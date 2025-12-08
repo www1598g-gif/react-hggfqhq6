@@ -2357,14 +2357,14 @@ export default function TravelApp() {
               <div className="w-full relative mb-6 mt-auto">
                 <KeyRound
                   size={18}
-                  className="absolute left-4 top-4 text-emerald-150"
+                  className="absolute left-4 top-4 text-emerald-100"
                 />
                <input
                   type="password"
                   value={inputPwd}
                   onChange={(e) => setInputPwd(e.target.value)}
                   placeholder="Passcode"
-                  className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg"
+                  className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-250 text-center font-bold shadow-lg"
                 />
               </div>
 
