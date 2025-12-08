@@ -2075,6 +2075,7 @@ const PackingPage = ({ isKonamiActive }) => {
 
 
 // Main App (20261208 卡通叢林 + 防誤觸 + 名單回歸)
+// Main App (20261208 優化 透明度調整 + 電腦版防扁 + 橫向遮罩)
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2098,11 +2099,10 @@ export default function TravelApp() {
 
   const MY_PASSWORD = '1314520';
 
-  // 使用俯視的熱帶叢林 之後再來改圖源
-  const JUNGLE_BG =
-    process.env.PUBLIC_URL + '/images/jungle1.jpeg';
+  // 使用俯視的熱帶叢林
+  const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
-  // 1. 搖晃彩蛋邏輯
+  // 1. 搖晃彩蛋邏輯 (省略...維持原樣)
   useEffect(() => {
     let lastShakeTime = 0;
     const handleShake = (e) => {
@@ -2138,7 +2138,7 @@ export default function TravelApp() {
     }
   };
 
-  // 2. 滑動彩蛋邏輯
+  // 2. 滑動彩蛋邏輯 (省略...維持原樣)
   useEffect(() => {
     const handleStart = (clientX, clientY) => {
       touchStartRef.current = { x: clientX, y: clientY };
@@ -2183,11 +2183,10 @@ export default function TravelApp() {
     }
   }, [konamiSequence]);
 
-  // 3. 氣象更新
+  // 3. 氣象更新 (省略...維持原樣)
   useEffect(() => {
     const updateWeatherForecast = async () => {
       const today = new Date();
-      // 防呆：需確保 itinerary 有資料
       if (!itinerary || itinerary.length === 0) return;
 
       const firstDayStr = itinerary[0].date;
@@ -2251,12 +2250,10 @@ export default function TravelApp() {
     requestMotionPermission();
 
     if (inputPwd === '1314520') {
-      // 情況 A: 自己人 (團員) : Admin 模式
       setIsAdmin(true);
       setIsUnlocking(true);
       setTimeout(() => setIsLocked(false), 800);
     } else if (inputPwd === '8888') {
-      // 情況 B: IG 朋友 (訪客) : 關閉 Admin 模式
       setIsAdmin(false);
       setIsUnlocking(true);
       setTimeout(() => setIsLocked(false), 800);
@@ -2274,130 +2271,150 @@ export default function TravelApp() {
   };
 
   return (
-    // 優化加入 overscroll-behavior-none 防止手機下拉重整 加入 select-none 防止選取文字
     <div className="min-h-screen bg-[#FDFBF7] font-sans text-stone-800 max-w-md mx-auto relative shadow-2xl overflow-hidden overscroll-behavior-none select-none">
+      
+      {/* 🚀 新增：橫向模式遮罩 (Landscape Blocker) */}
+      {/* 當螢幕轉橫 (landscape) 時顯示，直向 (portrait) 時隱藏 */}
+      <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
+        <Phone size={48} className="animate-pulse mb-4" />
+        <p className="text-lg font-bold tracking-widest">請將手機轉為直向</p>
+        <p className="text-xs text-stone-500 mt-2">Please rotate your phone</p>
+      </div>
+
       {/* 鎖定畫面 */}
       {isLocked && (
-       <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-stone-900">
-          {/* 左半邊葉子門 */}
-          <div
-            className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'
-              }`}
-            style={{
-              backgroundImage: `url(${JUNGLE_BG})`,
-              backgroundSize: '200% 120%',
-              backgroundPosition: 'left center',
-              backgroundRepeat: 'no-repeat',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/20"></div>
-          </div>
-
-          {/* 右半邊葉子門 */}
-          <div
-            className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'
-              }`}
-            style={{
-              backgroundImage: `url(${JUNGLE_BG})`,
-              backgroundSize: '200% 120%',
-              backgroundPosition: 'right center',
-              backgroundRepeat: 'no-repeat',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/20"></div>
-          </div>
-
-          {/* 中央內容區 */}
-          <div
-            className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 pb-20 transition-opacity duration-500 ${
-              isUnlocking ? 'opacity-0' : 'opacity-100'
-            }`}
-          >
-            {/* 優化加入問號按鈕加上 touch-none 和禁止右鍵 防止長按選取 */}
+        // 🚀 修改：外層加上 flex justify-center，讓內容在電腦版也能置中
+        <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900">
+          
+          {/* 🚀 新增：內層容器限制 max-w-md (手機寬度) */}
+          {/* 這樣在電腦上看，門就只會是手機那麼寬，不會被拉扁！ */}
+          <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center pt-40 pb-20">
+            
+            {/* 左半邊葉子門 */}
             <div
-              onMouseDown={handlePressStart}
-              onMouseUp={handlePressEnd}
-              onMouseLeave={handlePressEnd}
-              onTouchStart={handlePressStart}
-              onTouchEnd={handlePressEnd}
-              onContextMenu={(e) => e.preventDefault()}
-              className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"
-              style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+              className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
+                isUnlocking ? '-translate-x-full' : 'translate-x-0'
+              }`}
+              style={{
+                backgroundImage: `url(${JUNGLE_BG})`,
+                backgroundSize: '200% 120%',
+                backgroundPosition: 'left center',
+                backgroundRepeat: 'no-repeat',
+              }}
             >
-              <HelpCircle
-                size={40}
-                className="text-white drop-shadow-md"
-                strokeWidth={2.5}
-              />
+              <div className="absolute inset-0 bg-black/20"></div>
             </div>
 
-            <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">
-              Chiang Mai
-            </h2>
-
-            <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">
-              佑任・軒寶・學弟・腳慢
-            </p>
-            <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">
-              Jungle Adventure
-            </p>
-
-           <div className="w-full relative mb-6 mt-auto"> {/* 加入 mt-auto */}
-              <KeyRound
-                size={18}
-                className="absolute left-4 top-4 text-emerald-700"
-              />
-              <input
-                type="password"
-                value={inputPwd}
-                onChange={(e) => setInputPwd(e.target.value)}
-                placeholder="Passcode"
-                className="w-full bg-white/80 border border-white/50 rounded-2xl pl-12 pr-4 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all text-emerald-900 placeholder:text-emerald-700/50 text-center font-bold shadow-lg"
-              />
-            </div>
-
-            <button
-              onClick={handleUnlock}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2"
-            >
-              Start Journey <ArrowRight size={18} />
-            </button>
-
-            <div className="mt-8 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">
-              System Ver. 9.3 清邁4人團🧋
-            </div>
-          </div>
-
-          {/* Hello Kitty 彩蛋彈窗 */}
-          {showHelloKitty && (
+            {/* 右半邊葉子門 */}
             <div
-              onClick={() => setShowHelloKitty(false)}
-              className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"
+              className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
+                isUnlocking ? 'translate-x-full' : 'translate-x-0'
+              }`}
+              style={{
+                backgroundImage: `url(${JUNGLE_BG})`,
+                backgroundSize: '200% 120%',
+                backgroundPosition: 'right center',
+                backgroundRepeat: 'no-repeat',
+              }}
+            >
+              <div className="absolute inset-0 bg-black/20"></div>
+            </div>
+
+            {/* 中央內容區 (這層現在已經在正確的容器內了) */}
+            <div
+              className={`relative z-10 flex flex-col items-center w-full px-8 h-full transition-opacity duration-500 ${
+                isUnlocking ? 'opacity-0' : 'opacity-100'
+              }`}
             >
               <div
-                onClick={(e) => e.stopPropagation()}
-                className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"
+                onMouseDown={handlePressStart}
+                onMouseUp={handlePressEnd}
+                onMouseLeave={handlePressEnd}
+                onTouchStart={handlePressStart}
+                onTouchEnd={handlePressEnd}
+                onContextMenu={(e) => e.preventDefault()}
+                className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"
+                style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
               >
-                <button
-                  onClick={() => setShowHelloKitty(false)}
-                  className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold"
-                >
-                  ×
-                </button>
-                <img
-                  src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg"
-                  alt="Hello Kitty Surprise"
-                  className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md"
+                <HelpCircle
+                  size={40}
+                  className="text-white drop-shadow-md"
+                  strokeWidth={2.5}
                 />
-                <h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">
-                  Surprise!
-                </h3>
-                <p className="text-pink-400 text-sm font-bold">
-                  發現隱藏彩蛋 🎉
-                </p>
+              </div>
+
+              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">
+                Chiang Mai
+              </h2>
+
+              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">
+                佑任・軒寶・學弟・腳慢
+              </p>
+              <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">
+                Jungle Adventure
+              </p>
+
+              <div className="w-full relative mb-6 mt-auto">
+                <KeyRound
+                  size={18}
+                  className="absolute left-4 top-4 text-emerald-700"
+                />
+                <input
+                  type="password"
+                  value={inputPwd}
+                  onChange={(e) => setInputPwd(e.target.value)}
+                  placeholder="Passcode"
+                  // 🚀 修改：bg-white/40 (透明度從 80% 改為 40%)
+                  // 🚀 修改：border-white/30 (邊框也改淡一點)
+                  // 🚀 修改：text-emerald-900 (文字深綠色比較清楚)
+                  // 🚀 修改：placeholder:text-emerald-800/70 (提示字也深一點)
+                  className="w-full bg-white/40 border border-white/30 rounded-2xl pl-12 pr-4 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/60 focus:ring-2 focus:ring-emerald-500 transition-all text-emerald-900 placeholder:text-emerald-800/70 text-center font-bold shadow-lg backdrop-blur-sm"
+                />
+              </div>
+
+              <button
+                onClick={handleUnlock}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2"
+              >
+                Start Journey <ArrowRight size={18} />
+              </button>
+
+              <div className="mt-8 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">
+                System Ver. 9.3 清邁4人團🧋
               </div>
             </div>
-          )}
+
+            {/* Hello Kitty 彩蛋彈窗 */}
+            {showHelloKitty && (
+              <div
+                onClick={() => setShowHelloKitty(false)}
+                className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"
+              >
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"
+                >
+                  <button
+                    onClick={() => setShowHelloKitty(false)}
+                    className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold"
+                  >
+                    ×
+                  </button>
+                  <img
+                    src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg"
+                    alt="Hello Kitty Surprise"
+                    className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md"
+                  />
+                  <h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">
+                    Surprise!
+                  </h3>
+                  <p className="text-pink-400 text-sm font-bold">
+                    發現隱藏彩蛋 🎉
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -2465,16 +2482,18 @@ export default function TravelApp() {
       <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-4 pb-8 z-40 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)]">
         <button
           onClick={() => setActiveTab('itinerary')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'
-            }`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${
+            activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'
+          }`}
         >
           <MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
           <span className="text-[10px] font-bold tracking-wide">行程</span>
         </button>
         <button
           onClick={() => setActiveTab('packing')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'
-            }`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${
+            activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'
+          }`}
         >
           <CheckCircle
             size={22}
@@ -2484,8 +2503,9 @@ export default function TravelApp() {
         </button>
         <button
           onClick={() => setActiveTab('utils')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'
-            }`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${
+            activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'
+          }`}
         >
           <Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} />
           <span className="text-[10px] font-bold tracking-wide">工具</span>
