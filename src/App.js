@@ -689,6 +689,7 @@ const UTILS_DATA = {
 // note:天氣 Widget (防當機 Crash Guard)
 // note:天氣 Widget (修ㄌ跨夜問題 + 24小時預報 + 橫向捲動)
 // 天氣 Widget (移除點擊彩蛋20251206)
+// 修正: 移除最外層的 shadow-xl，讓頂部變平滑
 const WeatherHero = () => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
@@ -700,11 +701,9 @@ const WeatherHero = () => {
           'https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&current=temperature_2m,weather_code,relative_humidity_2m&hourly=temperature_2m,weather_code&forecast_days=2&timezone=Asia%2FBangkok'
         );
         const json = await res.json();
-
         if (json && json.current) {
           setData(json);
         }
-
         try {
           const aqiRes = await fetch(
             'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=18.7883&longitude=98.9853&current=us_aqi'
@@ -722,17 +721,10 @@ const WeatherHero = () => {
   }, []);
 
   const getWeatherIcon = (code, size = 20) => {
-    if (code <= 1)
-      return <Sun size={size} className="text-amber-500" strokeWidth={2.5} />;
-    if (code <= 3)
-      return <Cloud size={size} className="text-stone-400" strokeWidth={2.5} />;
-    if (code >= 50)
-      return (
-        <CloudRain size={size} className="text-blue-400" strokeWidth={2.5} />
-      );
-    return (
-      <CloudSun size={size} className="text-amber-400" strokeWidth={2.5} />
-    );
+    if (code <= 1) return <Sun size={size} className="text-amber-500" strokeWidth={2.5} />;
+    if (code <= 3) return <Cloud size={size} className="text-stone-400" strokeWidth={2.5} />;
+    if (code >= 50) return <CloudRain size={size} className="text-blue-400" strokeWidth={2.5} />;
+    return <CloudSun size={size} className="text-amber-400" strokeWidth={2.5} />;
   };
 
   const getAqiColor = (val) => {
@@ -744,15 +736,12 @@ const WeatherHero = () => {
 
   const getNext24Hours = () => {
     if (!data || !data.hourly || !data.hourly.time) return [];
-
     const currentHourIndex = new Date().getHours();
     const startIndex = currentHourIndex + 1;
     const endIndex = startIndex + 24;
-
     const times = data.hourly.time.slice(startIndex, endIndex);
     const temps = data.hourly.temperature_2m.slice(startIndex, endIndex);
     const codes = data.hourly.weather_code.slice(startIndex, endIndex);
-
     return times.map((t, i) => ({
       time: t.split('T')[1].slice(0, 5),
       temp: Math.round(temps[i]),
@@ -763,7 +752,8 @@ const WeatherHero = () => {
   const nextHours = getNext24Hours();
 
   return (
-    <div className="relative bg-[#FDFBF7] pt-6 pb-8 px-6 border-b border-stone-200 rounded-b-[2.5rem] shadow-xl shadow-stone-200/50 z-10 overflow-hidden">
+    // 這裡原本有 shadow-xl，我刪掉了
+    <div className="relative bg-[#FDFBF7] pt-6 pb-8 px-6 border-b border-stone-200 rounded-b-[2.5rem] z-10 overflow-hidden">
       <div className="absolute top-[-20px] right-[-20px] text-[8rem] font-serif text-amber-50 opacity-50 select-none leading-none pointer-events-none">
         Thai
       </div>
@@ -799,11 +789,7 @@ const WeatherHero = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <div
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${getAqiColor(
-                      aqi
-                    )}`}
-                  >
+                  <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${getAqiColor(aqi)}`}>
                     <Wind size={10} /> AQI {aqi}
                   </div>
                   <div className="text-xs text-stone-500 font-medium bg-white/50 px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -827,22 +813,12 @@ const WeatherHero = () => {
                 FUTURE 24H
               </div>
 
-              <div
-                className="flex overflow-x-auto gap-4 pb-2 w-full no-scrollbar"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
+              <div className="flex overflow-x-auto gap-4 pb-2 w-full no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {nextHours.map((h, idx) => (
-                  <div
-                    key={idx}
-                    className="flex flex-col items-center gap-1 min-w-[3.5rem] flex-shrink-0"
-                  >
-                    <span className="text-[10px] text-stone-400 font-bold whitespace-nowrap">
-                      {h.time}
-                    </span>
+                  <div key={idx} className="flex flex-col items-center gap-1 min-w-[3.5rem] flex-shrink-0">
+                    <span className="text-[10px] text-stone-400 font-bold whitespace-nowrap">{h.time}</span>
                     <div className="py-1">{getWeatherIcon(h.code, 20)}</div>
-                    <span className="text-sm font-bold text-stone-700">
-                      {h.temp}°
-                    </span>
+                    <span className="text-sm font-bold text-stone-700">{h.temp}°</span>
                   </div>
                 ))}
               </div>
@@ -967,18 +943,16 @@ const OutfitGuide = () => {
 // update地點卡片 爛腳標籤獨立一行
 // update地點卡片移除內部重複標示)
 // update: 地點卡片 (V5 - 標籤分行顯示，不再擋字)
+// 修正: 爛腳標籤移到時間旁邊 (flex-row layout)
 const LocationCard = ({ item }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const getIcon = () => {
     switch (item.type) {
-      case 'food':
-        return <Utensils size={16} className="text-orange-600" />;
-      case 'transport':
-        return <Car size={16} className="text-blue-500" />;
-      default:
-        return <MapPin size={16} className="text-emerald-500" />;
+      case 'food': return <Utensils size={16} className="text-orange-600" />;
+      case 'transport': return <Car size={16} className="text-blue-500" />;
+      default: return <MapPin size={16} className="text-emerald-500" />;
     }
   };
 
@@ -992,60 +966,49 @@ const LocationCard = ({ item }) => {
 
   const handleNav = (e) => {
     e.stopPropagation();
-    window.open(
-      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.nav)}`,
-      '_blank'
-    );
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.nav)}`, '_blank');
   };
 
   const handleAskAI = (e) => {
     e.stopPropagation();
     const prompt = `我正在清邁旅遊，地點是「${item.name}」。請告訴我這裡有什麼必吃美食、必買紀念品，或是需要注意的參觀禁忌？請用繁體中文回答。`;
-    window.open(
-      `https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`,
-      '_blank'
-    );
+    window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`, '_blank');
   };
 
   return (
     <div
       onClick={() => setIsExpanded(!isExpanded)}
-      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${
-        isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
-      }`}
+      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''}`}
     >
       <div className="p-4 flex items-start gap-4">
         <div className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center border border-stone-100">
           {getIcon()}
         </div>
         <div className="flex-1 min-w-0">
-          {/* 第一行：時間 + Highlight */}
-          <div className="flex justify-between items-start mb-1">
-            <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
-              {item.time}
-            </div>
-            {item.highlight && (
-              <span className="inline-block px-2 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full border border-amber-100 flex-shrink-0 ml-2">
-                ★ {item.highlight}
-              </span>
-            )}
+          {/* Header: 時間 + 爛腳標籤 + Highlight */}
+          <div className="flex flex-wrap justify-between items-start mb-1">
+             <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
+                  {item.time}
+                </span>
+                {/* 爛腳標籤在這裡！ */}
+                {item.difficulty && (
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
+                    🦵 {item.difficulty}
+                  </span>
+                )}
+             </div>
+             {item.highlight && (
+                <span className="inline-block px-2 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full border border-amber-100 flex-shrink-0 ml-2">
+                  ★ {item.highlight}
+                </span>
+             )}
           </div>
 
-          {/* 第二行：標題 */}
           <h3 className="font-bold text-stone-800 text-lg leading-tight mb-2 pr-2">
             {item.name}
           </h3>
           
-          {/* 第三行：爛腳標籤 (獨立一行) */}
-          {item.difficulty && (
-             <div className="mb-1.5">
-               <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded font-bold ${getDifficultyColor(item.difficulty)}`}>
-                 🦵 {item.difficulty}
-               </span>
-             </div>
-          )}
-
-          {/* 第四行：備註文字 (允許自動換行，不再切掉) */}
           <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
              {item.note}
           </p>
@@ -1063,23 +1026,14 @@ const LocationCard = ({ item }) => {
                 <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
               </div>
             )}
-            <img
-              src={getLocationImage(item.name)}
-              alt={item.name}
-              onLoad={() => setIsImageLoaded(true)}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${
-                isImageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
+            <img src={getLocationImage(item.name)} alt={item.name} onLoad={() => setIsImageLoaded(true)} className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1">
               <Camera size={10} /> Image for reference
             </div>
           </div>
-
           <div className="p-5 bg-stone-50/50">
             <div className="mb-5">
-              {/* 這裡原本的爛腳標示已移除 */}
               <h4 className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
                 <Info size={12} /> 導遊說故事
               </h4>
@@ -1087,19 +1041,11 @@ const LocationCard = ({ item }) => {
                 {item.desc || '暫無詳細介紹，但這裡絕對值得一去！'}
               </p>
             </div>
-
             <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={handleNav}
-                className="flex items-center justify-center gap-2 py-3 bg-stone-800 text-amber-50 rounded-xl active:scale-95 transition-all text-sm font-bold shadow-lg shadow-stone-200"
-              >
+              <button onClick={handleNav} className="flex items-center justify-center gap-2 py-3 bg-stone-800 text-amber-50 rounded-xl active:scale-95 transition-all text-sm font-bold shadow-lg shadow-stone-200">
                 <Navigation size={16} /> 導航
               </button>
-
-              <button
-                onClick={handleAskAI}
-                className="flex items-center justify-center gap-2 py-3 bg-white border border-stone-200 text-stone-600 rounded-xl active:scale-95 transition-all text-sm font-bold hover:bg-stone-50 shadow-sm"
-              >
+              <button onClick={handleAskAI} className="flex items-center justify-center gap-2 py-3 bg-white border border-stone-200 text-stone-600 rounded-xl active:scale-95 transition-all text-sm font-bold hover:bg-stone-50 shadow-sm">
                 <Sparkles size={16} className="text-teal-500" /> 問問 AI
               </button>
             </div>
@@ -1110,11 +1056,11 @@ const LocationCard = ({ item }) => {
   );
 };
 
+// 修正: 滑動速度由 300ms 提升到 100ms
 const DayCard = ({ dayData, isOpen, toggle }) => {
   const cardRef = useRef(null);
-  // 👇👇👇 1. 把這個函式貼在這裡 (這是新加入的捲動功能) 👇👇👇
-  const smoothScrollTo = (element, duration = 300) => {
-    // -120 是為了留一點頭部空間 (避開上面的天氣卡片)
+
+  const smoothScrollTo = (element, duration = 100) => {
     const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - 120;
     const startPosition = window.pageYOffset;
     const distance = targetPosition - startPosition;
@@ -1128,89 +1074,44 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
       if (timeElapsed < duration) requestAnimationFrame(animation);
     };
 
-    // 緩動公式 (讓滑動順暢，不是生硬的直線)
     const ease = (t, b, c, d) => {
       t /= d / 2;
       if (t < 1) return (c / 2) * t * t + b;
       t--;
       return (-c / 2) * (t * (t - 2) - 1) + b;
     };
-
     requestAnimationFrame(animation);
   };
+
   useEffect(() => {
     if (isOpen && cardRef.current) {
-      //  setTimeout(() => {
-      //   cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // }, 20);
       setTimeout(() => {
-        smoothScrollTo(cardRef.current, 300); // 想更快就把 300 改成 150
+        smoothScrollTo(cardRef.current, 100); // 這裡是 100ms
       }, 50);
     }
   }, [isOpen]);
 
   return (
     <div ref={cardRef} className="mb-3 px-2 scroll-mt-32">
-      <div
-        onClick={toggle}
-        className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen
-          ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
-          : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
-          }`}
-      >
+      <div onClick={toggle} className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]' : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'}`}>
         <div className="flex items-center gap-4">
-          <div
-            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen
-              ? 'bg-stone-700 border-stone-600'
-              : 'bg-stone-50 border-stone-200'
-              }`}
-          >
-            <span
-              className={`text-[10px] font-bold uppercase ${isOpen ? 'text-stone-400' : 'text-stone-400'
-                }`}
-            >
-              Day
-            </span>
-            <span
-              className={`text-xl font-serif font-bold ${isOpen ? 'text-amber-400' : 'text-stone-800'
-                }`}
-            >
-              {dayData.day}
-            </span>
+          <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen ? 'bg-stone-700 border-stone-600' : 'bg-stone-50 border-stone-200'}`}>
+            <span className={`text-[10px] font-bold uppercase ${isOpen ? 'text-stone-400' : 'text-stone-400'}`}>Day</span>
+            <span className={`text-xl font-serif font-bold ${isOpen ? 'text-amber-400' : 'text-stone-800'}`}>{dayData.day}</span>
           </div>
           <div>
-            <div
-              className={`text-xs font-bold mb-0.5 ${isOpen ? 'text-stone-400' : 'text-stone-500'
-                }`}
-            >
-              {dayData.displayDate}
-            </div>
-            <div className="font-bold text-lg leading-tight">
-              {dayData.title}
-            </div>
+            <div className={`text-xs font-bold mb-0.5 ${isOpen ? 'text-stone-400' : 'text-stone-500'}`}>{dayData.displayDate}</div>
+            <div className="font-bold text-lg leading-tight">{dayData.title}</div>
           </div>
         </div>
-
         <div className="text-right">
           <div className="flex items-center justify-end gap-1 mb-1">
-            {dayData.weather.realData && (
-              <Signal size={10} className="text-green-500 animate-pulse" />
-            )}
-            <span
-              className={`text-sm font-medium ${isOpen ? 'text-stone-300' : 'text-stone-600'
-                }`}
-            >
-              {dayData.weather.temp}
-            </span>
+            {dayData.weather.realData && <Signal size={10} className="text-green-500 animate-pulse" />}
+            <span className={`text-sm font-medium ${isOpen ? 'text-stone-300' : 'text-stone-600'}`}>{dayData.weather.temp}</span>
           </div>
-          {isOpen ? (
-            <ChevronUp size={20} className="text-stone-500 ml-auto" />
-          ) : (
-            <ChevronDown size={20} className="text-stone-300 ml-auto" />
-          )}
+          {isOpen ? <ChevronUp size={20} className="text-stone-500 ml-auto" /> : <ChevronDown size={20} className="text-stone-300 ml-auto" />}
         </div>
       </div>
-
       {isOpen && (
         <div className="mt-4 pl-4 border-l-2 border-stone-200/50 space-y-4 pb-4 animate-fadeIn">
           {dayData.locations.map((loc, idx) => (
@@ -2168,6 +2069,7 @@ const PackingPage = ({ isKonamiActive }) => {
 // Main App (20261209回歸穩定版：修復白底透出、移除頂部陰影、調整導覽列高度)
 // Main App (V8 - 最終回退修復版：移除陰影、降低選單、修復白底)
 // Main App (V9 - 解決鍵盤露餡 + 移除頂部醜陰影)
+// Main App (V10 - 最終優化：無陰影、無白底、低導覽列)
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2180,21 +2082,15 @@ export default function TravelApp() {
   const [openDay, setOpenDay] = useState(0);
   const [itinerary, setItinerary] = useState(INITIAL_ITINERARY_DATA);
 
-  // 彩蛋狀態
   const [shakeCount, setShakeCount] = useState(0);
   const [showShakeEgg, setShowShakeEgg] = useState(false);
-
-  // 滑動彩蛋
   const touchStartRef = useRef({ x: 0, y: 0 });
   const [konamiSequence, setKonamiSequence] = useState([]);
   const [isKonamiActive, setIsKonamiActive] = useState(false);
-
   const MY_PASSWORD = '1314520';
-
-  // 使用俯視的熱帶叢林
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
-  // 1. 搖晃彩蛋邏輯
+  // (Event Listeners 省略，保持原樣)
   useEffect(() => {
     let lastShakeTime = 0;
     const handleShake = (e) => {
@@ -2203,402 +2099,125 @@ export default function TravelApp() {
       const total = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
       if (total > 20 && Date.now() - lastShakeTime > 300) {
         lastShakeTime = Date.now();
-        setShakeCount((prev) => {
-          const newCount = prev + 1;
-          if (newCount >= 8) {
-            setShowShakeEgg(true);
-            return 0;
-          }
-          return newCount;
-        });
+        setShakeCount((prev) => { const newCount = prev + 1; if (newCount >= 8) { setShowShakeEgg(true); return 0; } return newCount; });
       }
     };
     window.addEventListener('devicemotion', handleShake);
     return () => window.removeEventListener('devicemotion', handleShake);
   }, []);
 
-  const requestMotionPermission = async () => {
-    if (
-      typeof DeviceMotionEvent !== 'undefined' &&
-      typeof DeviceMotionEvent.requestPermission === 'function'
-    ) {
-      try {
-        await DeviceMotionEvent.requestPermission();
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  };
+  const requestMotionPermission = async () => { if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') { try { await DeviceMotionEvent.requestPermission(); } catch (e) { console.error(e); } } };
 
-  // 2. 滑動彩蛋邏輯
   useEffect(() => {
-    const handleStart = (clientX, clientY) => {
-      touchStartRef.current = { x: clientX, y: clientY };
-    };
+    const handleStart = (clientX, clientY) => { touchStartRef.current = { x: clientX, y: clientY }; };
     const handleEnd = (clientX, clientY) => {
       const diffX = clientX - touchStartRef.current.x;
       const diffY = clientY - touchStartRef.current.y;
       if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
       let direction = '';
-      if (Math.abs(diffX) > Math.abs(diffY)) {
-        direction = diffX > 0 ? 'right' : 'left';
-      } else {
-        direction = diffY > 0 ? 'down' : 'up';
-      }
+      if (Math.abs(diffX) > Math.abs(diffY)) direction = diffX > 0 ? 'right' : 'left'; else direction = diffY > 0 ? 'down' : 'up';
       setKonamiSequence((prev) => [...prev, direction].slice(-4));
     };
-
-    const onTouchStart = (e) =>
-      handleStart(e.touches[0].clientX, e.touches[0].clientY);
-    const onTouchEnd = (e) =>
-      handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    const onTouchStart = (e) => handleStart(e.touches[0].clientX, e.touches[0].clientY);
+    const onTouchEnd = (e) => handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
     const onMouseDown = (e) => handleStart(e.clientX, e.clientY);
     const onMouseUp = (e) => handleEnd(e.clientX, e.clientY);
-
-    window.addEventListener('touchstart', onTouchStart);
-    window.addEventListener('touchend', onTouchEnd);
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mouseup', onMouseUp);
-
-    return () => {
-      window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchend', onTouchEnd);
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
-    };
+    window.addEventListener('touchstart', onTouchStart); window.addEventListener('touchend', onTouchEnd); window.addEventListener('mousedown', onMouseDown); window.addEventListener('mouseup', onMouseUp);
+    return () => { window.removeEventListener('touchstart', onTouchStart); window.removeEventListener('touchend', onTouchEnd); window.removeEventListener('mousedown', onMouseDown); window.removeEventListener('mouseup', onMouseUp); };
   }, []);
 
-  useEffect(() => {
-    if (konamiSequence.join(' ') === 'up down left right') {
-      setIsKonamiActive((prev) => !prev);
-      setKonamiSequence([]);
-    }
-  }, [konamiSequence]);
+  useEffect(() => { if (konamiSequence.join(' ') === 'up down left right') { setIsKonamiActive((prev) => !prev); setKonamiSequence([]); } }, [konamiSequence]);
 
-  // 3. 氣象更新
   useEffect(() => {
     const updateWeatherForecast = async () => {
-      const today = new Date();
-      if (!itinerary || itinerary.length === 0) return;
-
-      const firstDayStr = itinerary[0].date;
-      const lastDayStr = itinerary[itinerary.length - 1].date;
-      const tripStart = new Date(firstDayStr);
-      const diffTime = tripStart - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
+      const today = new Date(); if (!itinerary || itinerary.length === 0) return;
+      const firstDayStr = itinerary[0].date; const lastDayStr = itinerary[itinerary.length - 1].date;
+      const tripStart = new Date(firstDayStr); const diffTime = tripStart - today; const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       if (diffDays > 14) return;
-
       try {
-        const cityRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`
-        );
+        const cityRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`);
         const cityData = await cityRes.json();
-        const mountainRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=18.58&longitude=98.48&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`
-        );
+        const mountainRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=18.58&longitude=98.48&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`);
         const mountainData = await mountainRes.json();
-
-        setItinerary((prevItinerary) => {
-          return prevItinerary.map((dayItem, index) => {
-            if (!cityData.daily || !cityData.daily.time[index]) return dayItem;
-            let maxTemp, minTemp, code;
-            if (
-              dayItem.day === 6 &&
-              mountainData.daily &&
-              mountainData.daily.time[index]
-            ) {
-              maxTemp = Math.round(
-                mountainData.daily.temperature_2m_max[index]
-              );
-              minTemp = Math.round(
-                mountainData.daily.temperature_2m_min[index]
-              );
-              code = mountainData.daily.weather_code[index];
-            } else {
-              maxTemp = Math.round(cityData.daily.temperature_2m_max[index]);
-              minTemp = Math.round(cityData.daily.temperature_2m_min[index]);
-              code = cityData.daily.weather_code[index];
-            }
-            return {
-              ...dayItem,
-              weather: {
-                ...dayItem.weather,
-                temp: `${minTemp}-${maxTemp}°C`,
-                icon: code <= 3 ? 'sunny' : 'cloudy',
-                realData: true,
-              },
-            };
-          });
-        });
-      } catch (e) {
-        console.error('氣象同步失敗:', e);
-      }
+        setItinerary((prev) => prev.map((item, i) => {
+          if (!cityData.daily || !cityData.daily.time[i]) return item;
+          let max, min, code;
+          if (item.day === 6 && mountainData.daily) { max = Math.round(mountainData.daily.temperature_2m_max[i]); min = Math.round(mountainData.daily.temperature_2m_min[i]); code = mountainData.daily.weather_code[i]; }
+          else { max = Math.round(cityData.daily.temperature_2m_max[i]); min = Math.round(cityData.daily.temperature_2m_min[i]); code = cityData.daily.weather_code[i]; }
+          return { ...item, weather: { ...item.weather, temp: `${min}-${max}°C`, icon: code <= 3 ? 'sunny' : 'cloudy', realData: true } };
+        }));
+      } catch (e) { console.error(e); }
     };
     updateWeatherForecast();
   }, []);
 
   const handleUnlock = () => {
     requestMotionPermission();
-
-    if (inputPwd === '1314520') {
-      setIsAdmin(true);
-      setIsUnlocking(true);
-      setTimeout(() => setIsLocked(false), 800);
-    } else if (inputPwd === '8888') {
-      setIsAdmin(false);
-      setIsUnlocking(true);
-      setTimeout(() => setIsLocked(false), 800);
-    } else {
-      alert('密碼錯誤！再試一次吧 🔒');
-      setInputPwd('');
-    }
+    if (inputPwd === '1314520') { setIsAdmin(true); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
+    else if (inputPwd === '8888') { setIsAdmin(false); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
+    else { alert('密碼錯誤！再試一次吧 🔒'); setInputPwd(''); }
   };
-
-  const handlePressStart = () => {
-    pressTimerRef.current = setTimeout(() => setShowHelloKitty(true), 2000);
-  };
-  const handlePressEnd = () => {
-    if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
-  };
+  const handlePressStart = () => { pressTimerRef.current = setTimeout(() => setShowHelloKitty(true), 2000); };
+  const handlePressEnd = () => { if (pressTimerRef.current) clearTimeout(pressTimerRef.current); };
 
   return (
-    // 修正1: 移除 shadow-2xl (解決頂部陰影)
+    // 修正1: 移除 shadow-2xl。鎖定時用 bg-stone-900 解決白底。
     <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
-      
-      {/* 橫向模式遮罩 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
         <p className="text-lg font-bold tracking-widest">請將手機轉為直向</p>
         <p className="text-xs text-stone-500 mt-2">Please rotate your phone</p>
       </div>
 
-      {/* 鎖定畫面 */}
-      {/* 修正2: 這裡不做任何條件渲染，只要 isLocked 為 true，這裡就是唯一存在的 DOM */}
-      {isLocked ? (
+      {isLocked && (
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900 h-screen w-full">
-          
-          {/* 內層容器 */}
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
+            <div className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'left center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
+            <div className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
             
-            {/* 左半邊葉子門 */}
-            <div
-              className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
-                isUnlocking ? '-translate-x-full' : 'translate-x-0'
-              }`}
-              style={{
-                backgroundImage: `url(${JUNGLE_BG})`,
-                backgroundSize: '200% 120%', // 保留你設定的 120%
-                backgroundPosition: 'left center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            >
-              <div className="absolute inset-0 bg-black/20"></div>
-            </div>
-
-            {/* 右半邊葉子門 */}
-            <div
-              className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
-                isUnlocking ? 'translate-x-full' : 'translate-x-0'
-              }`}
-              style={{
-                backgroundImage: `url(${JUNGLE_BG})`,
-                backgroundSize: '200% 120%', // 保留你設定的 120%
-                backgroundPosition: 'right center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            >
-              <div className="absolute inset-0 bg-black/20"></div>
-            </div>
-
-            {/* 中央內容區 - 保持你習慣的佈局 */}
-            <div
-              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${
-                isUnlocking ? 'opacity-0' : 'opacity-100'
-              }`}
-            >
-              <div
-                onMouseDown={handlePressStart}
-                onMouseUp={handlePressEnd}
-                onMouseLeave={handlePressEnd}
-                onTouchStart={handlePressStart}
-                onTouchEnd={handlePressEnd}
-                onContextMenu={(e) => e.preventDefault()}
-                className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"
-                style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
-              >
-                <HelpCircle
-                  size={40}
-                  className="text-white drop-shadow-md"
-                  strokeWidth={2.5}
-                />
-              </div>
-
-              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">
-                Chiang Mai
-              </h2>
-
-              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">
-                佑任・軒寶・學弟・腳慢
-              </p>
-              <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">
-                Jungle Adventure
-              </p>
-
-              {/* mt-auto 確保在下方 */}
+            <div className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'}`}>
+              <div onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onMouseLeave={handlePressEnd} onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onContextMenu={(e) => e.preventDefault()} className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none" style={{ WebkitUserSelect: 'none', userSelect: 'none' }}><HelpCircle size={40} className="text-white drop-shadow-md" strokeWidth={2.5} /></div>
+              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
+              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
+              <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">Jungle Adventure</p>
+              
               <div className="w-full relative mb-6 mt-auto">
-                <KeyRound
-                  size={18}
-                  className="absolute left-4 top-4 text-emerald-100"
-                />
-                <input
-                  type="password"
-                  value={inputPwd}
-                  onChange={(e) => setInputPwd(e.target.value)}
-                  placeholder="Passcode"
-                  className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg"
-                />
+                <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
+                <input type="password" value={inputPwd} onChange={(e) => setInputPwd(e.target.value)} placeholder="Passcode" className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" />
               </div>
-
-              <button
-                onClick={handleUnlock}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10" 
-              >
-                Start Journey <ArrowRight size={18} />
-              </button>
-
-              <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">
-                System Ver. 9.3 清邁4人團🧋
-              </div>
+              <button onClick={handleUnlock} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10">Start Journey <ArrowRight size={18} /></button>
+              <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">System Ver. 9.3 清邁4人團🧋</div>
             </div>
-
-            {/* Hello Kitty 彩蛋彈窗 */}
-            {showHelloKitty && (
-              <div
-                onClick={() => setShowHelloKitty(false)}
-                className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"
-              >
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"
-                >
-                  <button
-                    onClick={() => setShowHelloKitty(false)}
-                    className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold"
-                  >
-                    ×
-                  </button>
-                  <img
-                    src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg"
-                    alt="Hello Kitty Surprise"
-                    className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md"
-                  />
-                  <h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">
-                    Surprise!
-                  </h3>
-                  <p className="text-pink-400 text-sm font-bold">
-                    發現隱藏彩蛋 🎉
-                  </p>
-                </div>
-              </div>
-            )}
+            {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div onClick={(e) => e.stopPropagation()} className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"><button onClick={() => setShowHelloKitty(false)} className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold">×</button><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" alt="Hello Kitty Surprise" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md" /><h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">Surprise!</h3><p className="text-pink-400 text-sm font-bold">發現隱藏彩蛋 🎉</p></div></div>)}
           </div>
         </div>
-      ) : (
-        // 修正3: 主程式現在只在 !isLocked 時才渲染
-        // 這意味著鎖定時，DOM 裡面根本沒有白色的主頁面，所以鍵盤彈起絕對不會露出白底
+      )}
+
+      {/* 只有解鎖後才渲染內容 */}
+      {!isLocked && (
         <div className="bg-[#FDFBF7] min-h-screen">
           <WeatherHero />
-
           <main className="pb-28">
             {activeTab === 'itinerary' && (
               <div className="pb-4">
                 <OutfitGuide />
                 <div className="p-4 mt-2">
                   {itinerary.map((day, idx) => (
-                    <DayCard
-                      key={day.day}
-                      dayData={day}
-                      isOpen={openDay === idx}
-                      toggle={() => setOpenDay(openDay === idx ? -1 : idx)}
-                    />
+                    <DayCard key={day.day} dayData={day} isOpen={openDay === idx} toggle={() => setOpenDay(openDay === idx ? -1 : idx)} />
                   ))}
-                  <div className="text-center text-xs text-stone-400 mt-12 mb-8 font-serif italic">
-                    — Journey to Chiang Mai —
-                  </div>
+                  <div className="text-center text-xs text-stone-400 mt-12 mb-8 font-serif italic">— Journey to Chiang Mai —</div>
                 </div>
                 <FloatingStatus itinerary={itinerary} />
               </div>
             )}
-
-            {activeTab === 'packing' && (
-              <PackingPage isKonamiActive={isKonamiActive} />
-            )}
-
+            {activeTab === 'packing' && <PackingPage isKonamiActive={isKonamiActive} />}
             {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} />}
           </main>
-          
-          {/* 搖晃彩蛋 */}
-          {showShakeEgg && (
-            <div
-              onClick={() => setShowShakeEgg(false)}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"
-            >
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"
-              >
-                <button
-                  onClick={() => setShowShakeEgg(false)}
-                  className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold z-10"
-                >
-                  ×
-                </button>
-                <img
-                  src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif"
-                  alt="Shake Surprise"
-                  className="w-full rounded-xl mb-4"
-                />
-                <h3 className="text-2xl font-bold text-pink-600 mb-2 font-serif">
-                  搖出驚喜!
-                </h3>
-                <p className="text-pink-500 mb-2">大家的旅途一定會超順利~</p>
-              </div>
-            </div>
-          )}
-
-          {/* 底部導覽列 - 修正4: pb-8 改回 pb-4，降低高度 */}
+          {/* 修正2: pb-8 -> pb-4，降低底部高度 */}
           <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 pb-4 z-40">
-            <button
-              onClick={() => setActiveTab('itinerary')}
-              className={`flex flex-col items-center gap-1.5 transition-colors ${
-                activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'
-              }`}
-            >
-              <MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
-              <span className="text-[10px] font-bold tracking-wide">行程</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('packing')}
-              className={`flex flex-col items-center gap-1.5 transition-colors ${
-                activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'
-              }`}
-            >
-              <CheckCircle
-                size={22}
-                strokeWidth={activeTab === 'packing' ? 2.5 : 2}
-              />
-              <span className="text-[10px] font-bold tracking-wide">準備</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('utils')}
-              className={`flex flex-col items-center gap-1.5 transition-colors ${
-                activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'
-              }`}
-            >
-              <Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} />
-              <span className="text-[10px] font-bold tracking-wide">工具</span>
-            </button>
+            <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'}`}><MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">行程</span></button>
+            <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'}`}><CheckCircle size={22} strokeWidth={activeTab === 'packing' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">準備</span></button>
+            <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'}`}><Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">工具</span></button>
           </nav>
         </div>
       )}
