@@ -764,8 +764,9 @@ const FloatingStatus = ({ itinerary }) => {
   );
 };
 
+// update: 穿搭指南 + 爛腳圖例
 const OutfitGuide = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false); // 預設關閉，保持版面清爽
 
   if (!isOpen)
     return (
@@ -773,45 +774,46 @@ const OutfitGuide = () => {
         onClick={() => setIsOpen(true)}
         className="mx-6 mt-6 bg-white shadow-sm border border-stone-100 py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 text-stone-600 w-[calc(100%-3rem)] active:scale-95 transition-transform"
       >
-        <Shirt size={14} className="text-amber-500" /> 查看穿衣建議
+        <Info size={14} className="text-amber-500" /> 查看穿搭 & 爛腳等級說明
       </button>
     );
 
   return (
-    <div className="mx-6 mt-6 bg-[#FFFBF0] p-5 rounded-2xl border border-amber-100/50 shadow-sm relative">
+    <div className="mx-6 mt-6 bg-[#FFFBF0] p-5 rounded-2xl border border-amber-100/50 shadow-sm relative animate-fadeIn">
       <button
         onClick={() => setIsOpen(false)}
         className="absolute top-3 right-3 text-amber-300 hover:text-amber-500 transition-colors"
       >
         <ChevronUp size={18} />
       </button>
+      
+      {/* 第一部分：穿搭 */}
       <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 text-base mb-3">
-        <Shirt size={18} className="text-amber-500" />
-        2月穿搭指南
+        <Shirt size={18} className="text-amber-500" /> 2月穿搭指南
       </h3>
-      <div className="space-y-3 text-xs text-stone-600 leading-relaxed">
+      <div className="space-y-3 text-xs text-stone-600 leading-relaxed mb-6">
         <div className="flex items-start gap-3">
-          <div className="bg-amber-100 p-1.5 rounded-full text-amber-600">
+          <div className="bg-amber-100 p-1.5 rounded-full text-amber-600 flex-shrink-0">
             <Sun size={12} />
           </div>
           <div>
             <strong className="text-stone-800">白天 (30-35°C)</strong>
             <br />
-            棉麻材質、短袖、透氣長裙。太陽很毒，務必戴墨鏡帽。
+            短袖、透氣長裙。太陽很毒，務必戴墨鏡帽。
           </div>
         </div>
         <div className="flex items-start gap-3">
-          <div className="bg-blue-100 p-1.5 rounded-full text-blue-600">
+          <div className="bg-blue-100 p-1.5 rounded-full text-blue-600 flex-shrink-0">
             <Wind size={12} />
           </div>
           <div>
-            <strong className="text-stone-800">早晚/百貨 (18-20°C)</strong>
+            <strong className="text-stone-800">早晚 (18-20°C)</strong>
             <br />
-            溫差大，隨身帶一件薄襯衫或針織外套。
+            溫差大，隨身帶一件薄襯衫。
           </div>
         </div>
         <div className="bg-white p-3 rounded-xl border border-amber-100 flex items-start gap-3">
-          <div className="bg-red-100 p-1.5 rounded-full text-red-600">
+          <div className="bg-red-100 p-1.5 rounded-full text-red-600 flex-shrink-0">
             <Mountain size={12} />
           </div>
           <div>
@@ -819,16 +821,36 @@ const OutfitGuide = () => {
               茵他儂山特別注意
             </strong>
             <span className="block text-stone-500 mb-0.5">
-              • 瀑布區:{' '}
-              <span className="text-amber-600 font-bold">熱 (短袖)</span>
+              • 瀑布區: <span className="text-amber-600 font-bold">熱 (短袖)</span>
             </span>
             <span className="block text-stone-500">
-              • 雙塔/山頂:{' '}
-              <span className="text-blue-600 font-bold">極冷 (羽絨/防風)</span>
+              • 山頂: <span className="text-blue-600 font-bold">極冷 (羽絨/防風)</span>
             </span>
           </div>
         </div>
       </div>
+
+      {/* 第二部分：爛腳圖例 (新增) */}
+      <div className="pt-4 border-t border-amber-200/50">
+        <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 text-base mb-3">
+          <span className="text-lg">🦵</span> 爛腳指數說明
+        </h3>
+        <div className="grid grid-cols-1 gap-2 text-xs">
+          <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-emerald-100">
+             <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold whitespace-nowrap">低 / 零</span>
+             <span className="text-stone-600">全程坐車、平地，有冷氣或座位。</span>
+          </div>
+          <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-amber-100">
+             <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold whitespace-nowrap">中</span>
+             <span className="text-stone-600">一般步行、有些微階梯或泥土路。</span>
+          </div>
+          <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-rose-100">
+             <span className="bg-rose-100 text-rose-700 px-2 py-0.5 rounded font-bold whitespace-nowrap">高 / 極高</span>
+             <span className="text-stone-600">陡坡、長途步行、人潮擁擠 (如夜市)。</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };
