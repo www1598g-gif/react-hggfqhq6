@@ -2278,14 +2278,14 @@ export default function TravelApp() {
     <div className="min-h-screen bg-[#FDFBF7] font-sans text-stone-800 max-w-md mx-auto relative shadow-2xl overflow-hidden overscroll-behavior-none select-none">
       {/* 鎖定畫面 */}
       {isLocked && (
-       <div className="fixed inset-0 z-[100] flex items-start justify-center pt-60 overflow-hidden bg-stone-900">
+       <div className="fixed inset-0 z-[100] flex items-start justify-center pt-90 overflow-hidden bg-stone-900">
           {/* 左半邊葉子門 */}
           <div
             className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'
               }`}
             style={{
               backgroundImage: `url(${JUNGLE_BG})`,
-              backgroundSize: '200% 95%',
+              backgroundSize: '200% 110%',
               backgroundPosition: 'left center',
               backgroundRepeat: 'no-repeat',
             }}
@@ -2299,7 +2299,7 @@ export default function TravelApp() {
               }`}
             style={{
               backgroundImage: `url(${JUNGLE_BG})`,
-              backgroundSize: '200% 95%',
+              backgroundSize: '200% 110%',
               backgroundPosition: 'right center',
               backgroundRepeat: 'no-repeat',
             }}
