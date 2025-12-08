@@ -2302,6 +2302,7 @@ export default function TravelApp() {
             style={{
               backgroundImage: `url(${JUNGLE_BG})`,
               backgroundSize: 'cover',
+              backgroundPosition: 'bottom left',
             }}
           >
             <div className="absolute inset-0 bg-black/20"></div>
@@ -2315,6 +2316,7 @@ export default function TravelApp() {
             style={{
               backgroundImage: `url(${JUNGLE_BG})`,
               backgroundSize: 'cover',
+              backgroundPosition: 'bottom right',
             }}
           >
             <div className="absolute inset-0 bg-black/20"></div>
