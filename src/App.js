@@ -43,127 +43,43 @@ import {
 const getLocationImage = (locationName) => {
   const name = locationName.toLowerCase();
 
-  // use Unsplash
+  if (name.includes('機場')) return 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80';
+  if (name.includes('mae kampong') || name.includes('前往')) return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80';
+  if (name.includes('portare') || name.includes('涮涮鍋') || name.includes('晚餐')) return 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=800&q=80';
+  if (name.includes('日出') || name.includes('kew fin')) return 'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=800&q=80';
+  if (name.includes('teddu') || name.includes('懸崖')) return 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80';
+  if (name.includes('rimping') || name.includes('採買')) return 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800&q=80';
+  if (name.includes('kad manee')) return 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80';
+  if (name.includes('jing jai')) return 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=800&q=80';
+  if (name.includes('chamcha')) return 'https://images.unsplash.com/photo-1567696911980-2eed69a46042?w=800&q=80';
+  if (name.includes('khao tom') || name.includes('稀飯')) return 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800&q=80';
+  if (name.includes('coconut market')) return 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=80';
+  if (name.includes('fah lanna') || name.includes('spa')) return 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80';
+  if (name.includes('sunday')) return 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80';
+  if (name.includes('elephant')) return 'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=800&q=80';
+  if (name.includes('huen muan')) return 'https://images.unsplash.com/photo-1517244683847-7456b63c5969?w=800&q=80';
+  if (name.includes('doi inthanon')) return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80';
+  if (name.includes('khantoke') || name.includes('帝王')) return 'https://images.unsplash.com/photo-1528712306091-ed0763094c98?w=800&q=80';
+  if (name.includes('cooking')) return 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80';
+  if (name.includes('baan kang')) return 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=800&q=80';
+  if (name.includes('wat umong')) return 'https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80';
+  if (name.includes('ristr8to') || name.includes('coffee')) return 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800&q=80';
+  if (name.includes('tong tem')) return 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=800&q=80';
+  if (name.includes('wat chedi') || name.includes('柴迪隆')) return 'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=800&q=80';
+  if (name.includes('sp chicken') || name.includes('烤雞')) return 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=800&q=80';
+  if (name.includes('kor panich') || name.includes('芒果')) return 'https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=800&q=80';
+  if (name.includes('makkha')) return 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80';
+  if (name.includes('aroon')) return 'https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4?w=800&q=80';
+  if (name.includes('boxing') || name.includes('泰拳')) return 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&q=80';
+  if (name.includes('warorot')) return 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=80';
+  if (name.includes('cake')) return 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80';
+  if (name.includes('ginger')) return 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80';
 
-  // Day 1: 機場
-  if (name.includes('機場'))
-    return 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80';
-  // Day 1: Mae Kampong (山林村落)
-  if (name.includes('mae kampong') || name.includes('前往'))
-    return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80';
-  // Day 1: 民宿火鍋
-  if (
-    name.includes('portare') ||
-    name.includes('涮涮鍋') ||
-    name.includes('晚餐')
-  )
-    return 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=800&q=80';
-
-  // Day 2: 日出觀景
-  if (name.includes('日出') || name.includes('kew fin'))
-    return 'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=800&q=80';
-  // Day 2: 懸崖咖啡
-  if (name.includes('teddu') || name.includes('懸崖'))
-    return 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80';
-  // Day 2: 超市
-  if (name.includes('rimping') || name.includes('採買'))
-    return 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800&q=80';
-  // Day 2: 夜市
-  if (name.includes('kad manee'))
-    return 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80';
-
-  // Day 3: Jing Jai 文青市集
-  if (name.includes('jing jai'))
-    return 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=800&q=80';
-  // Day 3: Chamcha 雨林市集
-  if (name.includes('chamcha'))
-    return 'https://images.unsplash.com/photo-1567696911980-2eed69a46042?w=800&q=80';
-  // Day 3: 稀飯熱炒
-  if (name.includes('khao tom') || name.includes('稀飯'))
-    return 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800&q=80';
-
-  // Day 4: 椰子市集
-  if (name.includes('coconut market'))
-    return 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=80';
-  // Day 4: SPA
-  if (name.includes('fah lanna') || name.includes('spa'))
-    return 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80';
-  // Day 4: 週日夜市
-  if (name.includes('sunday'))
-    return 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80';
-
-  // Day 5: 大象保育園
-  if (name.includes('elephant'))
-    return 'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=800&q=80';
-  // Day 5: 米其林餐廳
-  if (name.includes('huen muan'))
-    return 'https://images.unsplash.com/photo-1517244683847-7456b63c5969?w=800&q=80';
-
-  // Day 6: 茵他儂國家公園
-  if (name.includes('doi inthanon'))
-    return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80';
-  // Day 6: 帝王餐宴
-  if (name.includes('khantoke') || name.includes('帝王'))
-    return 'https://images.unsplash.com/photo-1528712306091-ed0763094c98?w=800&q=80';
-
-  // Day 7: 料理課程
-  if (name.includes('cooking'))
-    return 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80';
-  // Day 7: 藝術村
-  if (name.includes('baan kang'))
-    return 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=800&q=80';
-  // Day 7: 悟孟寺
-  if (name.includes('wat umong'))
-    return 'https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80';
-  // Day 7: 冠軍咖啡
-  if (name.includes('ristr8to') || name.includes('coffee'))
-    return 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800&q=80';
-  // Day 7: 燒烤餐廳
-  if (name.includes('tong tem'))
-    return 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=800&q=80';
-
-  // Day 8: 柴迪隆寺
-  if (name.includes('wat chedi') || name.includes('柴迪隆'))
-    return 'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=800&q=80';
-  // Day 8: 烤雞
-  if (name.includes('sp chicken') || name.includes('烤雞'))
-    return 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=800&q=80';
-  // Day 8: 芒果糯米飯
-  if (name.includes('kor panich') || name.includes('芒果'))
-    return 'https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=800&q=80';
-  // Day 8: Makkha SPA
-  if (name.includes('makkha'))
-    return 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80';
-  // Day 8: 泰式料理
-  if (name.includes('aroon'))
-    return 'https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4?w=800&q=80';
-  // Day 8: 泰拳
-  if (name.includes('boxing') || name.includes('泰拳'))
-    return 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&q=80';
-
-  // Day 9: 傳統市場
-  if (name.includes('warorot'))
-    return 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=80';
-  // Day 9: 甜點蛋糕
-  if (name.includes('cake'))
-    return 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80';
-  // Day 9: 高級餐廳
-  if (name.includes('ginger'))
-    return 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80';
-
-  // 萬用預設圖 - 清邁風景
   return 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
 };
 
 // ============================================
-// 2. 初始行程資料 日期改回 2026ㄌ
-// ============================================
-// ============================================
-// 2. 初始行程資料 (V23 最終版 - 含爛腳人挑戰)
-// ============================================
-
-// ============================================
-// 2. 初始行程資料 (V23 最終定案版 - 2026/02)
+// 2. 初始行程資料 (V23 最終定案版)
 // ============================================
 
 const INITIAL_ITINERARY_DATA = [
@@ -614,11 +530,6 @@ const INITIAL_ITINERARY_DATA = [
   },
 ];
 
-// 修改原本的 UTILS_DATA (填入正確航班資訊20251201)
-// 修改原本的 UTILS_DATA (含航廈資訊20251202)
-// 修改原本的 UTILS_DATA (精準對應截圖20251202)
-// 修改原本的 UTILS_DATA (V4.1 微調備註20251205)
-// 修改原本的 UTILS_DATA (V5.0 加入詳細住宿資料結構20251206)
 const UTILS_DATA = {
   flights: [
     {
@@ -648,7 +559,6 @@ const UTILS_DATA = {
       toTerminal: 'T1',
     },
   ],
-  // 住宿資料結構化 方便我生成按鈕
   accommodations: [
     {
       name: 'Portare.home',
@@ -667,7 +577,6 @@ const UTILS_DATA = {
       phone: '+66876568952',
       mapQuery: 'Lucky Charm House Chiang Mai',
       note: '近古城・房東 Dusadeewan',
-      // 新增ㄌ Airbnb 專屬連結與指南
       airbnbUrl: atob('aHR0cHM6Ly93d3cuYWlyYm5iLmNvbS9sLzRtNHNkN0hk'),
       guideUrl: atob(
         'aHR0cHM6Ly93d3cuYWlyYm5iLmNvbS50dy9zL2d1aWRlYm9va3M/cmVmaW5lbWVudF9wYXRocyU1QiU1RD0lMkZndWlkZWJvb2tzJTJGNjQzNjY3MCZzPTY3JnVuaXF1ZV9zaGFyZV9pZD02MDU5M2FjZi05NTJiLTQ4ZTItYTk4Ni00ZjZiZjY2MDdmZmM='
@@ -677,7 +586,6 @@ const UTILS_DATA = {
   emergency: '泰國觀光警察: 1155 \n救護車: 1669 \n駐泰辦事處: +66-81-666-4006',
   notes:
     '🔥 2月為燒山季節，AQI 空氣品質較差，請隨身攜帶口罩。\n🚗 自駕注意：右駕左行，山路多彎。',
-  // 統一的雲端連結
   driveUrl:
     'https://drive.google.com/drive/folders/1J7sQLshn9A1y8I9d6007SavZ5eFWs4-U?usp=sharing',
 };
@@ -686,9 +594,7 @@ const UTILS_DATA = {
 // 3. UIUX part thai
 // ============================================
 
-// note:天氣 Widget (防當機 Crash Guard)
-// note:天氣 Widget (修ㄌ跨夜問題 + 24小時預報 + 橫向捲動)
-// 天氣 Widget (移除點擊彩蛋20251206)
+// 修正1: 移除 WeatherHero 上方的 shadow-xl，解決頂部陰影問題
 const WeatherHero = () => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
@@ -700,10 +606,7 @@ const WeatherHero = () => {
           'https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&current=temperature_2m,weather_code,relative_humidity_2m&hourly=temperature_2m,weather_code&forecast_days=2&timezone=Asia%2FBangkok'
         );
         const json = await res.json();
-
-        if (json && json.current) {
-          setData(json);
-        }
+        if (json && json.current) setData(json);
 
         try {
           const aqiRes = await fetch(
@@ -722,17 +625,10 @@ const WeatherHero = () => {
   }, []);
 
   const getWeatherIcon = (code, size = 20) => {
-    if (code <= 1)
-      return <Sun size={size} className="text-amber-500" strokeWidth={2.5} />;
-    if (code <= 3)
-      return <Cloud size={size} className="text-stone-400" strokeWidth={2.5} />;
-    if (code >= 50)
-      return (
-        <CloudRain size={size} className="text-blue-400" strokeWidth={2.5} />
-      );
-    return (
-      <CloudSun size={size} className="text-amber-400" strokeWidth={2.5} />
-    );
+    if (code <= 1) return <Sun size={size} className="text-amber-500" strokeWidth={2.5} />;
+    if (code <= 3) return <Cloud size={size} className="text-stone-400" strokeWidth={2.5} />;
+    if (code >= 50) return <CloudRain size={size} className="text-blue-400" strokeWidth={2.5} />;
+    return <CloudSun size={size} className="text-amber-400" strokeWidth={2.5} />;
   };
 
   const getAqiColor = (val) => {
@@ -744,15 +640,12 @@ const WeatherHero = () => {
 
   const getNext24Hours = () => {
     if (!data || !data.hourly || !data.hourly.time) return [];
-
     const currentHourIndex = new Date().getHours();
     const startIndex = currentHourIndex + 1;
     const endIndex = startIndex + 24;
-
     const times = data.hourly.time.slice(startIndex, endIndex);
     const temps = data.hourly.temperature_2m.slice(startIndex, endIndex);
     const codes = data.hourly.weather_code.slice(startIndex, endIndex);
-
     return times.map((t, i) => ({
       time: t.split('T')[1].slice(0, 5),
       temp: Math.round(temps[i]),
@@ -763,7 +656,8 @@ const WeatherHero = () => {
   const nextHours = getNext24Hours();
 
   return (
-    <div className="relative bg-[#FDFBF7] pt-6 pb-8 px-6 border-b border-stone-200 rounded-b-[2.5rem] shadow-xl shadow-stone-200/50 z-10 overflow-hidden">
+    // 移除 shadow-xl
+    <div className="relative bg-[#FDFBF7] pt-6 pb-8 px-6 border-b border-stone-200 rounded-b-[2.5rem] z-10 overflow-hidden">
       <div className="absolute top-[-20px] right-[-20px] text-[8rem] font-serif text-amber-50 opacity-50 select-none leading-none pointer-events-none">
         Thai
       </div>
@@ -799,11 +693,7 @@ const WeatherHero = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <div
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${getAqiColor(
-                      aqi
-                    )}`}
-                  >
+                  <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${getAqiColor(aqi)}`}>
                     <Wind size={10} /> AQI {aqi}
                   </div>
                   <div className="text-xs text-stone-500 font-medium bg-white/50 px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -826,23 +716,12 @@ const WeatherHero = () => {
               <div className="text-[10px] font-bold text-stone-400 writing-vertical-rl rotate-180 border-l pl-3 mr-3 border-stone-200 h-10 flex items-center justify-center tracking-widest flex-shrink-0">
                 FUTURE 24H
               </div>
-
-              <div
-                className="flex overflow-x-auto gap-4 pb-2 w-full no-scrollbar"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
+              <div className="flex overflow-x-auto gap-4 pb-2 w-full no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {nextHours.map((h, idx) => (
-                  <div
-                    key={idx}
-                    className="flex flex-col items-center gap-1 min-w-[3.5rem] flex-shrink-0"
-                  >
-                    <span className="text-[10px] text-stone-400 font-bold whitespace-nowrap">
-                      {h.time}
-                    </span>
+                  <div key={idx} className="flex flex-col items-center gap-1 min-w-[3.5rem] flex-shrink-0">
+                    <span className="text-[10px] text-stone-400 font-bold whitespace-nowrap">{h.time}</span>
                     <div className="py-1">{getWeatherIcon(h.code, 20)}</div>
-                    <span className="text-sm font-bold text-stone-700">
-                      {h.temp}°
-                    </span>
+                    <span className="text-sm font-bold text-stone-700">{h.temp}°</span>
                   </div>
                 ))}
               </div>
@@ -868,23 +747,12 @@ const FloatingStatus = ({ itinerary }) => {
             <div className="text-[10px] text-stone-400 uppercase tracking-wider font-bold mb-0.5 flex items-center gap-1">
               Coming Up <Clock size={10} />
             </div>
-            <div className="font-bold text-sm truncate text-white">
-              {nextStop.name}
-            </div>
-            <div className="text-xs text-stone-400 truncate">
-              {nextStop.time}
-            </div>
+            <div className="font-bold text-sm truncate text-white">{nextStop.name}</div>
+            <div className="text-xs text-stone-400 truncate">{nextStop.time}</div>
           </div>
         </div>
         <button
-          onClick={() =>
-            window.open(
-              `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                nextStop.nav
-              )}`,
-              '_blank'
-            )
-          }
+          onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(nextStop.nav)}`, '_blank')}
           className="bg-stone-800 p-2 rounded-full text-stone-400 hover:text-white hover:bg-stone-700 transition-colors ml-2 flex-shrink-0"
         >
           <ArrowRight size={20} />
@@ -909,76 +777,40 @@ const OutfitGuide = () => {
 
   return (
     <div className="mx-6 mt-6 bg-[#FFFBF0] p-5 rounded-2xl border border-amber-100/50 shadow-sm relative">
-      <button
-        onClick={() => setIsOpen(false)}
-        className="absolute top-3 right-3 text-amber-300 hover:text-amber-500 transition-colors"
-      >
+      <button onClick={() => setIsOpen(false)} className="absolute top-3 right-3 text-amber-300 hover:text-amber-500 transition-colors">
         <ChevronUp size={18} />
       </button>
       <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 text-base mb-3">
-        <Shirt size={18} className="text-amber-500" />
-        2月穿搭指南
+        <Shirt size={18} className="text-amber-500" /> 2月穿搭指南
       </h3>
       <div className="space-y-3 text-xs text-stone-600 leading-relaxed">
         <div className="flex items-start gap-3">
-          <div className="bg-amber-100 p-1.5 rounded-full text-amber-600">
-            <Sun size={12} />
-          </div>
-          <div>
-            <strong className="text-stone-800">白天 (30-35°C)</strong>
-            <br />
-            棉麻材質、短袖、透氣長裙。太陽很毒，務必戴墨鏡帽。
-          </div>
+          <div className="bg-amber-100 p-1.5 rounded-full text-amber-600"><Sun size={12} /></div>
+          <div><strong className="text-stone-800">白天 (30-35°C)</strong><br />棉麻材質、短袖、透氣長裙。太陽很毒，務必戴墨鏡帽。</div>
         </div>
         <div className="flex items-start gap-3">
-          <div className="bg-blue-100 p-1.5 rounded-full text-blue-600">
-            <Wind size={12} />
-          </div>
-          <div>
-            <strong className="text-stone-800">早晚/百貨 (18-20°C)</strong>
-            <br />
-            溫差大，隨身帶一件薄襯衫或針織外套。
-          </div>
+          <div className="bg-blue-100 p-1.5 rounded-full text-blue-600"><Wind size={12} /></div>
+          <div><strong className="text-stone-800">早晚/百貨 (18-20°C)</strong><br />溫差大，隨身帶一件薄襯衫或針織外套。</div>
         </div>
         <div className="bg-white p-3 rounded-xl border border-amber-100 flex items-start gap-3">
-          <div className="bg-red-100 p-1.5 rounded-full text-red-600">
-            <Mountain size={12} />
-          </div>
-          <div>
-            <strong className="text-stone-800 block mb-1">
-              茵他儂山特別注意
-            </strong>
-            <span className="block text-stone-500 mb-0.5">
-              • 瀑布區:{' '}
-              <span className="text-amber-600 font-bold">熱 (短袖)</span>
-            </span>
-            <span className="block text-stone-500">
-              • 雙塔/山頂:{' '}
-              <span className="text-blue-600 font-bold">極冷 (羽絨/防風)</span>
-            </span>
-          </div>
+          <div className="bg-red-100 p-1.5 rounded-full text-red-600"><Mountain size={12} /></div>
+          <div><strong className="text-stone-800 block mb-1">茵他儂山特別注意</strong><span className="block text-stone-500 mb-0.5">• 瀑布區: <span className="text-amber-600 font-bold">熱 (短袖)</span></span><span className="block text-stone-500">• 雙塔/山頂: <span className="text-blue-600 font-bold">極冷 (羽絨/防風)</span></span></div>
         </div>
       </div>
     </div>
   );
 };
 
-
-// update地點卡片 爛腳標籤獨立一行
-// update地點卡片移除內部重複標示)
-// update: 地點卡片 (V5 - 標籤分行顯示，不再擋字)
+// 修正2: LocationCard 標籤不擋字 (移到時間旁邊)
 const LocationCard = ({ item }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const getIcon = () => {
     switch (item.type) {
-      case 'food':
-        return <Utensils size={16} className="text-orange-600" />;
-      case 'transport':
-        return <Car size={16} className="text-blue-500" />;
-      default:
-        return <MapPin size={16} className="text-emerald-500" />;
+      case 'food': return <Utensils size={16} className="text-orange-600" />;
+      case 'transport': return <Car size={16} className="text-blue-500" />;
+      default: return <MapPin size={16} className="text-emerald-500" />;
     }
   };
 
@@ -992,37 +824,34 @@ const LocationCard = ({ item }) => {
 
   const handleNav = (e) => {
     e.stopPropagation();
-    window.open(
-      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.nav)}`,
-      '_blank'
-    );
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.nav)}`, '_blank');
   };
 
   const handleAskAI = (e) => {
     e.stopPropagation();
     const prompt = `我正在清邁旅遊，地點是「${item.name}」。請告訴我這裡有什麼必吃美食、必買紀念品，或是需要注意的參觀禁忌？請用繁體中文回答。`;
-    window.open(
-      `https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`,
-      '_blank'
-    );
+    window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`, '_blank');
   };
 
   return (
     <div
       onClick={() => setIsExpanded(!isExpanded)}
-      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${
-        isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
-      }`}
+      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''}`}
     >
       <div className="p-4 flex items-start gap-4">
         <div className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center border border-stone-100">
           {getIcon()}
         </div>
         <div className="flex-1 min-w-0">
-          {/* 第一行：時間 + Highlight */}
           <div className="flex justify-between items-start mb-1">
-            <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
-              {item.time}
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">{item.time}</span>
+              {/* 爛腳標籤移到這裡 */}
+              {item.difficulty && (
+                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
+                  🦵 {item.difficulty}
+                </span>
+              )}
             </div>
             {item.highlight && (
               <span className="inline-block px-2 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full border border-amber-100 flex-shrink-0 ml-2">
@@ -1030,22 +859,9 @@ const LocationCard = ({ item }) => {
               </span>
             )}
           </div>
-
-          {/* 第二行：標題 */}
           <h3 className="font-bold text-stone-800 text-lg leading-tight mb-2 pr-2">
             {item.name}
           </h3>
-          
-          {/* 第三行：爛腳標籤 (獨立一行) */}
-          {item.difficulty && (
-             <div className="mb-1.5">
-               <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded font-bold ${getDifficultyColor(item.difficulty)}`}>
-                 🦵 {item.difficulty}
-               </span>
-             </div>
-          )}
-
-          {/* 第四行：備註文字 (允許自動換行，不再切掉) */}
           <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
              {item.note}
           </p>
@@ -1063,23 +879,14 @@ const LocationCard = ({ item }) => {
                 <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
               </div>
             )}
-            <img
-              src={getLocationImage(item.name)}
-              alt={item.name}
-              onLoad={() => setIsImageLoaded(true)}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${
-                isImageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
+            <img src={getLocationImage(item.name)} alt={item.name} onLoad={() => setIsImageLoaded(true)} className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1">
               <Camera size={10} /> Image for reference
             </div>
           </div>
-
           <div className="p-5 bg-stone-50/50">
             <div className="mb-5">
-              {/* 這裡原本的爛腳標示已移除 */}
               <h4 className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
                 <Info size={12} /> 導遊說故事
               </h4>
@@ -1087,19 +894,11 @@ const LocationCard = ({ item }) => {
                 {item.desc || '暫無詳細介紹，但這裡絕對值得一去！'}
               </p>
             </div>
-
             <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={handleNav}
-                className="flex items-center justify-center gap-2 py-3 bg-stone-800 text-amber-50 rounded-xl active:scale-95 transition-all text-sm font-bold shadow-lg shadow-stone-200"
-              >
+              <button onClick={handleNav} className="flex items-center justify-center gap-2 py-3 bg-stone-800 text-amber-50 rounded-xl active:scale-95 transition-all text-sm font-bold shadow-lg shadow-stone-200">
                 <Navigation size={16} /> 導航
               </button>
-
-              <button
-                onClick={handleAskAI}
-                className="flex items-center justify-center gap-2 py-3 bg-white border border-stone-200 text-stone-600 rounded-xl active:scale-95 transition-all text-sm font-bold hover:bg-stone-50 shadow-sm"
-              >
+              <button onClick={handleAskAI} className="flex items-center justify-center gap-2 py-3 bg-white border border-stone-200 text-stone-600 rounded-xl active:scale-95 transition-all text-sm font-bold hover:bg-stone-50 shadow-sm">
                 <Sparkles size={16} className="text-teal-500" /> 問問 AI
               </button>
             </div>
@@ -1110,11 +909,11 @@ const LocationCard = ({ item }) => {
   );
 };
 
+// 修正3: DayCard 滑動速度調整 (300 -> 100)
 const DayCard = ({ dayData, isOpen, toggle }) => {
   const cardRef = useRef(null);
-  // 👇👇👇 1. 把這個函式貼在這裡 (這是新加入的捲動功能) 👇👇👇
-  const smoothScrollTo = (element, duration = 300) => {
-    // -120 是為了留一點頭部空間 (避開上面的天氣卡片)
+
+  const smoothScrollTo = (element, duration = 100) => {
     const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - 120;
     const startPosition = window.pageYOffset;
     const distance = targetPosition - startPosition;
@@ -1128,89 +927,44 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
       if (timeElapsed < duration) requestAnimationFrame(animation);
     };
 
-    // 緩動公式 (讓滑動順暢，不是生硬的直線)
     const ease = (t, b, c, d) => {
       t /= d / 2;
       if (t < 1) return (c / 2) * t * t + b;
       t--;
       return (-c / 2) * (t * (t - 2) - 1) + b;
     };
-
     requestAnimationFrame(animation);
   };
+
   useEffect(() => {
     if (isOpen && cardRef.current) {
-      //  setTimeout(() => {
-      //   cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // }, 20);
       setTimeout(() => {
-        smoothScrollTo(cardRef.current, 300); // 想更快就把 300 改成 150
+        smoothScrollTo(cardRef.current, 100);
       }, 50);
     }
   }, [isOpen]);
 
   return (
     <div ref={cardRef} className="mb-3 px-2 scroll-mt-32">
-      <div
-        onClick={toggle}
-        className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen
-          ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
-          : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
-          }`}
-      >
+      <div onClick={toggle} className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]' : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'}`}>
         <div className="flex items-center gap-4">
-          <div
-            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen
-              ? 'bg-stone-700 border-stone-600'
-              : 'bg-stone-50 border-stone-200'
-              }`}
-          >
-            <span
-              className={`text-[10px] font-bold uppercase ${isOpen ? 'text-stone-400' : 'text-stone-400'
-                }`}
-            >
-              Day
-            </span>
-            <span
-              className={`text-xl font-serif font-bold ${isOpen ? 'text-amber-400' : 'text-stone-800'
-                }`}
-            >
-              {dayData.day}
-            </span>
+          <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen ? 'bg-stone-700 border-stone-600' : 'bg-stone-50 border-stone-200'}`}>
+            <span className={`text-[10px] font-bold uppercase ${isOpen ? 'text-stone-400' : 'text-stone-400'}`}>Day</span>
+            <span className={`text-xl font-serif font-bold ${isOpen ? 'text-amber-400' : 'text-stone-800'}`}>{dayData.day}</span>
           </div>
           <div>
-            <div
-              className={`text-xs font-bold mb-0.5 ${isOpen ? 'text-stone-400' : 'text-stone-500'
-                }`}
-            >
-              {dayData.displayDate}
-            </div>
-            <div className="font-bold text-lg leading-tight">
-              {dayData.title}
-            </div>
+            <div className={`text-xs font-bold mb-0.5 ${isOpen ? 'text-stone-400' : 'text-stone-500'}`}>{dayData.displayDate}</div>
+            <div className="font-bold text-lg leading-tight">{dayData.title}</div>
           </div>
         </div>
-
         <div className="text-right">
           <div className="flex items-center justify-end gap-1 mb-1">
-            {dayData.weather.realData && (
-              <Signal size={10} className="text-green-500 animate-pulse" />
-            )}
-            <span
-              className={`text-sm font-medium ${isOpen ? 'text-stone-300' : 'text-stone-600'
-                }`}
-            >
-              {dayData.weather.temp}
-            </span>
+            {dayData.weather.realData && <Signal size={10} className="text-green-500 animate-pulse" />}
+            <span className={`text-sm font-medium ${isOpen ? 'text-stone-300' : 'text-stone-600'}`}>{dayData.weather.temp}</span>
           </div>
-          {isOpen ? (
-            <ChevronUp size={20} className="text-stone-500 ml-auto" />
-          ) : (
-            <ChevronDown size={20} className="text-stone-300 ml-auto" />
-          )}
+          {isOpen ? <ChevronUp size={20} className="text-stone-500 ml-auto" /> : <ChevronDown size={20} className="text-stone-300 ml-auto" />}
         </div>
       </div>
-
       {isOpen && (
         <div className="mt-4 pl-4 border-l-2 border-stone-200/50 space-y-4 pb-4 animate-fadeIn">
           {dayData.locations.map((loc, idx) => (
@@ -1221,138 +975,62 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
     </div>
   );
 };
-// update 航班卡片組件
-// 新增 航廈顯示版
-// update 航班卡片組件 (修正間距 避免飛機擋住文字20251206)
-const FlightCard = ({
-  type,
-  date,
-  flightNo,
-  time,
-  airline,
-  from,
-  to,
-  fromCode,
-  toCode,
-  fromTerminal,
-  toTerminal,
-}) => {
-  const searchUrl = `https://www.google.com/search?q=${flightNo}+flight+status`;
 
+const FlightCard = ({ type, date, flightNo, time, airline, from, to, fromCode, toCode, fromTerminal, toTerminal }) => {
+  const searchUrl = `https://www.google.com/search?q=${flightNo}+flight+status`;
   return (
     <div className="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm mb-3 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-24 h-24 bg-stone-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
-
       <div className="relative z-10">
         <div className="flex justify-between items-center mb-4">
-          <span
-            className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${type === '去程'
-              ? 'bg-amber-100 text-amber-800'
-              : 'bg-stone-100 text-stone-600'
-              }`}
-          >
-            {type}
-          </span>
+          <span className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${type === '去程' ? 'bg-amber-100 text-amber-800' : 'bg-stone-100 text-stone-600'}`}>{type}</span>
           <span className="text-xs font-bold text-stone-400">{date}</span>
         </div>
-
         <div className="flex justify-between items-center mb-4">
-          {/* 出發地 */}
           <div className="text-center min-w-[3rem]">
-            <div className="text-2xl font-bold text-stone-800 leading-none mb-1">
-              {from}
-            </div>
+            <div className="text-2xl font-bold text-stone-800 leading-none mb-1">{from}</div>
             <div className="flex flex-col items-center">
-              <span className="text-[10px] text-stone-400 font-bold tracking-widest">
-                {fromCode}
-              </span>
-              {fromTerminal && (
-                <span className="mt-1 text-[10px] font-bold text-white bg-amber-500 px-1.5 py-0.5 rounded shadow-sm">
-                  {fromTerminal}
-                </span>
-              )}
+              <span className="text-[10px] text-stone-400 font-bold tracking-widest">{fromCode}</span>
+              {fromTerminal && <span className="mt-1 text-[10px] font-bold text-white bg-amber-500 px-1.5 py-0.5 rounded shadow-sm">{fromTerminal}</span>}
             </div>
           </div>
-
-          {/* 飛機圖示 (修正：加大上下間距 mb-2 mt-2) */}
           <div className="flex-1 px-3 flex flex-col items-center">
-            <div className="text-xs font-bold text-stone-500 mb-2">
-              {flightNo}
-            </div>
+            <div className="text-xs font-bold text-stone-500 mb-2">{flightNo}</div>
             <div className="w-full h-[2px] bg-stone-200 relative">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-1">
-                <Plane size={14} className="text-stone-300 rotate-90" />
-              </div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-1"><Plane size={14} className="text-stone-300 rotate-90" /></div>
             </div>
-            <div className="text-xs font-bold text-stone-400 mt-2 whitespace-nowrap">
-              {time}
-            </div>
+            <div className="text-xs font-bold text-stone-400 mt-2 whitespace-nowrap">{time}</div>
           </div>
-
-          {/* 目的地 */}
           <div className="text-center min-w-[3rem]">
-            <div className="text-2xl font-bold text-stone-800 leading-none mb-1">
-              {to}
-            </div>
+            <div className="text-2xl font-bold text-stone-800 leading-none mb-1">{to}</div>
             <div className="flex flex-col items-center">
-              <span className="text-[10px] text-stone-400 font-bold tracking-widest">
-                {toCode}
-              </span>
-              {toTerminal && (
-                <span className="mt-1 text-[10px] font-bold text-white bg-stone-400 px-1.5 py-0.5 rounded shadow-sm">
-                  {toTerminal}
-                </span>
-              )}
+              <span className="text-[10px] text-stone-400 font-bold tracking-widest">{toCode}</span>
+              {toTerminal && <span className="mt-1 text-[10px] font-bold text-white bg-stone-400 px-1.5 py-0.5 rounded shadow-sm">{toTerminal}</span>}
             </div>
           </div>
         </div>
-
         <div className="flex items-center justify-between pt-3 border-t border-stone-100">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-xs text-stone-500 font-medium">
-              {airline}
-            </span>
-          </div>
-
-          <a
-            href={searchUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1 text-xs font-bold text-blue-500 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-full transition-colors"
-          >
-            即時動態 <ArrowRight size={12} />
-          </a>
+          <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div><span className="text-xs text-stone-500 font-medium">{airline}</span></div>
+          <a href={searchUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-xs font-bold text-blue-500 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-full transition-colors">即時動態 <ArrowRight size={12} /></a>
         </div>
       </div>
     </div>
   );
 };
-// 新增 換匯計算機and推薦換匯所
-// ============================================
-// 修正後的 CurrencySection
-// ============================================
-// ============================================
-// 修正後的 CurrencySection (補回遺失的 thb 變數)
-// ============================================
+
 const CurrencySection = () => {
   const [rate, setRate] = useState(1.08);
   const [twd, setTwd] = useState('');
-  // 👇👇👇 就是補上這一行！ 👇👇👇
   const [thb, setThb] = useState('');
   const [lastUpdate, setLastUpdate] = useState('');
 
-  // 抓取即時匯率
   useEffect(() => {
     const fetchRate = async () => {
       try {
-        // 使用免費匯率 API (以 TWD 為基準)
-        const res = await fetch(
-          'https://api.exchangerate-api.com/v4/latest/TWD'
-        );
+        const res = await fetch('https://api.exchangerate-api.com/v4/latest/TWD');
         const data = await res.json();
         if (data && data.rates && data.rates.THB) {
-          setRate(data.rates.THB); // 1 TWD = ? THB
+          setRate(data.rates.THB);
           setLastUpdate(new Date().toLocaleDateString());
         }
       } catch (e) {
@@ -1365,143 +1043,44 @@ const CurrencySection = () => {
   const handleTwdChange = (e) => {
     const val = e.target.value;
     setTwd(val);
-    if (val) setThb((parseFloat(val) * rate).toFixed(2));
-    else setThb('');
+    if (val) setThb((parseFloat(val) * rate).toFixed(2)); else setThb('');
   };
 
   const handleThbChange = (e) => {
     const val = e.target.value;
     setThb(val);
-    if (val) setTwd((parseFloat(val) / rate).toFixed(2));
-    else setTwd('');
+    if (val) setTwd((parseFloat(val) / rate).toFixed(2)); else setTwd('');
   };
 
-  //  修正後的換匯所清單 
   const exchanges = [
-    {
-      id: 1,
-      name: '清邁機場換匯 (Arrival)',
-      map: 'Chiang Mai International Airport Currency Exchange',
-      note: '🚨 抵達應急用，匯率較差，建議只換車資。',
-      tag: '抵達第一站',
-      tagColor: 'bg-red-100 text-red-700',
-    },
-    {
-      id: 2,
-      name: 'Super Rich (清邁店)',
-      map: 'Super Rich Chiang Mai',
-      note: '🔥 匯率通常是全清邁最好，近古城。',
-      tag: '匯率最優',
-      tagColor: 'bg-amber-100 text-amber-700',
-    },
-    {
-      id: 3,
-      name: 'Mr. Pierre (巫宗雄)',
-      map: 'Mr. Pierre Money Exchange',
-      note: '👍 古城內匯率王，老闆會說中文。',
-      tag: '古城推薦',
-      tagColor: 'bg-green-100 text-green-700',
-    },
-    {
-      id: 4,
-      name: 'G Exchange Co.,Ltd.',
-      map: 'G Exchange Co.,Ltd. Chiang Mai',
-      note: 'Loi Kroh 路熱門店，評價極高 (4.7星)。',
-      tag: '夜市區',
-      tagColor: 'bg-blue-100 text-blue-700',
-    },
-    {
-      id: 5,
-      name: 'S.K. Money Exchange',
-      map: 'S.K. Money Exchange',
-      note: '泰國常見連鎖，塔佩門附近方便。',
-    },
+    { id: 1, name: '清邁機場換匯 (Arrival)', map: 'Chiang Mai International Airport Currency Exchange', note: '🚨 抵達應急用，匯率較差，建議只換車資。', tag: '抵達第一站', tagColor: 'bg-red-100 text-red-700' },
+    { id: 2, name: 'Super Rich (清邁店)', map: 'Super Rich Chiang Mai', note: '🔥 匯率通常是全清邁最好，近古城。', tag: '匯率最優', tagColor: 'bg-amber-100 text-amber-700' },
+    { id: 3, name: 'Mr. Pierre (巫宗雄)', map: 'Mr. Pierre Money Exchange', note: '👍 古城內匯率王，老闆會說中文。', tag: '古城推薦', tagColor: 'bg-green-100 text-green-700' },
+    { id: 4, name: 'G Exchange Co.,Ltd.', map: 'G Exchange Co.,Ltd. Chiang Mai', note: 'Loi Kroh 路熱門店，評價極高 (4.7星)。', tag: '夜市區', tagColor: 'bg-blue-100 text-blue-700' },
+    { id: 5, name: 'S.K. Money Exchange', map: 'S.K. Money Exchange', note: '泰國常見連鎖，塔佩門附近方便。' },
   ];
 
   return (
     <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 mb-6">
-      <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
-        <Wallet size={18} className="text-green-600" /> 匯率計算機
-      </h3>
-
+      <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3"><Wallet size={18} className="text-green-600" /> 匯率計算機</h3>
       <div className="bg-green-50 p-4 rounded-xl mb-4 border border-green-100">
-        <div className="text-xs text-green-600 font-bold mb-2 flex justify-between">
-          <span>即時現金匯率</span>
-          <span>1 TWD ≈ {rate} THB</span>
-        </div>
-
+        <div className="text-xs text-green-600 font-bold mb-2 flex justify-between"><span>即時現金匯率</span><span>1 TWD ≈ {rate} THB</span></div>
         <div className="flex items-center gap-2 mb-2">
-          <div className="flex-1 relative">
-            <span className="absolute left-3 top-2.5 text-stone-400 text-xs font-bold">
-              TWD
-            </span>
-            <input
-              type="number"
-              value={twd}
-              onChange={handleTwdChange}
-              placeholder="台幣"
-              className="w-full pl-12 pr-3 py-2 rounded-lg border border-green-200 focus:outline-none focus:border-green-500 font-bold text-stone-700"
-            />
-          </div>
+          <div className="flex-1 relative"><span className="absolute left-3 top-2.5 text-stone-400 text-xs font-bold">TWD</span><input type="number" value={twd} onChange={handleTwdChange} placeholder="台幣" className="w-full pl-12 pr-3 py-2 rounded-lg border border-green-200 focus:outline-none focus:border-green-500 font-bold text-stone-700" /></div>
           <div className="text-stone-400">=</div>
-          <div className="flex-1 relative">
-            <span className="absolute left-3 top-2.5 text-stone-400 text-xs font-bold">
-              THB
-            </span>
-            <input
-              type="number"
-              value={thb}
-              onChange={handleThbChange}
-              placeholder="泰銖"
-              className="w-full pl-12 pr-3 py-2 rounded-lg border border-green-200 focus:outline-none focus:border-green-500 font-bold text-stone-700 bg-white"
-            />
-          </div>
+          <div className="flex-1 relative"><span className="absolute left-3 top-2.5 text-stone-400 text-xs font-bold">THB</span><input type="number" value={thb} onChange={handleThbChange} placeholder="泰銖" className="w-full pl-12 pr-3 py-2 rounded-lg border border-green-200 focus:outline-none focus:border-green-500 font-bold text-stone-700 bg-white" /></div>
         </div>
-        <div className="text-[10px] text-green-400 text-right">
-          更新: {lastUpdate || '載入中...'}
-        </div>
+        <div className="text-[10px] text-green-400 text-right">更新: {lastUpdate || '載入中...'}</div>
       </div>
-
-      <h4 className="text-xs font-bold text-stone-400 mb-3 uppercase tracking-widest">
-        推薦換匯所
-      </h4>
+      <h4 className="text-xs font-bold text-stone-400 mb-3 uppercase tracking-widest">推薦換匯所</h4>
       <div className="space-y-2">
         {exchanges.map((ex, i) => (
-          <div
-            key={i}
-            className={`flex justify-between items-center p-3 rounded-xl border transition-all ${i < 3
-              ? 'bg-white border-stone-200 shadow-sm'
-              : 'bg-stone-50 border-stone-100 opacity-80'
-              }`}
-          >
+          <div key={i} className={`flex justify-between items-center p-3 rounded-xl border transition-all ${i < 3 ? 'bg-white border-stone-200 shadow-sm' : 'bg-stone-50 border-stone-100 opacity-80'}`}>
             <div>
-              <div className="flex items-center gap-2 mb-0.5">
-                <div className="font-bold text-stone-700 text-sm">
-                  {i + 1}. {ex.name}
-                </div>
-                {ex.tag && (
-                  <span
-                    className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${ex.tagColor}`}
-                  >
-                    {ex.tag}
-                  </span>
-                )}
-              </div>
+              <div className="flex items-center gap-2 mb-0.5"><div className="font-bold text-stone-700 text-sm">{i + 1}. {ex.name}</div>{ex.tag && <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${ex.tagColor}`}>{ex.tag}</span>}</div>
               <div className="text-[10px] text-stone-500">{ex.note}</div>
             </div>
-            <button
-              onClick={() =>
-                window.open(
-                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    ex.map
-                  )}`,
-                  '_blank'
-                )
-              }
-              className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-stone-500 shadow-sm border border-stone-200 active:scale-95 hover:text-amber-600 hover:border-amber-200"
-            >
-              <Navigation size={14} />
-            </button>
+            <button onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ex.map)}`, '_blank')} className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-stone-500 shadow-sm border border-stone-200 active:scale-95 hover:text-amber-600 hover:border-amber-200"><Navigation size={14} /></button>
           </div>
         ))}
       </div>
@@ -1509,665 +1088,21 @@ const CurrencySection = () => {
   );
 };
 
-// 修改 UtilsPage 的 return 部分：
 const UtilsPage = ({ isAdmin }) => {
   return (
     <div className="p-6 space-y-6 pb-24 animate-fade-in bg-[#FDFBF7] min-h-screen">
-      <h2 className="text-2xl font-serif font-bold text-stone-800 mb-6">
-        實用工具
-      </h2>
-
-      {/* 1. 航班資訊區塊 */}
-      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
-        <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
-          <Plane size={18} className="text-blue-500" /> 航班資訊
-        </h3>
-        <div className="space-y-2 mb-4">
-          {UTILS_DATA.flights.map((f, i) => (
-            <FlightCard key={i} {...f} />
-          ))}
-        </div>
-        <a
-          href={UTILS_DATA.driveUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 active:scale-95 transition-all"
-        >
-          <Info size={16} /> 開啟電子機票存摺
-        </a>
-      </section>
-
-      {/* 2. 住宿資訊區塊 */}
-      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
-        <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
-          <Home size={18} className="text-orange-500" /> 住宿導航
-        </h3>
-        <div className="space-y-4">
-          {UTILS_DATA.accommodations.map((acc, idx) => (
-            <div
-              key={idx}
-              className="bg-stone-50 rounded-xl p-4 border border-stone-100 relative overflow-hidden"
-            >
-              <div className="absolute -right-4 -top-4 w-16 h-16 bg-white rounded-full opacity-50 pointer-events-none"></div>
-              <div className="flex justify-between items-start mb-2 relative z-10">
-                <div>
-                  <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
-                    {acc.type}
-                  </span>
-                  <h4 className="font-bold text-stone-800 text-lg leading-tight">
-                    {acc.name}
-                  </h4>
-                </div>
-                <span className="text-xs font-bold bg-white px-2 py-1 rounded border border-stone-100 text-stone-500">
-                  {acc.date}
-                </span>
-              </div>
-              <p className="text-xs text-stone-500 mb-4 flex items-center gap-1">
-                <MapPin size={10} /> {acc.address}
-              </p>
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                      acc.mapQuery
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center gap-1.5 py-2 bg-stone-800 text-amber-50 rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm"
-                  >
-                    <Navigation size={12} /> 導航
-                  </a>
-                  <a
-                    href={`tel:${acc.phone}`}
-                    className="flex items-center justify-center gap-1.5 py-2 bg-white border border-stone-200 text-stone-600 rounded-lg text-xs font-bold active:scale-95 transition-transform"
-                  >
-                    <Phone size={12} /> 聯絡
-                  </a>
-                </div>
-                {/* 只有當 isAdmin 為 true (輸入 1314520) 時 ，偶才會顯示 Airbnb 按鈕 */}
-                {isAdmin && acc.airbnbUrl && (
-                  <div className="grid grid-cols-2 gap-2 animate-fadeIn">
-                    <a
-                      href={acc.airbnbUrl} // 這裡是 Base64 解碼後的連結
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-center gap-1.5 py-2 bg-[#FF385C] text-white rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm"
-                    >
-                      <Home size={12} /> 開啟房源
-                    </a>
-                    <a
-                      href={acc.guideUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-center gap-1.5 py-2 bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold active:scale-95 transition-transform"
-                    >
-                      <MapPin size={12} /> 房東地圖
-                    </a>
-                  </div>
-                )}
-                {/* 如果不是 Admin 顯示這行字給朋友看 */}
-                {!isAdmin && acc.name === 'Lucky Charm House' && (
-                  <div className="text-center py-2 bg-stone-50 rounded-lg text-[10px] text-stone-400">
-                    🔒 房源連結僅供團員存取
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* 下面的憑證按鈕加入 isAdmin 保護 */}
-        {isAdmin && (
-          <a
-            href={UTILS_DATA.driveUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 mt-4 rounded-xl bg-orange-50 text-orange-600 font-bold hover:bg-orange-100 active:scale-95 transition-all"
-          >
-            <Info size={16} /> 查看住宿憑證
-          </a>
-        )}
-      </section>
-
-      {/* 3. 租車資訊區塊 */}
-      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 mb-6">
-        <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
-          <Car size={18} className="text-amber-600" /> 租車資訊
-        </h3>
-        <div className="flex gap-4 mb-4">
-          <div className="w-16 h-16 bg-[#009FE3] rounded-xl flex items-center justify-center text-xs font-bold text-white border border-blue-200 shadow-sm">
-            DRIVE
-          </div>
-          <div className="flex-1">
-            <div className="text-lg font-bold text-stone-800">
-              Nissan Serena (7座)
-            </div>
-            <div className="text-sm text-stone-500 mb-2 flex items-center gap-1">
-              <CheckCircle size={12} className="text-green-500" />{' '}
-              預訂確認單已存檔
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <span className="text-[10px] bg-amber-50 text-amber-700 px-2 py-1 rounded border border-amber-100">
-                國際線 8-9號門
-              </span>
-              <span className="text-[10px] bg-stone-100 text-stone-600 px-2 py-1 rounded">
-                現場押金 ฿20,000
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="relative pl-4 border-l-2 border-stone-200 space-y-6 my-4 ml-2">
-          <div className="relative">
-            <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-green-500 ring-4 ring-white"></div>
-            <div className="text-xs text-stone-400 font-bold">取車</div>
-            <div className="font-bold text-stone-800">2/19 (四) 17:30</div>
-            <div className="text-xs text-stone-500 mt-1">
-              國際線入境大廳 1樓 (Gate 8-9)
-            </div>
-          </div>
-          <div className="relative">
-            <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-red-400 ring-4 ring-white"></div>
-            <div className="text-xs text-stone-400 font-bold">還車</div>
-            <div className="font-bold text-stone-800">2/20 (五) 17:30</div>
-            <div className="text-xs text-stone-500 mt-1">國際線入境大廳</div>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3 mt-4">
-          <a
-            href="tel:+66847004384"
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-600 hover:bg-stone-50 transition-colors"
-          >
-            <Phone size={16} /> 車行電話
-          </a>
-          <a
-            href={UTILS_DATA.driveUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-stone-800 text-amber-50 text-sm font-bold hover:bg-stone-700 active:scale-95 transition-all"
-          >
-            <Info size={16} /> 原始憑證
-          </a>
-        </div>
-      </section>
-
-      {/* 4. LINE 分帳 (綠色區塊) - 只有 Admin 可見 */}
-      {isAdmin && (
-        <section className="bg-[#06C755] p-6 rounded-2xl shadow-lg shadow-green-900/10 text-white relative overflow-hidden mb-6 animate-fadeIn">
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
-          <h3 className="flex items-center gap-2 font-bold text-white mb-2 relative z-10">
-            <Wallet size={18} /> 公款記帳與分帳
-          </h3>
-          <p className="text-green-50 text-sm mb-6 relative z-10 font-medium">
-            所有公費支出請統一記錄在此，系統會自動結算每個人該付多少錢。
-          </p>
-          <a
-            // Lightsplit URL Base64 Encoded
-            href={atob(
-              'aHR0cHM6Ly9saWZmLmxpbmUubWUvMTY1NTMyMDk5Mi1ZOEdvd0Vwdy9nL29tSkgzaVpDNWNya1hoNm1RdmFYZ1Q='
-            )}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 w-full bg-white text-[#06C755] py-3.5 rounded-xl font-bold hover:bg-green-50 active:scale-95 transition-all shadow-sm relative z-10"
-          >
-            開啟 Lightsplit 分帳群組 <ArrowRight size={16} />
-          </a>
-        </section>
-      )}
-
-      {/*  5. 匯率計算機 */}
+      <h2 className="text-2xl font-serif font-bold text-stone-800 mb-6">實用工具</h2>
+      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100"><h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3"><Plane size={18} className="text-blue-500" /> 航班資訊</h3><div className="space-y-2 mb-4">{UTILS_DATA.flights.map((f, i) => <FlightCard key={i} {...f} />)}</div><a href={UTILS_DATA.driveUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 active:scale-95 transition-all"><Info size={16} /> 開啟電子機票存摺</a></section>
+      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100"><h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3"><Home size={18} className="text-orange-500" /> 住宿導航</h3><div className="space-y-4">{UTILS_DATA.accommodations.map((acc, idx) => (<div key={idx} className="bg-stone-50 rounded-xl p-4 border border-stone-100 relative overflow-hidden"><div className="absolute -right-4 -top-4 w-16 h-16 bg-white rounded-full opacity-50 pointer-events-none"></div><div className="flex justify-between items-start mb-2 relative z-10"><div><span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">{acc.type}</span><h4 className="font-bold text-stone-800 text-lg leading-tight">{acc.name}</h4></div><span className="text-xs font-bold bg-white px-2 py-1 rounded border border-stone-100 text-stone-500">{acc.date}</span></div><p className="text-xs text-stone-500 mb-4 flex items-center gap-1"><MapPin size={10} /> {acc.address}</p><div className="space-y-2"><div className="grid grid-cols-2 gap-2"><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(acc.mapQuery)}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1.5 py-2 bg-stone-800 text-amber-50 rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm"><Navigation size={12} /> 導航</a><a href={`tel:${acc.phone}`} className="flex items-center justify-center gap-1.5 py-2 bg-white border border-stone-200 text-stone-600 rounded-lg text-xs font-bold active:scale-95 transition-transform"><Phone size={12} /> 聯絡</a></div>{isAdmin && acc.airbnbUrl && (<div className="grid grid-cols-2 gap-2 animate-fadeIn"><a href={acc.airbnbUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1.5 py-2 bg-[#FF385C] text-white rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm"><Home size={12} /> 開啟房源</a><a href={acc.guideUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1.5 py-2 bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold active:scale-95 transition-transform"><MapPin size={12} /> 房東地圖</a></div>)}{!isAdmin && acc.name === 'Lucky Charm House' && (<div className="text-center py-2 bg-stone-50 rounded-lg text-[10px] text-stone-400">🔒 房源連結僅供團員存取</div>)}</div></div>))}</div>{isAdmin && (<a href={UTILS_DATA.driveUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 w-full py-3 mt-4 rounded-xl bg-orange-50 text-orange-600 font-bold hover:bg-orange-100 active:scale-95 transition-all"><Info size={16} /> 查看住宿憑證</a>)}</section>
+      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 mb-6"><h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3"><Car size={18} className="text-amber-600" /> 租車資訊</h3><div className="flex gap-4 mb-4"><div className="w-16 h-16 bg-[#009FE3] rounded-xl flex items-center justify-center text-xs font-bold text-white border border-blue-200 shadow-sm">DRIVE</div><div className="flex-1"><div className="text-lg font-bold text-stone-800">Nissan Serena (7座)</div><div className="text-sm text-stone-500 mb-2 flex items-center gap-1"><CheckCircle size={12} className="text-green-500" /> 預訂確認單已存檔</div><div className="flex flex-wrap gap-2"><span className="text-[10px] bg-amber-50 text-amber-700 px-2 py-1 rounded border border-amber-100">國際線 8-9號門</span><span className="text-[10px] bg-stone-100 text-stone-600 px-2 py-1 rounded">現場押金 ฿20,000</span></div></div></div><div className="relative pl-4 border-l-2 border-stone-200 space-y-6 my-4 ml-2"><div className="relative"><div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-green-500 ring-4 ring-white"></div><div className="text-xs text-stone-400 font-bold">取車</div><div className="font-bold text-stone-800">2/19 (四) 17:30</div><div className="text-xs text-stone-500 mt-1">國際線入境大廳 1樓 (Gate 8-9)</div></div><div className="relative"><div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-red-400 ring-4 ring-white"></div><div className="text-xs text-stone-400 font-bold">還車</div><div className="font-bold text-stone-800">2/20 (五) 17:30</div><div className="text-xs text-stone-500 mt-1">國際線入境大廳</div></div></div><div className="grid grid-cols-2 gap-3 mt-4"><a href="tel:+66847004384" className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-600 hover:bg-stone-50 transition-colors"><Phone size={16} /> 車行電話</a><a href={UTILS_DATA.driveUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-stone-800 text-amber-50 text-sm font-bold hover:bg-stone-700 active:scale-95 transition-all"><Info size={16} /> 原始憑證</a></div></section>
+      {isAdmin && <section className="bg-[#06C755] p-6 rounded-2xl shadow-lg shadow-green-900/10 text-white relative overflow-hidden mb-6 animate-fadeIn"><div className="absolute -right-6 -top-6 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div><h3 className="flex items-center gap-2 font-bold text-white mb-2 relative z-10"><Wallet size={18} /> 公款記帳與分帳</h3><p className="text-green-50 text-sm mb-6 relative z-10 font-medium">所有公費支出請統一記錄在此，系統會自動結算每個人該付多少錢。</p><a href={atob('aHR0cHM6Ly9saWZmLmxpbmUubWUvMTY1NTMyMDk5Mi1ZOEdvd0Vwdy9nL29tSkgzaVpDNWNya1hoNm1RdmFYZ1Q=')} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 w-full bg-white text-[#06C755] py-3.5 rounded-xl font-bold hover:bg-green-50 active:scale-95 transition-all shadow-sm relative z-10">開啟 Lightsplit 分帳群組 <ArrowRight size={16} /></a></section>}
       <CurrencySection />
-
-      {/* 6. 緊急救援 (紅色區塊) */}
-      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 mb-6">
-        <h3 className="flex items-center gap-2 font-bold text-red-700 mb-4 border-b border-stone-100 pb-3">
-          <AlertCircle size={18} className="text-red-600" /> 緊急救援中心
-        </h3>
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-3">
-            <a
-              href="tel:1155"
-              className="bg-red-50 hover:bg-red-100 p-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-100"
-            >
-              <span className="text-2xl font-black text-red-600">1155</span>
-              <span className="text-xs font-bold text-red-800">
-                觀光警察 (中文可)
-              </span>
-            </a>
-            <a
-              href="tel:1669"
-              className="bg-red-50 hover:bg-red-100 p-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-100"
-            >
-              <span className="text-2xl font-black text-red-600">1669</span>
-              <span className="text-xs font-bold text-red-800">
-                救護車 (24hr)
-              </span>
-            </a>
-          </div>
-          <div>
-            <h4 className="text-xs font-bold text-stone-400 mb-3 uppercase tracking-widest flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>{' '}
-              推薦醫院 (24hr 急診)
-            </h4>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100">
-                <div>
-                  <div className="font-bold text-stone-800">Chiang Mai Ram</div>
-                  <div className="text-xs text-stone-500">
-                    清邁蘭醫院 (設備最好)
-                  </div>
-                </div>
-                <a
-                  href="tel:053920300"
-                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-green-600 shadow-sm border border-stone-100"
-                >
-                  <Phone size={14} />
-                </a>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100">
-                <div>
-                  <div className="font-bold text-stone-800">
-                    Bangkok Hospital
-                  </div>
-                  <div className="text-xs text-stone-500">
-                    曼谷醫院 (服務最優)
-                  </div>
-                </div>
-                <a
-                  href="tel:1719"
-                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-green-600 shadow-sm border border-stone-100"
-                >
-                  <Phone size={14} />
-                </a>
-              </div>
-            </div>
-          </div>
-          <div className="bg-stone-800 rounded-xl p-4 text-stone-300 text-sm space-y-3">
-            <div className="flex justify-between items-center border-b border-stone-700 pb-2">
-              <span>🇹🇼 駐泰辦事處 (急難)</span>
-              <a
-                href="tel:0816664006"
-                className="text-amber-400 font-bold hover:underline"
-              >
-                081-666-4006
-              </a>
-            </div>
-            <div className="flex justify-between items-center border-b border-stone-700 pb-2">
-              <span>👮 當地報案 (Police)</span>
-              <a
-                href="tel:191"
-                className="text-white font-bold hover:underline"
-              >
-                191
-              </a>
-            </div>
-            <div className="flex justify-between items-center pt-1">
-              <span>💳 Visa 全球掛失</span>
-              <a
-                href="tel:001800115350660"
-                className="text-stone-400 text-xs hover:text-white"
-              >
-                001-800-11-535-0660
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 mb-6"><h3 className="flex items-center gap-2 font-bold text-red-700 mb-4 border-b border-stone-100 pb-3"><AlertCircle size={18} className="text-red-600" /> 緊急救援中心</h3><div className="space-y-6"><div className="grid grid-cols-2 gap-3"><a href="tel:1155" className="bg-red-50 hover:bg-red-100 p-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-100"><span className="text-2xl font-black text-red-600">1155</span><span className="text-xs font-bold text-red-800">觀光警察 (中文可)</span></a><a href="tel:1669" className="bg-red-50 hover:bg-red-100 p-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-100"><span className="text-2xl font-black text-red-600">1669</span><span className="text-xs font-bold text-red-800">救護車 (24hr)</span></a></div><div><h4 className="text-xs font-bold text-stone-400 mb-3 uppercase tracking-widest flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> 推薦醫院 (24hr 急診)</h4><div className="space-y-3"><div className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100"><div><div className="font-bold text-stone-800">Chiang Mai Ram</div><div className="text-xs text-stone-500">清邁蘭醫院 (設備最好)</div></div><a href="tel:053920300" className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-green-600 shadow-sm border border-stone-100"><Phone size={14} /></a></div><div className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100"><div><div className="font-bold text-stone-800">Bangkok Hospital</div><div className="text-xs text-stone-500">曼谷醫院 (服務最優)</div></div><a href="tel:1719" className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-green-600 shadow-sm border border-stone-100"><Phone size={14} /></a></div></div></div><div className="bg-stone-800 rounded-xl p-4 text-stone-300 text-sm space-y-3"><div className="flex justify-between items-center border-b border-stone-700 pb-2"><span>🇹🇼 駐泰辦事處 (急難)</span><a href="tel:0816664006" className="text-amber-400 font-bold hover:underline">081-666-4006</a></div><div className="flex justify-between items-center border-b border-stone-700 pb-2"><span>👮 當地報案 (Police)</span><a href="tel:191" className="text-white font-bold hover:underline">191</a></div><div className="flex justify-between items-center pt-1"><span>💳 Visa 全球掛失</span><a href="tel:001800115350660" className="text-stone-400 text-xs hover:text-white">001-800-11-535-0660</a></div></div></div></section>
     </div>
   );
 };
 
-// ============================================
-// 4.行李清單 &泰國需知
-// ============================================
-
-const DEFAULT_ITEMS = [
-  '乳液、凡士林',
-  '防曬乳',
-  '化妝品',
-  '衣服、褲子',
-  '睡衣',
-  '內衣褲、襪子',
-  '護照',
-  'eSIM / 網卡',
-  '提款卡 (開國外提款)',
-  '信用卡',
-  '現金 (泰銖/台幣)',
-  '牙膏、牙刷',
-  '行李箱 (確認密碼)',
-  '一般出門鞋子',
-  '手機 & 充電器',
-  '行動電源',
-  '衛生紙/濕紙巾',
-  '吹風機 (確認電壓)',
-  '梳子',
-  '旅行電熱壺',
-  '暈車藥',
-  '防蚊液',
-  '國際轉接插座 (220V)',
-  '身分證/健保卡',
-  '國際駕照',
-  '個人藥品',
-  '雨傘/便利雨衣',
-  '汽車導航架',
-  '泳衣',
-  '塑膠袋 (髒衣物用)',
-  '沐浴乳/洗髮精',
-  '西裝',
-  '數位相機/充電器/記憶卡',
-  '隱形眼鏡/藥水/器具',
-  '眼鏡/眼鏡盒',
-  '墨鏡',
-  '刮鬍刀/刮鬍泡',
-];
-
-const USERS = ['佑任', '軒寶', '學弟', '腳慢'];
-
-const ThaiTips = () => {
-  const [isOpen, setIsOpen] = useState(true);
-
-  return (
-    <div className="mx-6 mt-6 mb-6">
-      <div className="bg-amber-50 rounded-2xl border border-amber-100 overflow-hidden shadow-sm">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center justify-between p-4 bg-amber-100/50 text-amber-900 font-bold"
-        >
-          <div className="flex items-center gap-2">
-            <AlertCircle size={18} className="text-amber-600" />
-            <span>泰國旅遊禁忌與需知</span>
-          </div>
-          {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-        </button>
-
-        {isOpen && (
-          <div className="p-4 space-y-4 text-sm text-stone-700 leading-relaxed">
-            <div className="flex gap-3">
-              <div className="min-w-[24px] text-red-500 font-bold">
-                <Gavel size={18} />
-              </div>
-              <div>
-                <strong className="text-red-700 block">電子菸絕對違法</strong>
-                攜帶或使用電子菸在泰國是違法的，最高可判10年監禁或高額罰款。
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="min-w-[24px] text-amber-600 font-bold">
-                <Zap size={18} />
-              </div>
-              <div>
-                <strong className="text-stone-900 block">電壓 220V</strong>
-                台灣電器(110V)如吹風機、離子夾
-                <span className="font-bold text-red-600">不可直接插</span>
-                ，會燒壞！手機充電器通常支援100-240V則沒問題。
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="min-w-[24px] text-stone-600 font-bold">
-                <User size={18} />
-              </div>
-              <div>
-                <strong className="text-stone-900 block">文化與規矩</strong>
-                1. 絕對不可批評皇室 (重罪)。
-                <br />
-                2. 不要摸泰國人的頭。
-                <br />
-                3. 寺廟需脫鞋，不可穿著暴露。
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="min-w-[24px] text-green-600 font-bold">
-                <Utensils size={18} />
-              </div>
-              <div>
-                <strong className="text-stone-900 block">飲食衛生</strong>
-                生水不可飲用。路邊攤少吃生食 (如生蝦、生蟹)，避免腸胃不適。
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// 修改 PackingPage: 接收 isKonamiActive 來切換顯示模式
-const PackingPage = ({ isKonamiActive }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [packingData, setPackingData] = useState({});
-  const [newItem, setNewItem] = useState('');
-
-  // 角色圖片對照表
-  const CHARACTER_MAP = {
-    佑任: 'https://www.sanrio.co.jp/special/characterranking/2025/assets/img/results/img_rank1.png', // 布丁狗
-    軒寶: 'https://www.sanrio.co.jp/special/characterranking/2025/assets/img/characters/hellokitty.png', // Kitty
-    學弟: 'https://www.sanrio.co.jp/special/characterranking/2025/assets/img/results/img_rank2.png', // 大耳狗
-    腳慢: 'https://www.sanrio.co.jp/special/characterranking/2025/assets/img/characters/mymelody.png', // 美樂蒂
-  };
-
-  useEffect(() => {
-    const saved = localStorage.getItem('cm_packing_list_v2');
-    if (saved) {
-      setPackingData(JSON.parse(saved));
-    } else {
-      const initialData = {};
-      USERS.forEach((user) => {
-        initialData[user] = DEFAULT_ITEMS.map((item) => ({
-          name: item,
-          checked: false,
-        }));
-      });
-      setPackingData(initialData);
-      localStorage.setItem('cm_packing_list_v2', JSON.stringify(initialData));
-    }
-  }, []);
-
-  const saveToStorage = (newData) => {
-    setPackingData(newData);
-    localStorage.setItem('cm_packing_list_v2', JSON.stringify(newData));
-  };
-
-  const toggleItem = (user, index) => {
-    const newData = { ...packingData };
-    newData[user][index].checked = !newData[user][index].checked;
-    saveToStorage(newData);
-
-    const allChecked = newData[user].every((item) => item.checked);
-    if (allChecked && newData[user].length > 0) {
-      setTimeout(() => {
-        alert('🎉 完美! 所有行李都準備好了!\n準備出發清邁囉~');
-      }, 300);
-    }
-  };
-
-  const addItem = () => {
-    if (!newItem.trim() || !currentUser) return;
-    const newData = { ...packingData };
-    newData[currentUser] = [
-      { name: newItem, checked: false },
-      ...newData[currentUser],
-    ];
-    saveToStorage(newData);
-    setNewItem('');
-  };
-
-  const deleteItem = (index) => {
-    if (!window.confirm('確定刪除此項目？')) return;
-    const newData = { ...packingData };
-    newData[currentUser].splice(index, 1);
-    saveToStorage(newData);
-  };
-
-  const getProgress = (user) => {
-    if (!packingData[user]) return 0;
-    const total = packingData[user].length;
-    const checked = packingData[user].filter((i) => i.checked).length;
-    return total === 0 ? 0 : Math.round((checked / total) * 100);
-  };
-
-  return (
-    <div className="pb-24 min-h-screen bg-[#FDFBF7]">
-      <ThaiTips />
-
-      <div className="px-6 mt-2 mb-4">
-        <h2 className="text-2xl font-serif font-bold text-stone-800 flex items-center gap-2">
-          <span className="w-1.5 h-6 bg-amber-500 rounded-full"></span>
-          行李準備清單
-        </h2>
-        <p className="text-xs text-stone-400 mt-1 ml-3.5">
-          請點選下方名字開始檢查
-        </p>
-      </div>
-
-      <div className="px-6 mb-6">
-        <h3 className="text-center font-serif text-stone-500 mb-4 text-sm italic">
-          — Who are you? —
-        </h3>
-        <div className="grid grid-cols-4 gap-2">
-          {USERS.map((user) => (
-            <button
-              key={user}
-              onClick={() => setCurrentUser(user)}
-              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
-                ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
-                : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
-                }`}
-            >
-              {/* 判斷：如果有觸發彩蛋，就顯示圖片；否則顯示文字 */}
-              {isKonamiActive ? (
-                <div className="flex flex-col items-center animate-bounce">
-                  {/* 針對學弟(大耳狗)做特別放大處理 scale-125 */}
-                  <img
-                    src={CHARACTER_MAP[user]}
-                    alt={user}
-                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${user === '學弟' ? 'scale-125' : ''
-                      }`}
-                  />
-                  <span className="text-[10px] opacity-80">{user}</span>
-                </div>
-              ) : (
-                <>
-                  <span>{user}</span>
-                  {packingData[user] && (
-                    <span className="text-[10px] opacity-80 font-normal">
-                      {getProgress(user)}%
-                    </span>
-                  )}
-                </>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {currentUser ? (
-        <div className="px-6 animate-fadeIn">
-          <div className="flex justify-between items-end mb-4">
-            <h2 className="text-2xl font-serif font-bold text-stone-800 flex items-center gap-2">
-              <span className="text-amber-600">{currentUser}</span> 的清單
-              {/* 如果觸發彩蛋，標題旁也顯示小圖 */}
-              {isKonamiActive && (
-                <img
-                  src={CHARACTER_MAP[currentUser]}
-                  className="w-8 h-8 -mb-1"
-                />
-              )}
-            </h2>
-            <span className="text-xs text-stone-400 font-bold">
-              {packingData[currentUser]?.filter((i) => i.checked).length} /{' '}
-              {packingData[currentUser]?.length} 完成
-            </span>
-          </div>
-
-          <div className="h-1.5 w-full bg-stone-200 rounded-full mb-6 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-500"
-              style={{ width: `${getProgress(currentUser)}%` }}
-            />
-          </div>
-
-          <div className="mb-6 flex gap-2">
-            <input
-              type="text"
-              value={newItem}
-              onChange={(e) => setNewItem(e.target.value)}
-              placeholder="新增個人項目..."
-              className="flex-1 p-3 rounded-xl border border-stone-200 focus:outline-none focus:border-amber-500 bg-white shadow-sm"
-              onKeyPress={(e) => e.key === 'Enter' && addItem()}
-            />
-            <button
-              onClick={addItem}
-              className="bg-stone-800 text-amber-50 px-5 rounded-xl font-bold active:scale-95 transition-transform shadow-md"
-            >
-              +
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {packingData[currentUser]?.map((item, index) => (
-              <div
-                key={index}
-                onClick={() => toggleItem(currentUser, index)}
-                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${item.checked
-                  ? 'bg-stone-100 border-transparent opacity-60'
-                  : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
-                  }`}
-              >
-                <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${item.checked
-                    ? 'bg-green-500 border-green-500 text-white'
-                    : 'border-stone-300 bg-stone-50'
-                    }`}
-                >
-                  {item.checked && <CheckCircle size={14} strokeWidth={3} />}
-                </div>
-                <span
-                  className={`flex-1 font-medium ${item.checked
-                    ? 'text-stone-400 line-through decoration-stone-400'
-                    : 'text-stone-700'
-                    }`}
-                >
-                  {item.name}
-                </span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteItem(index);
-                  }}
-                  className="p-2 text-stone-300 hover:text-red-400 transition-colors"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <div className="h-12" />
-        </div>
-      ) : (
-        <div className="px-10 py-20 text-center text-stone-400">
-          <p className="text-sm">
-            👆 請先點選上方按鈕
-            <br />
-            開啟專屬清單
-            <br />
-            (此處有彩蛋喔~提示:上下左右)
-          </p>
-        </div>
-      )}
-    </div>
-  );
-};
-
-
-// Main App (20261208 卡通叢林 + 防誤觸 + 名單回歸)
-// Main App (20261208 優化 透明度調整 + 電腦版防扁 + 橫向遮罩)
-// Main App (20261208 最終修正版：輸入框沉底 + 美樂蒂露臉)
-// Main App (20261208 修復白底 + 文字顯示優化)
-// Main App (20261208 )
-// Main App (20261208 回歸穩定版 + 黑底防破圖)
-// Main App (20261209回歸穩定版：修復白底透出、移除頂部陰影、調整導覽列高度)
-// Main App (V8 - 最終回退修復版：移除陰影、降低選單、修復白底)
-// Main App (V9 - 解決鍵盤露餡 + 移除頂部醜陰影)
+// Main App (V10 - 最終優化版)
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2180,21 +1115,14 @@ export default function TravelApp() {
   const [openDay, setOpenDay] = useState(0);
   const [itinerary, setItinerary] = useState(INITIAL_ITINERARY_DATA);
 
-  // 彩蛋狀態
   const [shakeCount, setShakeCount] = useState(0);
   const [showShakeEgg, setShowShakeEgg] = useState(false);
-
-  // 滑動彩蛋
   const touchStartRef = useRef({ x: 0, y: 0 });
   const [konamiSequence, setKonamiSequence] = useState([]);
   const [isKonamiActive, setIsKonamiActive] = useState(false);
-
   const MY_PASSWORD = '1314520';
-
-  // 使用俯視的熱帶叢林
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
-  // 1. 搖晃彩蛋邏輯
   useEffect(() => {
     let lastShakeTime = 0;
     const handleShake = (e) => {
@@ -2205,10 +1133,7 @@ export default function TravelApp() {
         lastShakeTime = Date.now();
         setShakeCount((prev) => {
           const newCount = prev + 1;
-          if (newCount >= 8) {
-            setShowShakeEgg(true);
-            return 0;
-          }
+          if (newCount >= 8) { setShowShakeEgg(true); return 0; }
           return newCount;
         });
       }
@@ -2218,48 +1143,30 @@ export default function TravelApp() {
   }, []);
 
   const requestMotionPermission = async () => {
-    if (
-      typeof DeviceMotionEvent !== 'undefined' &&
-      typeof DeviceMotionEvent.requestPermission === 'function'
-    ) {
-      try {
-        await DeviceMotionEvent.requestPermission();
-      } catch (e) {
-        console.error(e);
-      }
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+      try { await DeviceMotionEvent.requestPermission(); } catch (e) { console.error(e); }
     }
   };
 
-  // 2. 滑動彩蛋邏輯
   useEffect(() => {
-    const handleStart = (clientX, clientY) => {
-      touchStartRef.current = { x: clientX, y: clientY };
-    };
+    const handleStart = (clientX, clientY) => { touchStartRef.current = { x: clientX, y: clientY }; };
     const handleEnd = (clientX, clientY) => {
       const diffX = clientX - touchStartRef.current.x;
       const diffY = clientY - touchStartRef.current.y;
       if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
       let direction = '';
-      if (Math.abs(diffX) > Math.abs(diffY)) {
-        direction = diffX > 0 ? 'right' : 'left';
-      } else {
-        direction = diffY > 0 ? 'down' : 'up';
-      }
+      if (Math.abs(diffX) > Math.abs(diffY)) direction = diffX > 0 ? 'right' : 'left';
+      else direction = diffY > 0 ? 'down' : 'up';
       setKonamiSequence((prev) => [...prev, direction].slice(-4));
     };
-
-    const onTouchStart = (e) =>
-      handleStart(e.touches[0].clientX, e.touches[0].clientY);
-    const onTouchEnd = (e) =>
-      handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    const onTouchStart = (e) => handleStart(e.touches[0].clientX, e.touches[0].clientY);
+    const onTouchEnd = (e) => handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
     const onMouseDown = (e) => handleStart(e.clientX, e.clientY);
     const onMouseUp = (e) => handleEnd(e.clientX, e.clientY);
-
     window.addEventListener('touchstart', onTouchStart);
     window.addEventListener('touchend', onTouchEnd);
     window.addEventListener('mousedown', onMouseDown);
     window.addEventListener('mouseup', onMouseUp);
-
     return () => {
       window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchend', onTouchEnd);
@@ -2275,333 +1182,110 @@ export default function TravelApp() {
     }
   }, [konamiSequence]);
 
-  // 3. 氣象更新
   useEffect(() => {
     const updateWeatherForecast = async () => {
       const today = new Date();
       if (!itinerary || itinerary.length === 0) return;
-
       const firstDayStr = itinerary[0].date;
       const lastDayStr = itinerary[itinerary.length - 1].date;
       const tripStart = new Date(firstDayStr);
       const diffTime = tripStart - today;
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
       if (diffDays > 14) return;
-
       try {
-        const cityRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`
-        );
+        const cityRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`);
         const cityData = await cityRes.json();
-        const mountainRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=18.58&longitude=98.48&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`
-        );
+        const mountainRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=18.58&longitude=98.48&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`);
         const mountainData = await mountainRes.json();
-
         setItinerary((prevItinerary) => {
           return prevItinerary.map((dayItem, index) => {
             if (!cityData.daily || !cityData.daily.time[index]) return dayItem;
             let maxTemp, minTemp, code;
-            if (
-              dayItem.day === 6 &&
-              mountainData.daily &&
-              mountainData.daily.time[index]
-            ) {
-              maxTemp = Math.round(
-                mountainData.daily.temperature_2m_max[index]
-              );
-              minTemp = Math.round(
-                mountainData.daily.temperature_2m_min[index]
-              );
+            if (dayItem.day === 6 && mountainData.daily && mountainData.daily.time[index]) {
+              maxTemp = Math.round(mountainData.daily.temperature_2m_max[index]);
+              minTemp = Math.round(mountainData.daily.temperature_2m_min[index]);
               code = mountainData.daily.weather_code[index];
             } else {
               maxTemp = Math.round(cityData.daily.temperature_2m_max[index]);
               minTemp = Math.round(cityData.daily.temperature_2m_min[index]);
               code = cityData.daily.weather_code[index];
             }
-            return {
-              ...dayItem,
-              weather: {
-                ...dayItem.weather,
-                temp: `${minTemp}-${maxTemp}°C`,
-                icon: code <= 3 ? 'sunny' : 'cloudy',
-                realData: true,
-              },
-            };
+            return { ...dayItem, weather: { ...dayItem.weather, temp: `${minTemp}-${maxTemp}°C`, icon: code <= 3 ? 'sunny' : 'cloudy', realData: true } };
           });
         });
-      } catch (e) {
-        console.error('氣象同步失敗:', e);
-      }
+      } catch (e) { console.error('氣象同步失敗:', e); }
     };
     updateWeatherForecast();
   }, []);
 
   const handleUnlock = () => {
     requestMotionPermission();
-
-    if (inputPwd === '1314520') {
-      setIsAdmin(true);
-      setIsUnlocking(true);
-      setTimeout(() => setIsLocked(false), 800);
-    } else if (inputPwd === '8888') {
-      setIsAdmin(false);
-      setIsUnlocking(true);
-      setTimeout(() => setIsLocked(false), 800);
-    } else {
-      alert('密碼錯誤！再試一次吧 🔒');
-      setInputPwd('');
-    }
+    if (inputPwd === '1314520') { setIsAdmin(true); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
+    else if (inputPwd === '8888') { setIsAdmin(false); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
+    else { alert('密碼錯誤！再試一次吧 🔒'); setInputPwd(''); }
   };
 
-  const handlePressStart = () => {
-    pressTimerRef.current = setTimeout(() => setShowHelloKitty(true), 2000);
-  };
-  const handlePressEnd = () => {
-    if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
-  };
+  const handlePressStart = () => { pressTimerRef.current = setTimeout(() => setShowHelloKitty(true), 2000); };
+  const handlePressEnd = () => { if (pressTimerRef.current) clearTimeout(pressTimerRef.current); };
 
   return (
-    // 修正1: 移除 shadow-2xl (解決頂部陰影)
+    // 修正1: 拿掉了 shadow-2xl，解決頂部陰影問題。加上 bg-stone-900 解決白底透出。
     <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
-      
-      {/* 橫向模式遮罩 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
         <p className="text-lg font-bold tracking-widest">請將手機轉為直向</p>
         <p className="text-xs text-stone-500 mt-2">Please rotate your phone</p>
       </div>
 
-      {/* 鎖定畫面 */}
-      {/* 修正2: 這裡不做任何條件渲染，只要 isLocked 為 true，這裡就是唯一存在的 DOM */}
-      {isLocked ? (
+      {isLocked && (
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900 h-screen w-full">
-          
-          {/* 內層容器 */}
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
-            
-            {/* 左半邊葉子門 */}
-            <div
-              className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
-                isUnlocking ? '-translate-x-full' : 'translate-x-0'
-              }`}
-              style={{
-                backgroundImage: `url(${JUNGLE_BG})`,
-                backgroundSize: '200% 120%', // 保留你設定的 120%
-                backgroundPosition: 'left center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            >
-              <div className="absolute inset-0 bg-black/20"></div>
+            <div className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'left center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
+            <div className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
+            <div className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'}`}>
+              <div onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onMouseLeave={handlePressEnd} onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onContextMenu={(e) => e.preventDefault()} className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none" style={{ WebkitUserSelect: 'none', userSelect: 'none' }}><HelpCircle size={40} className="text-white drop-shadow-md" strokeWidth={2.5} /></div>
+              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
+              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
+              <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">Jungle Adventure</p>
+              <div className="w-full relative mb-6 mt-auto"><KeyRound size={18} className="absolute left-4 top-4 text-emerald-200" /><input type="password" value={inputPwd} onChange={(e) => setInputPwd(e.target.value)} placeholder="Passcode" className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" /></div>
+              <button onClick={handleUnlock} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10">Start Journey <ArrowRight size={18} /></button>
+              <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">System Ver. 9.3 清邁4人團🧋</div>
             </div>
-
-            {/* 右半邊葉子門 */}
-            <div
-              className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
-                isUnlocking ? 'translate-x-full' : 'translate-x-0'
-              }`}
-              style={{
-                backgroundImage: `url(${JUNGLE_BG})`,
-                backgroundSize: '200% 120%', // 保留你設定的 120%
-                backgroundPosition: 'right center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            >
-              <div className="absolute inset-0 bg-black/20"></div>
-            </div>
-
-            {/* 中央內容區 - 保持你習慣的佈局 */}
-            <div
-              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${
-                isUnlocking ? 'opacity-0' : 'opacity-100'
-              }`}
-            >
-              <div
-                onMouseDown={handlePressStart}
-                onMouseUp={handlePressEnd}
-                onMouseLeave={handlePressEnd}
-                onTouchStart={handlePressStart}
-                onTouchEnd={handlePressEnd}
-                onContextMenu={(e) => e.preventDefault()}
-                className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"
-                style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
-              >
-                <HelpCircle
-                  size={40}
-                  className="text-white drop-shadow-md"
-                  strokeWidth={2.5}
-                />
-              </div>
-
-              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">
-                Chiang Mai
-              </h2>
-
-              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">
-                佑任・軒寶・學弟・腳慢
-              </p>
-              <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">
-                Jungle Adventure
-              </p>
-
-              {/* mt-auto 確保在下方 */}
-              <div className="w-full relative mb-6 mt-auto">
-                <KeyRound
-                  size={18}
-                  className="absolute left-4 top-4 text-emerald-100"
-                />
-                <input
-                  type="password"
-                  value={inputPwd}
-                  onChange={(e) => setInputPwd(e.target.value)}
-                  placeholder="Passcode"
-                  className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg"
-                />
-              </div>
-
-              <button
-                onClick={handleUnlock}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10" 
-              >
-                Start Journey <ArrowRight size={18} />
-              </button>
-
-              <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">
-                System Ver. 9.3 清邁4人團🧋
-              </div>
-            </div>
-
-            {/* Hello Kitty 彩蛋彈窗 */}
-            {showHelloKitty && (
-              <div
-                onClick={() => setShowHelloKitty(false)}
-                className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"
-              >
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"
-                >
-                  <button
-                    onClick={() => setShowHelloKitty(false)}
-                    className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold"
-                  >
-                    ×
-                  </button>
-                  <img
-                    src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg"
-                    alt="Hello Kitty Surprise"
-                    className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md"
-                  />
-                  <h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">
-                    Surprise!
-                  </h3>
-                  <p className="text-pink-400 text-sm font-bold">
-                    發現隱藏彩蛋 🎉
-                  </p>
-                </div>
-              </div>
-            )}
+            {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div onClick={(e) => e.stopPropagation()} className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"><button onClick={() => setShowHelloKitty(false)} className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold">×</button><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" alt="Hello Kitty Surprise" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md" /><h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">Surprise!</h3><p className="text-pink-400 text-sm font-bold">發現隱藏彩蛋 🎉</p></div></div>)}
           </div>
         </div>
-      ) : (
-        // 修正3: 主程式現在只在 !isLocked 時才渲染
-        // 這意味著鎖定時，DOM 裡面根本沒有白色的主頁面，所以鍵盤彈起絕對不會露出白底
+      )}
+
+      {/* 只有在解鎖後才渲染內容，這樣鍵盤彈起時就不會有白底行程內容露出的問題 */}
+      {!isLocked && (
         <div className="bg-[#FDFBF7] min-h-screen">
           <WeatherHero />
-
           <main className="pb-28">
             {activeTab === 'itinerary' && (
               <div className="pb-4">
                 <OutfitGuide />
                 <div className="p-4 mt-2">
                   {itinerary.map((day, idx) => (
-                    <DayCard
-                      key={day.day}
-                      dayData={day}
-                      isOpen={openDay === idx}
-                      toggle={() => setOpenDay(openDay === idx ? -1 : idx)}
-                    />
+                    <DayCard key={day.day} dayData={day} isOpen={openDay === idx} toggle={() => setOpenDay(openDay === idx ? -1 : idx)} />
                   ))}
-                  <div className="text-center text-xs text-stone-400 mt-12 mb-8 font-serif italic">
-                    — Journey to Chiang Mai —
-                  </div>
+                  <div className="text-center text-xs text-stone-400 mt-12 mb-8 font-serif italic">— Journey to Chiang Mai —</div>
                 </div>
                 <FloatingStatus itinerary={itinerary} />
               </div>
             )}
-
-            {activeTab === 'packing' && (
-              <PackingPage isKonamiActive={isKonamiActive} />
-            )}
-
+            {activeTab === 'packing' && <PackingPage isKonamiActive={isKonamiActive} />}
             {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} />}
           </main>
-          
-          {/* 搖晃彩蛋 */}
-          {showShakeEgg && (
-            <div
-              onClick={() => setShowShakeEgg(false)}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"
-            >
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"
-              >
-                <button
-                  onClick={() => setShowShakeEgg(false)}
-                  className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold z-10"
-                >
-                  ×
-                </button>
-                <img
-                  src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif"
-                  alt="Shake Surprise"
-                  className="w-full rounded-xl mb-4"
-                />
-                <h3 className="text-2xl font-bold text-pink-600 mb-2 font-serif">
-                  搖出驚喜!
-                </h3>
-                <p className="text-pink-500 mb-2">大家的旅途一定會超順利~</p>
-              </div>
-            </div>
-          )}
-
-          {/* 底部導覽列 - 修正4: pb-8 改回 pb-4，降低高度 */}
+          {/* 修正4: pb-8 改回 pb-4，降低選單高度 */}
           <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 pb-4 z-40">
-            <button
-              onClick={() => setActiveTab('itinerary')}
-              className={`flex flex-col items-center gap-1.5 transition-colors ${
-                activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'
-              }`}
-            >
-              <MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
-              <span className="text-[10px] font-bold tracking-wide">行程</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('packing')}
-              className={`flex flex-col items-center gap-1.5 transition-colors ${
-                activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'
-              }`}
-            >
-              <CheckCircle
-                size={22}
-                strokeWidth={activeTab === 'packing' ? 2.5 : 2}
-              />
-              <span className="text-[10px] font-bold tracking-wide">準備</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('utils')}
-              className={`flex flex-col items-center gap-1.5 transition-colors ${
-                activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'
-              }`}
-            >
-              <Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} />
-              <span className="text-[10px] font-bold tracking-wide">工具</span>
-            </button>
+            <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'}`}><MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">行程</span></button>
+            <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'}`}><CheckCircle size={22} strokeWidth={activeTab === 'packing' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">準備</span></button>
+            <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'}`}><Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">工具</span></button>
           </nav>
         </div>
       )}
+      
+      {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div onClick={(e) => e.stopPropagation()} className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"><button onClick={() => setShowShakeEgg(false)} className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold z-10">×</button><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" alt="Shake Surprise" className="w-full rounded-xl mb-4" /><h3 className="text-2xl font-bold text-pink-600 mb-2 font-serif">搖出驚喜!</h3><p className="text-pink-500 mb-2">大家的旅途一定會超順利~</p></div></div>)}
     </div>
   );
 }
