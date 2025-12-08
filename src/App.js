@@ -2268,7 +2268,7 @@ export default function TravelApp() {
 
   return (
     // 外層容器：根據 isLocked 切換背景色 (解決鍵盤彈出露白底問題)
-    <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
+     <div className={`h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
       
       {/* 橫向模式遮罩 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
