@@ -2357,7 +2357,7 @@ export default function TravelApp() {
               <div className="w-full relative mb-6 mt-auto">
                 <KeyRound
                   size={18}
-                  className="absolute left-4 top-4 text-emerald-500"
+                  className="absolute left-4 top-4 text-emerald-200"
                 />
                <input
                   type="password"
