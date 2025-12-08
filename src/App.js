@@ -2165,6 +2165,7 @@ const PackingPage = ({ isKonamiActive }) => {
 // Main App (20261208 修復白底 + 文字顯示優化)
 // Main App (20261208 )
 // Main App (20261208 回歸穩定版 + 黑底防破圖)
+// Main App (20261209回歸穩定版：修復白底透出、移除頂部陰影、調整導覽列高度)
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2191,7 +2192,7 @@ export default function TravelApp() {
   // 使用俯視的熱帶叢林
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
-  // 1. 搖晃彩蛋邏輯 (維持原樣)
+  // 1. 搖晃彩蛋邏輯
   useEffect(() => {
     let lastShakeTime = 0;
     const handleShake = (e) => {
@@ -2227,7 +2228,7 @@ export default function TravelApp() {
     }
   };
 
-  // 2. 滑動彩蛋邏輯 (維持原樣)
+  // 2. 滑動彩蛋邏輯
   useEffect(() => {
     const handleStart = (clientX, clientY) => {
       touchStartRef.current = { x: clientX, y: clientY };
@@ -2272,7 +2273,7 @@ export default function TravelApp() {
     }
   }, [konamiSequence]);
 
-  // 3. 氣象更新 (維持原樣)
+  // 3. 氣象更新
   useEffect(() => {
     const updateWeatherForecast = async () => {
       const today = new Date();
@@ -2360,8 +2361,8 @@ export default function TravelApp() {
   };
 
   return (
-    // 這裡我們直接把 bg 設為黑色 (bg-stone-900)，這樣鎖定畫面鍵盤彈出時露出的就是黑色
-    <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative shadow-2xl overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
+    // 修正1: 拿掉 shadow-2xl，解決頂部陰影問題
+    <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
       
       {/* 橫向模式遮罩 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
@@ -2372,7 +2373,7 @@ export default function TravelApp() {
 
       {/* 鎖定畫面 */}
       {isLocked && (
-        // 使用 h-screen + w-full 確保佔滿，且背景是黑的
+        // 修正2: 這裡加上 bg-stone-900，並用 fixed inset-0 蓋住一切。這樣就算鍵盤彈出，底下也是黑的，不會有白底。
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900 h-screen w-full">
           
           {/* 內層容器限制 max-w-md (手機寬度) */}
@@ -2408,9 +2409,7 @@ export default function TravelApp() {
               <div className="absolute inset-0 bg-black/20"></div>
             </div>
 
-            {/* 中央內容區 */}
-            {/* 🚀 回歸最原始的佈局：pt-40 把標題推上去，mt-auto 把輸入框推下來 */}
-            {/* 這樣中間自然留白給布丁狗，結構最穩 */}
+            {/* 中央內容區 - 回到你最習慣的佈局 */}
             <div
               className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${
                 isUnlocking ? 'opacity-0' : 'opacity-100'
@@ -2444,7 +2443,7 @@ export default function TravelApp() {
                 Jungle Adventure
               </p>
 
-              {/* mt-auto 確保它在底部，mb-10 留一點空間不要貼底太死 */}
+              {/* mt-auto 確保它在底部 */}
               <div className="w-full relative mb-6 mt-auto">
                 <KeyRound
                   size={18}
@@ -2461,7 +2460,7 @@ export default function TravelApp() {
 
               <button
                 onClick={handleUnlock}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10" // mb-10 讓它離底部有距離
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10" 
               >
                 Start Journey <ArrowRight size={18} />
               </button>
@@ -2566,7 +2565,8 @@ export default function TravelApp() {
       )}
 
       {/* 底部導覽列 */}
-      <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-4 pb-8 z-40 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)]">
+      {/* 修正3: pb-8 改成 pb-6，讓導覽列沉下去一點，不要這麼高 */}
+      <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 pb-6 z-40 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)]">
         <button
           onClick={() => setActiveTab('itinerary')}
           className={`flex flex-col items-center gap-1.5 transition-colors ${
