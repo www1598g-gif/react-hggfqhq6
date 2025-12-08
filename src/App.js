@@ -966,6 +966,7 @@ const OutfitGuide = () => {
 
 // update地點卡片 爛腳標籤獨立一行
 // update地點卡片移除內部重複標示)
+// update: 地點卡片 (V5 - 標籤分行顯示，不再擋字)
 const LocationCard = ({ item }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -1018,6 +1019,7 @@ const LocationCard = ({ item }) => {
           {getIcon()}
         </div>
         <div className="flex-1 min-w-0">
+          {/* 第一行：時間 + Highlight */}
           <div className="flex justify-between items-start mb-1">
             <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
               {item.time}
@@ -1028,20 +1030,25 @@ const LocationCard = ({ item }) => {
               </span>
             )}
           </div>
+
+          {/* 第二行：標題 */}
           <h3 className="font-bold text-stone-800 text-lg leading-tight mb-2 pr-2">
             {item.name}
           </h3>
           
-          <div className="flex flex-col gap-1.5 align-start">
-             {item.difficulty && (
-               <span className={`self-start text-[10px] px-2 py-0.5 rounded font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
+          {/* 第三行：爛腳標籤 (獨立一行) */}
+          {item.difficulty && (
+             <div className="mb-1.5">
+               <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded font-bold ${getDifficultyColor(item.difficulty)}`}>
                  🦵 {item.difficulty}
                </span>
-             )}
-             <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
-               {item.note}
-             </p>
-          </div>
+             </div>
+          )}
+
+          {/* 第四行：備註文字 (允許自動換行，不再切掉) */}
+          <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
+             {item.note}
+          </p>
         </div>
         <div className="mt-8 text-stone-300 flex-shrink-0">
           {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -1072,7 +1079,7 @@ const LocationCard = ({ item }) => {
 
           <div className="p-5 bg-stone-50/50">
             <div className="mb-5">
-              {/* ⚠️ 爛腳人注意... 的區塊已經被刪除了 */}
+              {/* 這裡原本的爛腳標示已移除 */}
               <h4 className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
                 <Info size={12} /> 導遊說故事
               </h4>
@@ -1694,7 +1701,7 @@ const UtilsPage = ({ isAdmin }) => {
             所有公費支出請統一記錄在此，系統會自動結算每個人該付多少錢。
           </p>
           <a
-            // 這裡使用了 Base64 加密網址
+            // Lightsplit URL Base64 Encoded
             href={atob(
               'aHR0cHM6Ly9saWZmLmxpbmUubWUvMTY1NTMyMDk5Mi1ZOEdvd0Vwdy9nL29tSkgzaVpDNWNya1hoNm1RdmFYZ1Q='
             )}
@@ -2157,6 +2164,7 @@ const PackingPage = ({ isKonamiActive }) => {
 // Main App (20261208 最終修正版：輸入框沉底 + 美樂蒂露臉)
 // Main App (20261208 修復白底 + 文字顯示優化)
 // Main App (20261208 )
+// Main App (20261208 回歸穩定版 + 黑底防破圖)
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2183,7 +2191,7 @@ export default function TravelApp() {
   // 使用俯視的熱帶叢林
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
-  // 1. 搖晃彩蛋邏輯
+  // 1. 搖晃彩蛋邏輯 (維持原樣)
   useEffect(() => {
     let lastShakeTime = 0;
     const handleShake = (e) => {
@@ -2219,7 +2227,7 @@ export default function TravelApp() {
     }
   };
 
-  // 2. 滑動彩蛋邏輯
+  // 2. 滑動彩蛋邏輯 (維持原樣)
   useEffect(() => {
     const handleStart = (clientX, clientY) => {
       touchStartRef.current = { x: clientX, y: clientY };
@@ -2264,7 +2272,7 @@ export default function TravelApp() {
     }
   }, [konamiSequence]);
 
-  // 3. 氣象更新
+  // 3. 氣象更新 (維持原樣)
   useEffect(() => {
     const updateWeatherForecast = async () => {
       const today = new Date();
@@ -2352,6 +2360,7 @@ export default function TravelApp() {
   };
 
   return (
+    // 這裡我們直接把 bg 設為黑色 (bg-stone-900)，這樣鎖定畫面鍵盤彈出時露出的就是黑色
     <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative shadow-2xl overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
       
       {/* 橫向模式遮罩 */}
@@ -2363,9 +2372,10 @@ export default function TravelApp() {
 
       {/* 鎖定畫面 */}
       {isLocked && (
+        // 使用 h-screen + w-full 確保佔滿，且背景是黑的
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900 h-screen w-full">
           
-          {/* 內層容器 */}
+          {/* 內層容器限制 max-w-md (手機寬度) */}
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
             
             {/* 左半邊葉子門 */}
@@ -2398,69 +2408,66 @@ export default function TravelApp() {
               <div className="absolute inset-0 bg-black/20"></div>
             </div>
 
-            {/* 中央內容區 - 改用 justify-between 上下分開 */}
+            {/* 中央內容區 */}
+            {/* 🚀 回歸最原始的佈局：pt-40 把標題推上去，mt-auto 把輸入框推下來 */}
+            {/* 這樣中間自然留白給布丁狗，結構最穩 */}
             <div
-              className={`relative z-10 flex flex-col justify-between items-center w-full px-8 h-full py-24 transition-opacity duration-500 ${
+              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${
                 isUnlocking ? 'opacity-0' : 'opacity-100'
               }`}
             >
-              {/* 上半部：問號、標題 */}
-              <div className="flex flex-col items-center w-full">
-                <div
-                  onMouseDown={handlePressStart}
-                  onMouseUp={handlePressEnd}
-                  onMouseLeave={handlePressEnd}
-                  onTouchStart={handlePressStart}
-                  onTouchEnd={handlePressEnd}
-                  onContextMenu={(e) => e.preventDefault()}
-                  className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"
-                  style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
-                >
-                  <HelpCircle
-                    size={40}
-                    className="text-white drop-shadow-md"
-                    strokeWidth={2.5}
-                  />
-                </div>
-
-                <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">
-                  Chiang Mai
-                </h2>
-
-                <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">
-                  佑任・軒寶・學弟・腳慢
-                </p>
-                <p className="text-white/80 text-xs text-center tracking-wider font-sans drop-shadow">
-                  Jungle Adventure
-                </p>
+              <div
+                onMouseDown={handlePressStart}
+                onMouseUp={handlePressEnd}
+                onMouseLeave={handlePressEnd}
+                onTouchStart={handlePressStart}
+                onTouchEnd={handlePressEnd}
+                onContextMenu={(e) => e.preventDefault()}
+                className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"
+                style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+              >
+                <HelpCircle
+                  size={40}
+                  className="text-white drop-shadow-md"
+                  strokeWidth={2.5}
+                />
               </div>
 
-              {/* 下半部：輸入框、按鈕、版本號 */}
-              <div className="w-full flex flex-col items-center">
-                <div className="w-full relative mb-6">
-                  <KeyRound
-                    size={18}
-                    className="absolute left-4 top-4 text-emerald-100"
-                  />
-                  <input
-                    type="password"
-                    value={inputPwd}
-                    onChange={(e) => setInputPwd(e.target.value)}
-                    placeholder="Passcode"
-                    className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg"
-                  />
-                </div>
+              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">
+                Chiang Mai
+              </h2>
 
-                <button
-                  onClick={handleUnlock}
-                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2"
-                >
-                  Start Journey <ArrowRight size={18} />
-                </button>
+              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">
+                佑任・軒寶・學弟・腳慢
+              </p>
+              <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">
+                Jungle Adventure
+              </p>
 
-                <div className="mt-8 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">
-                  System Ver. 9.3 清邁4人團🧋
-                </div>
+              {/* mt-auto 確保它在底部，mb-10 留一點空間不要貼底太死 */}
+              <div className="w-full relative mb-6 mt-auto">
+                <KeyRound
+                  size={18}
+                  className="absolute left-4 top-4 text-emerald-100"
+                />
+                <input
+                  type="password"
+                  value={inputPwd}
+                  onChange={(e) => setInputPwd(e.target.value)}
+                  placeholder="Passcode"
+                  className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg"
+                />
+              </div>
+
+              <button
+                onClick={handleUnlock}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10" // mb-10 讓它離底部有距離
+              >
+                Start Journey <ArrowRight size={18} />
+              </button>
+
+              <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">
+                System Ver. 9.3 清邁4人團🧋
               </div>
             </div>
 
