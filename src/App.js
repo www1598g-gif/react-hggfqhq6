@@ -2359,16 +2359,16 @@ export default function TravelApp() {
                   size={18}
                   className="absolute left-4 top-4 text-emerald-700"
                 />
-                <input
+               <input
                   type="password"
                   value={inputPwd}
                   onChange={(e) => setInputPwd(e.target.value)}
                   placeholder="Passcode"
-                  // 🚀 修改：bg-white/40 (透明度從 80% 改為 40%)
-                  // 🚀 修改：border-white/30 (邊框也改淡一點)
-                  // 🚀 修改：text-emerald-900 (文字深綠色比較清楚)
-                  // 🚀 修改：placeholder:text-emerald-800/70 (提示字也深一點)
-                  className="w-full bg-white/40 border border-white/30 rounded-2xl pl-12 pr-4 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/60 focus:ring-2 focus:ring-emerald-500 transition-all text-emerald-900 placeholder:text-emerald-800/70 text-center font-bold shadow-lg backdrop-blur-sm"
+                  // 🚀 修改說明：
+                  // 1. 移除了 backdrop-blur-sm (不要毛玻璃)
+                  // 2. 改成 bg-white/20 (非常透，背景超清楚)
+                  // 3. focus:bg-white/40 (點擊輸入時稍微白一點點，方便辨識)
+                  className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-4 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-500 transition-all text-emerald-900 placeholder:text-emerald-900/80 text-center font-bold shadow-lg"
                 />
               </div>
 
