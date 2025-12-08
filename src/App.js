@@ -1086,7 +1086,7 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
   useEffect(() => {
     if (isOpen && cardRef.current) {
       setTimeout(() => {
-        smoothScrollTo(cardRef.current, 100); // 這裡是 100ms
+        smoothScrollTo(cardRef.current, 10); // 這裡是 100ms
       }, 50);
     }
   }, [isOpen]);
