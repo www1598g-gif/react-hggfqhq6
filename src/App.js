@@ -2100,7 +2100,7 @@ export default function TravelApp() {
 
   // 使用俯視的熱帶叢林 之後再來改圖源
   const JUNGLE_BG =
-    process.env.PUBLIC_URL + '/images/jungle.jpeg';
+    process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
   // 1. 搖晃彩蛋邏輯
   useEffect(() => {
@@ -2279,7 +2279,7 @@ export default function TravelApp() {
       {/* 鎖定畫面 */}
       {isLocked && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-stone-900">
-          {/* 左半邊3葉子門 */}
+          {/* 左半邊葉子門 */}
           <div
             className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'
               }`}
