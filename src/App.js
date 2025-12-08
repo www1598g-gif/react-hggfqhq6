@@ -2364,11 +2364,10 @@ export default function TravelApp() {
                   value={inputPwd}
                   onChange={(e) => setInputPwd(e.target.value)}
                   placeholder="Passcode"
-                  // 修改：
-                  // 1. 移除了 backdrop-blur-sm 
-                  // 2. 改成 bg-white/20 
-                  // 3. focus:bg-white/40 (點擊輸入時稍微白一點點 方便辨識)
-                  className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-4 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-500 transition-all text-emerald-900 placeholder:text-emerald-900/80 text-center font-bold shadow-lg"
+                  // 修改說明：
+                  // 1. placeholder:text-emerald-200 -> 改成超亮的薄荷綠 (原本是 600 太暗)
+                  // 2. text-emerald-100 -> 輸入的密碼字也改成亮色，不然打字會看不見
+                  className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-4 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg"
                 />
               </div>
 
