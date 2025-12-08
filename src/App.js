@@ -162,6 +162,10 @@ const getLocationImage = (locationName) => {
 // 2. 初始行程資料 (V23 最終版 - 含爛腳人挑戰)
 // ============================================
 
+// ============================================
+// 2. 初始行程資料 (V23 最終定案版 - 2026/02)
+// ============================================
+
 const INITIAL_ITINERARY_DATA = [
   {
     day: 1,
@@ -233,6 +237,7 @@ const INITIAL_ITINERARY_DATA = [
         desc: '擁有著名的森林吊橋，咖啡廳懸空在溪流與樹林之上。',
         nav: 'Teddu Coffee',
         highlight: '網美吊橋',
+        difficulty: '中 (部分階梯)',
       },
       {
         type: 'transport',
@@ -241,6 +246,7 @@ const INITIAL_ITINERARY_DATA = [
         note: '趁還車前買水、零食。',
         desc: '利用還車前的空檔，在市區超市買水、零食。',
         nav: 'Rimping Supermarket Nim City',
+        difficulty: '低',
       },
       {
         type: 'food',
@@ -319,6 +325,15 @@ const INITIAL_ITINERARY_DATA = [
       },
       {
         type: 'sight',
+        time: '10:50',
+        name: 'Jing Jai Market (二訪)',
+        note: '補貨與早午餐。',
+        desc: '補買昨天看上的東西，順便在舒適的環境吃早午餐。',
+        nav: 'Jing Jai Market Chiang Mai',
+        difficulty: '中',
+      },
+      {
+        type: 'sight',
         time: '13:00',
         name: 'Fah Lanna Spa (古城店)',
         note: '2小時療程，務必預訂。',
@@ -353,6 +368,15 @@ const INITIAL_ITINERARY_DATA = [
         desc: '體驗餵食、觀察大象泥巴浴。午餐的素食 Buffet 意外地非常好吃！',
         nav: 'Elephant Nature Park Office',
         difficulty: '中 (泥土路)',
+      },
+      {
+        type: 'sight',
+        time: '13:30',
+        name: '超長午睡時間',
+        note: '回民宿洗澡補眠。',
+        desc: '回到民宿洗去泥土味，徹底補眠，為晚上米其林大餐做準備。',
+        nav: 'Haiya',
+        difficulty: '零',
       },
       {
         type: 'food',
@@ -442,6 +466,7 @@ const INITIAL_ITINERARY_DATA = [
         desc: '必點招牌「Satan Latte (撒旦拿鐵)」。',
         nav: 'Ristr8to Original',
         highlight: '必喝咖啡',
+        difficulty: '低',
       },
       {
         type: 'food',
@@ -479,6 +504,7 @@ const INITIAL_ITINERARY_DATA = [
         desc: '米其林必比登推薦。皮脆肉嫩多汁的烤小雞。',
         nav: 'SP Chicken',
         highlight: '必吃烤雞',
+        difficulty: '低',
       },
       {
         type: 'food',
@@ -488,6 +514,7 @@ const INITIAL_ITINERARY_DATA = [
         desc: '80年老店，糯米口感極佳。',
         nav: 'Kor Panich Mango Sticky Rice',
         highlight: '必吃甜點',
+        difficulty: '低',
       },
       {
         type: 'sight',
@@ -497,6 +524,7 @@ const INITIAL_ITINERARY_DATA = [
         desc: '蘭納古宅分店環境非常美。2小時療程消除走路疲勞。',
         nav: 'Makkha Health&Spa (Ancient House)',
         highlight: '重要預約',
+        difficulty: '零',
       },
       {
         type: 'food',
@@ -543,6 +571,7 @@ const INITIAL_ITINERARY_DATA = [
         desc: '全清邁最好吃的椰子奶油派。',
         nav: 'Cake Baan Piemsuk',
         highlight: '必吃蛋糕',
+        difficulty: '低',
       },
       {
         type: 'sight',
@@ -570,6 +599,7 @@ const INITIAL_ITINERARY_DATA = [
         desc: '米其林推薦。華麗復古殖民風，非常精緻。',
         nav: 'The House by Ginger',
         highlight: '米其林推薦',
+        difficulty: '低',
       },
       {
         type: 'transport',
@@ -578,6 +608,7 @@ const INITIAL_ITINERARY_DATA = [
         note: '搭乘01:40班機返台。',
         desc: '準備回家囉！',
         nav: 'Chiang Mai International Airport',
+        difficulty: '低',
       },
     ],
   },
@@ -933,6 +964,7 @@ const OutfitGuide = () => {
 };
 
 // update: 地點卡片 (+ㄌ Perplexity 導遊版本 )
+// update: 地點卡片 (加入爛腳指數顯示 V2)
 const LocationCard = ({ item }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -948,6 +980,15 @@ const LocationCard = ({ item }) => {
     }
   };
 
+  // 根據難度回傳顏色
+  const getDifficultyColor = (diff) => {
+    if (!diff) return 'bg-gray-100 text-gray-500';
+    if (diff.includes('低') || diff.includes('零')) return 'bg-green-100 text-green-700';
+    if (diff.includes('中')) return 'bg-yellow-100 text-yellow-800';
+    if (diff.includes('高') || diff.includes('極高')) return 'bg-red-100 text-red-700';
+    return 'bg-gray-100 text-gray-600';
+  };
+
   const handleNav = (e) => {
     e.stopPropagation();
     window.open(
@@ -958,13 +999,9 @@ const LocationCard = ({ item }) => {
     );
   };
 
-  // 新增Perplexity 導遊功能
   const handleAskAI = (e) => {
     e.stopPropagation();
-    // 組合提示詞~ 專注於旅遊實用資訊
     const prompt = `我正在清邁旅遊，地點是「${item.name}」。請告訴我這裡有什麼必吃美食、必買紀念品，或是需要注意的參觀禁忌？請用繁體中文回答。`;
-
-    // 開啟 PP 搜尋
     window.open(
       `https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`,
       '_blank'
@@ -974,8 +1011,9 @@ const LocationCard = ({ item }) => {
   return (
     <div
       onClick={() => setIsExpanded(!isExpanded)}
-      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
-        }`}
+      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${
+        isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
+      }`}
     >
       <div className="p-4 flex items-start gap-4">
         <div className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center border border-stone-100">
@@ -986,6 +1024,7 @@ const LocationCard = ({ item }) => {
             <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wide mb-0.5">
               {item.time}
             </div>
+            {/* 這裡顯示 Highlight 標籤 */}
             {item.highlight && (
               <span className="inline-block px-2 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full border border-amber-100">
                 ★ {item.highlight}
@@ -995,9 +1034,21 @@ const LocationCard = ({ item }) => {
           <h3 className="font-bold text-stone-800 text-lg leading-tight mb-1 truncate pr-2">
             {item.name}
           </h3>
-          <p className="text-sm text-stone-500 leading-relaxed line-clamp-1">
-            {item.note}
-          </p>
+          
+          {/* 在這裡加入爛腳指數的小標籤 (未展開時也看得到) */}
+          {item.difficulty && (
+            <div className="flex items-center gap-2 mt-1">
+               <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
+                 🦵 {item.difficulty}
+               </span>
+               <span className="text-xs text-stone-400 truncate flex-1">{item.note}</span>
+            </div>
+          )}
+          {!item.difficulty && (
+             <p className="text-sm text-stone-500 leading-relaxed line-clamp-1">
+               {item.note}
+             </p>
+          )}
         </div>
         <div className="mt-8 text-stone-300">
           {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -1016,8 +1067,9 @@ const LocationCard = ({ item }) => {
               src={getLocationImage(item.name)}
               alt={item.name}
               onLoad={() => setIsImageLoaded(true)}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'
-                }`}
+              className={`w-full h-full object-cover transition-opacity duration-500 ${
+                isImageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1">
@@ -1027,6 +1079,13 @@ const LocationCard = ({ item }) => {
 
           <div className="p-5 bg-stone-50/50">
             <div className="mb-5">
+              {/* 這裡顯示詳細的爛腳建議 */}
+              {item.difficulty && (
+                 <div className={`mb-3 p-2 rounded-lg text-xs font-bold border ${getDifficultyColor(item.difficulty)} bg-opacity-20 border-opacity-20`}>
+                    ⚠️ 爛腳人注意：{item.difficulty}
+                 </div>
+              )}
+
               <h4 className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
                 <Info size={12} /> 導遊說故事
               </h4>
@@ -1043,7 +1102,6 @@ const LocationCard = ({ item }) => {
                 <Navigation size={16} /> 導航
               </button>
 
-              {/* Perplexity AI 按鈕 */}
               <button
                 onClick={handleAskAI}
                 className="flex items-center justify-center gap-2 py-3 bg-white border border-stone-200 text-stone-600 rounded-xl active:scale-95 transition-all text-sm font-bold hover:bg-stone-50 shadow-sm"
