@@ -2357,17 +2357,17 @@ export default function TravelApp() {
               <div className="w-full relative mb-6 mt-auto">
                 <KeyRound
                   size={18}
-                  className="absolute left-4 top-4 text-emerald-700"
+                  className="absolute left-4 top-4 text-emerald-500"
                 />
                <input
                   type="password"
                   value={inputPwd}
                   onChange={(e) => setInputPwd(e.target.value)}
                   placeholder="Passcode"
-                  // 🚀 修改說明：
-                  // 1. 移除了 backdrop-blur-sm (不要毛玻璃)
-                  // 2. 改成 bg-white/20 (非常透，背景超清楚)
-                  // 3. focus:bg-white/40 (點擊輸入時稍微白一點點，方便辨識)
+                  // 修改：
+                  // 1. 移除了 backdrop-blur-sm 
+                  // 2. 改成 bg-white/20 
+                  // 3. focus:bg-white/40 (點擊輸入時稍微白一點點 方便辨識)
                   className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-4 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-500 transition-all text-emerald-900 placeholder:text-emerald-900/80 text-center font-bold shadow-lg"
                 />
               </div>
