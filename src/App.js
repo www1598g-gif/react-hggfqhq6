@@ -839,7 +839,8 @@ const OutfitGuide = () => {
 // update: 地點卡片 (V5 - 標籤分行顯示，不再擋字)
 // 修正: 爛腳標籤移到時間旁邊 (flex-row layout)
 // update: 地點卡片 (接收 day 和 index 來抓圖片)
-const LocationCard = ({ item, day, index }) => { // 👈 這裡多了 day, index
+// update: 地點卡片 (V11 - 標籤美化 + 跟隨時間)
+const LocationCard = ({ item, day, index }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -852,11 +853,12 @@ const LocationCard = ({ item, day, index }) => { // 👈 這裡多了 day, index
   };
 
   const getDifficultyColor = (diff) => {
+    // 使用柔和一點的背景色，讓視覺更舒服
     if (!diff) return 'bg-gray-100 text-gray-500';
-    if (diff.includes('低') || diff.includes('零')) return 'bg-green-100 text-green-700';
-    if (diff.includes('中')) return 'bg-yellow-100 text-yellow-800';
-    if (diff.includes('高') || diff.includes('極高')) return 'bg-red-100 text-red-700';
-    return 'bg-gray-100 text-gray-600';
+    if (diff.includes('低') || diff.includes('零')) return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+    if (diff.includes('中')) return 'bg-amber-50 text-amber-700 border-amber-100';
+    if (diff.includes('高') || diff.includes('極高')) return 'bg-rose-50 text-rose-700 border-rose-100';
+    return 'bg-gray-50 text-gray-600 border-gray-100';
   };
 
   const handleNav = (e) => {
@@ -880,24 +882,30 @@ const LocationCard = ({ item, day, index }) => { // 👈 這裡多了 day, index
           {getIcon()}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex justify-between items-start mb-1">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">{item.time}</span>
-              {item.difficulty && (
-                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
-                  🦵 {item.difficulty}
+          {/* Header: 時間 + 標籤們 */}
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
+             <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
+               {item.time}
+             </span>
+             
+             {/* 爛腳標籤：改成圓角更明顯的 Tag，放在時間旁 */}
+             {item.difficulty && (
+               <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
+                 {item.difficulty}
+               </span>
+             )}
+
+             {item.highlight && (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-md border border-amber-100 bg-amber-50 text-amber-700 font-bold">
+                  ★ {item.highlight}
                 </span>
-              )}
-            </div>
-            {item.highlight && (
-              <span className="inline-block px-2 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full border border-amber-100 flex-shrink-0 ml-2">
-                ★ {item.highlight}
-              </span>
-            )}
+             )}
           </div>
-          <h3 className="font-bold text-stone-800 text-lg leading-tight mb-2 pr-2">
+
+          <h3 className="font-bold text-stone-800 text-lg leading-tight mb-1 pr-2">
             {item.name}
           </h3>
+          
           <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
              {item.note}
           </p>
@@ -915,13 +923,11 @@ const LocationCard = ({ item, day, index }) => { // 👈 這裡多了 day, index
                 <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
               </div>
             )}
-            {/* 👇 重點在這裡：把 day 和 index 傳給函式 👇 */}
             <img 
               src={getLocationImage(day, index)} 
               alt={item.name} 
               onLoad={() => setIsImageLoaded(true)} 
               className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} 
-              // 這裡加個 onError 預防萬一圖檔名打錯還有個底圖
               onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80'; }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -954,13 +960,21 @@ const LocationCard = ({ item, day, index }) => { // 👈 這裡多了 day, index
 };
 
 // 修正: 滑動速度由 300ms 提升到 100ms
+// 修正: 點擊後將卡片置於「螢幕垂直置中」的位置，且速度極快
 const DayCard = ({ dayData, isOpen, toggle }) => {
   const cardRef = useRef(null);
 
-  const smoothScrollTo = (element, duration = 100) => {
-    const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - 120;
+  const smoothScrollTo = (element, duration = 10) => {
+    // 1. 抓取卡片目前在整個網頁的絕對位置
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+    
+    // 2. 計算偏移量：讓卡片的頂部停在「螢幕高度的一半再往上一點點」
+    // window.innerHeight / 2 = 螢幕正中間
+    // - 60 = 標題高度的一半 (這樣標題就會剛好掛在正中間)
+    const offsetPosition = elementPosition - (window.innerHeight / 2) + 60;
+
     const startPosition = window.pageYOffset;
-    const distance = targetPosition - startPosition;
+    const distance = offsetPosition - startPosition;
     let startTime = null;
 
     const animation = (currentTime) => {
@@ -971,53 +985,100 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
       if (timeElapsed < duration) requestAnimationFrame(animation);
     };
 
+    // 緩動公式 (Ease Out Quart) - 一開始快，最後慢，感覺更順
     const ease = (t, b, c, d) => {
-      t /= d / 2;
-      if (t < 1) return (c / 2) * t * t + b;
+      t /= d;
       t--;
-      return (-c / 2) * (t * (t - 2) - 1) + b;
+      return -c * (t * t * t * t - 1) + b;
     };
+
     requestAnimationFrame(animation);
   };
 
   useEffect(() => {
     if (isOpen && cardRef.current) {
+      // 延遲 50ms 確保 Day 1 收合動畫稍微跑一下，位置重算後再跳轉
       setTimeout(() => {
-        smoothScrollTo(cardRef.current, 10); // 這裡是 100ms
+        smoothScrollTo(cardRef.current, 10); // 10ms 極速
       }, 50);
     }
   }, [isOpen]);
 
   return (
-    <div ref={cardRef} className="mb-3 px-2 scroll-mt-32">
-      <div onClick={toggle} className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]' : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'}`}>
+    <div ref={cardRef} className="mb-3 px-2">
+      <div
+        onClick={toggle}
+        className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${
+          isOpen
+            ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
+            : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
+        }`}
+      >
         <div className="flex items-center gap-4">
-          <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen ? 'bg-stone-700 border-stone-600' : 'bg-stone-50 border-stone-200'}`}>
-            <span className={`text-[10px] font-bold uppercase ${isOpen ? 'text-stone-400' : 'text-stone-400'}`}>Day</span>
-            <span className={`text-xl font-serif font-bold ${isOpen ? 'text-amber-400' : 'text-stone-800'}`}>{dayData.day}</span>
+          <div
+            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${
+              isOpen
+                ? 'bg-stone-700 border-stone-600'
+                : 'bg-stone-50 border-stone-200'
+            }`}
+          >
+            <span
+              className={`text-[10px] font-bold uppercase ${
+                isOpen ? 'text-stone-400' : 'text-stone-400'
+              }`}
+            >
+              Day
+            </span>
+            <span
+              className={`text-xl font-serif font-bold ${
+                isOpen ? 'text-amber-400' : 'text-stone-800'
+              }`}
+            >
+              {dayData.day}
+            </span>
           </div>
           <div>
-            <div className={`text-xs font-bold mb-0.5 ${isOpen ? 'text-stone-400' : 'text-stone-500'}`}>{dayData.displayDate}</div>
-            <div className="font-bold text-lg leading-tight">{dayData.title}</div>
+            <div
+              className={`text-xs font-bold mb-0.5 ${
+                isOpen ? 'text-stone-400' : 'text-stone-500'
+              }`}
+            >
+              {dayData.displayDate}
+            </div>
+            <div className="font-bold text-lg leading-tight">
+              {dayData.title}
+            </div>
           </div>
         </div>
         <div className="text-right">
           <div className="flex items-center justify-end gap-1 mb-1">
-            {dayData.weather.realData && <Signal size={10} className="text-green-500 animate-pulse" />}
-            <span className={`text-sm font-medium ${isOpen ? 'text-stone-300' : 'text-stone-600'}`}>{dayData.weather.temp}</span>
+            {dayData.weather.realData && (
+              <Signal size={10} className="text-green-500 animate-pulse" />
+            )}
+            <span
+              className={`text-sm font-medium ${
+                isOpen ? 'text-stone-300' : 'text-stone-600'
+              }`}
+            >
+              {dayData.weather.temp}
+            </span>
           </div>
-          {isOpen ? <ChevronUp size={20} className="text-stone-500 ml-auto" /> : <ChevronDown size={20} className="text-stone-300 ml-auto" />}
+          {isOpen ? (
+            <ChevronUp size={20} className="text-stone-500 ml-auto" />
+          ) : (
+            <ChevronDown size={20} className="text-stone-300 ml-auto" />
+          )}
         </div>
       </div>
+
       {isOpen && (
         <div className="mt-4 pl-4 border-l-2 border-stone-200/50 space-y-4 pb-4 animate-fadeIn">
           {dayData.locations.map((loc, idx) => (
-            <LocationCard 
-              key={idx} 
+            <LocationCard
+              key={idx}
               item={loc}
-              // 👇 這裡要加上這兩行 👇
-              day={dayData.day} 
-              index={idx + 1} 
+              day={dayData.day}
+              index={idx + 1}
             />
           ))}
         </div>
