@@ -2321,11 +2321,12 @@ export default function TravelApp() {
             </div>
 
             {/* 中央內容區 *****/}
-            <div
-              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-35 pb-20 transition-opacity duration-500 ${
-                isUnlocking ? 'opacity-0' : 'opacity-100'
-              }`}
-            >
+            {/* 中央內容區 */}
+          <div
+            className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-33 pb-20 transition-opacity duration-500 ${
+              isUnlocking ? 'opacity-0' : 'opacity-100'
+            }`}
+          >
               <div
                 onMouseDown={handlePressStart}
                 onMouseUp={handlePressEnd}
