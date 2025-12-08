@@ -974,9 +974,8 @@ const LocationCard = ({ item }) => {
   return (
     <div
       onClick={() => setIsExpanded(!isExpanded)}
-      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${
-        isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
-      }`}
+      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
+        }`}
     >
       <div className="p-4 flex items-start gap-4">
         <div className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center border border-stone-100">
@@ -1017,9 +1016,8 @@ const LocationCard = ({ item }) => {
               src={getLocationImage(item.name)}
               alt={item.name}
               onLoad={() => setIsImageLoaded(true)}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${
-                isImageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
+              className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1">
@@ -1075,40 +1073,35 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
     <div ref={cardRef} className="mb-3 px-2 scroll-mt-32">
       <div
         onClick={toggle}
-        className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${
-          isOpen
+        className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen
             ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
             : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
-        }`}
+          }`}
       >
         <div className="flex items-center gap-4">
           <div
-            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${
-              isOpen
+            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen
                 ? 'bg-stone-700 border-stone-600'
                 : 'bg-stone-50 border-stone-200'
-            }`}
+              }`}
           >
             <span
-              className={`text-[10px] font-bold uppercase ${
-                isOpen ? 'text-stone-400' : 'text-stone-400'
-              }`}
+              className={`text-[10px] font-bold uppercase ${isOpen ? 'text-stone-400' : 'text-stone-400'
+                }`}
             >
               Day
             </span>
             <span
-              className={`text-xl font-serif font-bold ${
-                isOpen ? 'text-amber-400' : 'text-stone-800'
-              }`}
+              className={`text-xl font-serif font-bold ${isOpen ? 'text-amber-400' : 'text-stone-800'
+                }`}
             >
               {dayData.day}
             </span>
           </div>
           <div>
             <div
-              className={`text-xs font-bold mb-0.5 ${
-                isOpen ? 'text-stone-400' : 'text-stone-500'
-              }`}
+              className={`text-xs font-bold mb-0.5 ${isOpen ? 'text-stone-400' : 'text-stone-500'
+                }`}
             >
               {dayData.displayDate}
             </div>
@@ -1124,9 +1117,8 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
               <Signal size={10} className="text-green-500 animate-pulse" />
             )}
             <span
-              className={`text-sm font-medium ${
-                isOpen ? 'text-stone-300' : 'text-stone-600'
-              }`}
+              className={`text-sm font-medium ${isOpen ? 'text-stone-300' : 'text-stone-600'
+                }`}
             >
               {dayData.weather.temp}
             </span>
@@ -1174,11 +1166,10 @@ const FlightCard = ({
       <div className="relative z-10">
         <div className="flex justify-between items-center mb-4">
           <span
-            className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${
-              type === '去程'
+            className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${type === '去程'
                 ? 'bg-amber-100 text-amber-800'
                 : 'bg-stone-100 text-stone-600'
-            }`}
+              }`}
           >
             {type}
           </span>
@@ -1265,10 +1256,10 @@ const FlightCard = ({
 // 修正後的 CurrencySection (補回遺失的 thb 變數)
 // ============================================
 const CurrencySection = () => {
-  const [rate, setRate] = useState(1.08); 
+  const [rate, setRate] = useState(1.08);
   const [twd, setTwd] = useState('');
   // 👇👇👇 就是補上這一行！ 👇👇👇
-  const [thb, setThb] = useState(''); 
+  const [thb, setThb] = useState('');
   const [lastUpdate, setLastUpdate] = useState('');
 
   // 抓取即時匯率
@@ -1398,11 +1389,10 @@ const CurrencySection = () => {
         {exchanges.map((ex, i) => (
           <div
             key={i}
-            className={`flex justify-between items-center p-3 rounded-xl border transition-all ${
-              i < 3
+            className={`flex justify-between items-center p-3 rounded-xl border transition-all ${i < 3
                 ? 'bg-white border-stone-200 shadow-sm'
                 : 'bg-stone-50 border-stone-100 opacity-80'
-            }`}
+              }`}
           >
             <div>
               <div className="flex items-center gap-2 mb-0.5">
@@ -1952,11 +1942,10 @@ const PackingPage = ({ isKonamiActive }) => {
             <button
               key={user}
               onClick={() => setCurrentUser(user)}
-              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${
-                currentUser === user
+              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
                   ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
                   : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
-              }`}
+                }`}
             >
               {/* 判斷：如果有觸發彩蛋，就顯示圖片；否則顯示文字 */}
               {isKonamiActive ? (
@@ -1965,9 +1954,8 @@ const PackingPage = ({ isKonamiActive }) => {
                   <img
                     src={CHARACTER_MAP[user]}
                     alt={user}
-                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${
-                      user === '學弟' ? 'scale-125' : ''
-                    }`}
+                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${user === '學弟' ? 'scale-125' : ''
+                      }`}
                   />
                   <span className="text-[10px] opacity-80">{user}</span>
                 </div>
@@ -2034,27 +2022,24 @@ const PackingPage = ({ isKonamiActive }) => {
               <div
                 key={index}
                 onClick={() => toggleItem(currentUser, index)}
-                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${
-                  item.checked
+                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${item.checked
                     ? 'bg-stone-100 border-transparent opacity-60'
                     : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
-                }`}
+                  }`}
               >
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${
-                    item.checked
+                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${item.checked
                       ? 'bg-green-500 border-green-500 text-white'
                       : 'border-stone-300 bg-stone-50'
-                  }`}
+                    }`}
                 >
                   {item.checked && <CheckCircle size={14} strokeWidth={3} />}
                 </div>
                 <span
-                  className={`flex-1 font-medium ${
-                    item.checked
+                  className={`flex-1 font-medium ${item.checked
                       ? 'text-stone-400 line-through decoration-stone-400'
                       : 'text-stone-700'
-                  }`}
+                    }`}
                 >
                   {item.name}
                 </span>
@@ -2296,13 +2281,14 @@ export default function TravelApp() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-stone-900">
           {/* 左半邊葉子門 */}
           <div
-            className={`absolute top-0 left-0 w-1/2 h-full bg-cover bg-left transition-transform duration-1000 ease-in-out ${
-              isUnlocking ? '-translate-x-full' : 'translate-x-0'
-            }`}
+            className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'
+              }`}
             style={{
               backgroundImage: `url(${JUNGLE_BG})`,
-              backgroundSize: '200% 100%',
-              backgroundPosition: 'bottom left',
+              backgroundSize: '200% auto',
+              backgroundPosition: 'left center',
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: '#1c1917'
             }}
           >
             <div className="absolute inset-0 bg-black/20"></div>
@@ -2310,13 +2296,14 @@ export default function TravelApp() {
 
           {/* 右半邊葉子門 */}
           <div
-            className={`absolute top-0 right-0 w-1/2 h-full bg-cover bg-right transition-transform duration-1000 ease-in-out ${
-              isUnlocking ? 'translate-x-full' : 'translate-x-0'
-            }`}
+            className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'
+              }`}
             style={{
               backgroundImage: `url(${JUNGLE_BG})`,
-              backgroundSize: '200% 100%',
-              backgroundPosition: 'bottom right',
+              backgroundSize: '200% auto',
+              backgroundPosition: 'right center',
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: '#1c1917'
             }}
           >
             <div className="absolute inset-0 bg-black/20"></div>
@@ -2324,9 +2311,8 @@ export default function TravelApp() {
 
           {/* 中央內容區 */}
           <div
-            className={`relative z-10 flex flex-col items-center w-full px-8 transition-opacity duration-500 ${
-              isUnlocking ? 'opacity-0' : 'opacity-100'
-            }`}
+            className={`relative z-10 flex flex-col items-center w-full px-8 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'
+              }`}
           >
             {/* 優化加入問號按鈕加上 touch-none 和禁止右鍵 防止長按選取 */}
             <div
@@ -2480,18 +2466,16 @@ export default function TravelApp() {
       <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-4 pb-8 z-40 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)]">
         <button
           onClick={() => setActiveTab('itinerary')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${
-            activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'
-          }`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'
+            }`}
         >
           <MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
           <span className="text-[10px] font-bold tracking-wide">行程</span>
         </button>
         <button
           onClick={() => setActiveTab('packing')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${
-            activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'
-          }`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'
+            }`}
         >
           <CheckCircle
             size={22}
@@ -2501,9 +2485,8 @@ export default function TravelApp() {
         </button>
         <button
           onClick={() => setActiveTab('utils')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${
-            activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'
-          }`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'
+            }`}
         >
           <Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} />
           <span className="text-[10px] font-bold tracking-wide">工具</span>
