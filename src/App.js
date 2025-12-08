@@ -2115,7 +2115,7 @@ export default function TravelApp() {
 
   // 使用俯視的熱帶叢林 之後再來改圖源
   const JUNGLE_BG =
-    'https://img.redocn.com/sheji/20240329/lvseconglin_13272115.jpg';
+    process.env.PUBLIC_URL + '/images/jungle.jpeg';
 
   // 1. 搖晃彩蛋邏輯
   useEffect(() => {
