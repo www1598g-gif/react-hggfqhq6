@@ -2166,6 +2166,7 @@ const PackingPage = ({ isKonamiActive }) => {
 // Main App (20261208 )
 // Main App (20261208 回歸穩定版 + 黑底防破圖)
 // Main App (20261209回歸穩定版：修復白底透出、移除頂部陰影、調整導覽列高度)
+// Main App (V8 - 最終回退修復版：移除陰影、降低選單、修復白底)
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2361,8 +2362,9 @@ export default function TravelApp() {
   };
 
   return (
-    // 修正1: 拿掉 shadow-2xl，解決頂部陰影問題
-    <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
+    // 修正1: 拿掉了 shadow-2xl (解決頂部陰影)
+    // 修正2: 加上了 bg-stone-900 (解決輸入密碼時透出白底，現在會透出黑底，看不出來)
+    <div className="min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none bg-stone-900">
       
       {/* 橫向模式遮罩 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
@@ -2371,22 +2373,21 @@ export default function TravelApp() {
         <p className="text-xs text-stone-500 mt-2">Please rotate your phone</p>
       </div>
 
-      {/* 鎖定畫面 */}
+      {/* 鎖定畫面 - 回歸你最喜歡的佈局 */}
       {isLocked && (
-        // 修正2: 這裡加上 bg-stone-900，並用 fixed inset-0 蓋住一切。這樣就算鍵盤彈出，底下也是黑的，不會有白底。
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900 h-screen w-full">
           
-          {/* 內層容器限制 max-w-md (手機寬度) */}
+          {/* 內層容器 */}
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
             
-            {/* 左半邊葉子門 */}
+            {/* 左半邊葉子門 - 回歸 200% 100% 完美拼接 */}
             <div
               className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
                 isUnlocking ? '-translate-x-full' : 'translate-x-0'
               }`}
               style={{
                 backgroundImage: `url(${JUNGLE_BG})`,
-                backgroundSize: '200% 120%',
+                backgroundSize: '200% 100%',
                 backgroundPosition: 'left center',
                 backgroundRepeat: 'no-repeat',
               }}
@@ -2401,7 +2402,7 @@ export default function TravelApp() {
               }`}
               style={{
                 backgroundImage: `url(${JUNGLE_BG})`,
-                backgroundSize: '200% 120%',
+                backgroundSize: '200% 100%',
                 backgroundPosition: 'right center',
                 backgroundRepeat: 'no-repeat',
               }}
@@ -2409,7 +2410,7 @@ export default function TravelApp() {
               <div className="absolute inset-0 bg-black/20"></div>
             </div>
 
-            {/* 中央內容區 - 回到你最習慣的佈局 */}
+            {/* 中央內容區 - 恢復原本的高度結構 */}
             <div
               className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${
                 isUnlocking ? 'opacity-0' : 'opacity-100'
@@ -2443,7 +2444,7 @@ export default function TravelApp() {
                 Jungle Adventure
               </p>
 
-              {/* mt-auto 確保它在底部 */}
+              {/* mt-auto: 確保輸入框沉在下面 */}
               <div className="w-full relative mb-6 mt-auto">
                 <KeyRound
                   size={18}
@@ -2504,36 +2505,38 @@ export default function TravelApp() {
         </div>
       )}
 
-      {/* 主程式 (unlock後) */}
-      <WeatherHero />
+      {/* 主程式內容 (背景色 bg-[#FDFBF7] 只加在這裡面，避免影響鎖定畫面) */}
+      <div className="bg-[#FDFBF7] min-h-screen">
+        <WeatherHero />
 
-      <main className="pb-28">
-        {activeTab === 'itinerary' && (
-          <div className="pb-4">
-            <OutfitGuide />
-            <div className="p-4 mt-2">
-              {itinerary.map((day, idx) => (
-                <DayCard
-                  key={day.day}
-                  dayData={day}
-                  isOpen={openDay === idx}
-                  toggle={() => setOpenDay(openDay === idx ? -1 : idx)}
-                />
-              ))}
-              <div className="text-center text-xs text-stone-400 mt-12 mb-8 font-serif italic">
-                — Journey to Chiang Mai —
+        <main className="pb-28">
+          {activeTab === 'itinerary' && (
+            <div className="pb-4">
+              <OutfitGuide />
+              <div className="p-4 mt-2">
+                {itinerary.map((day, idx) => (
+                  <DayCard
+                    key={day.day}
+                    dayData={day}
+                    isOpen={openDay === idx}
+                    toggle={() => setOpenDay(openDay === idx ? -1 : idx)}
+                  />
+                ))}
+                <div className="text-center text-xs text-stone-400 mt-12 mb-8 font-serif italic">
+                  — Journey to Chiang Mai —
+                </div>
               </div>
+              <FloatingStatus itinerary={itinerary} />
             </div>
-            <FloatingStatus itinerary={itinerary} />
-          </div>
-        )}
+          )}
 
-        {activeTab === 'packing' && (
-          <PackingPage isKonamiActive={isKonamiActive} />
-        )}
+          {activeTab === 'packing' && (
+            <PackingPage isKonamiActive={isKonamiActive} />
+          )}
 
-        {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} />}
-      </main>
+          {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} />}
+        </main>
+      </div>
 
       {/* 搖晃彩蛋 */}
       {showShakeEgg && (
@@ -2565,8 +2568,8 @@ export default function TravelApp() {
       )}
 
       {/* 底部導覽列 */}
-      {/* 修正3: pb-8 改成 pb-6，讓導覽列沉下去一點，不要這麼高 */}
-      <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 pb-6 z-40 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)]">
+      {/* 修正3: py-3 pb-4 (原本是 pb-8，這裡改回 pb-4 降低高度) */}
+      <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 pb-4 z-40">
         <button
           onClick={() => setActiveTab('itinerary')}
           className={`flex flex-col items-center gap-1.5 transition-colors ${
