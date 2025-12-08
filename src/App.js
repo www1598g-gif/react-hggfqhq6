@@ -40,119 +40,13 @@ import {
 // ============================================
 // 1.圖片XD
 // ============================================
-const getLocationImage = (locationName) => {
-  const name = locationName.toLowerCase();
-
-  // use Unsplash
-
-  // Day 1: 機場
-  if (name.includes('機場'))
-    return 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80';
-  // Day 1: Mae Kampong (山林村落)
-  if (name.includes('mae kampong') || name.includes('前往'))
-    return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80';
-  // Day 1: 民宿火鍋
-  if (
-    name.includes('portare') ||
-    name.includes('涮涮鍋') ||
-    name.includes('晚餐')
-  )
-    return 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=800&q=80';
-
-  // Day 2: 日出觀景
-  if (name.includes('日出') || name.includes('kew fin'))
-    return 'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=800&q=80';
-  // Day 2: 懸崖咖啡
-  if (name.includes('teddu') || name.includes('懸崖'))
-    return 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80';
-  // Day 2: 超市
-  if (name.includes('rimping') || name.includes('採買'))
-    return 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800&q=80';
-  // Day 2: 夜市
-  if (name.includes('kad manee'))
-    return 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80';
-
-  // Day 3: Jing Jai 文青市集
-  if (name.includes('jing jai'))
-    return 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=800&q=80';
-  // Day 3: Chamcha 雨林市集
-  if (name.includes('chamcha'))
-    return 'https://images.unsplash.com/photo-1567696911980-2eed69a46042?w=800&q=80';
-  // Day 3: 稀飯熱炒
-  if (name.includes('khao tom') || name.includes('稀飯'))
-    return 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800&q=80';
-
-  // Day 4: 椰子市集
-  if (name.includes('coconut market'))
-    return 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=80';
-  // Day 4: SPA
-  if (name.includes('fah lanna') || name.includes('spa'))
-    return 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80';
-  // Day 4: 週日夜市
-  if (name.includes('sunday'))
-    return 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80';
-
-  // Day 5: 大象保育園
-  if (name.includes('elephant'))
-    return 'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=800&q=80';
-  // Day 5: 米其林餐廳
-  if (name.includes('huen muan'))
-    return 'https://images.unsplash.com/photo-1517244683847-7456b63c5969?w=800&q=80';
-
-  // Day 6: 茵他儂國家公園
-  if (name.includes('doi inthanon'))
-    return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80';
-  // Day 6: 帝王餐宴
-  if (name.includes('khantoke') || name.includes('帝王'))
-    return 'https://images.unsplash.com/photo-1528712306091-ed0763094c98?w=800&q=80';
-
-  // Day 7: 料理課程
-  if (name.includes('cooking'))
-    return 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80';
-  // Day 7: 藝術村
-  if (name.includes('baan kang'))
-    return 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=800&q=80';
-  // Day 7: 悟孟寺
-  if (name.includes('wat umong'))
-    return 'https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80';
-  // Day 7: 冠軍咖啡
-  if (name.includes('ristr8to') || name.includes('coffee'))
-    return 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800&q=80';
-  // Day 7: 燒烤餐廳
-  if (name.includes('tong tem'))
-    return 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=800&q=80';
-
-  // Day 8: 柴迪隆寺
-  if (name.includes('wat chedi') || name.includes('柴迪隆'))
-    return 'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=800&q=80';
-  // Day 8: 烤雞
-  if (name.includes('sp chicken') || name.includes('烤雞'))
-    return 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=800&q=80';
-  // Day 8: 芒果糯米飯
-  if (name.includes('kor panich') || name.includes('芒果'))
-    return 'https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=800&q=80';
-  // Day 8: Makkha SPA
-  if (name.includes('makkha'))
-    return 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80';
-  // Day 8: 泰式料理
-  if (name.includes('aroon'))
-    return 'https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4?w=800&q=80';
-  // Day 8: 泰拳
-  if (name.includes('boxing') || name.includes('泰拳'))
-    return 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=800&q=80';
-
-  // Day 9: 傳統市場
-  if (name.includes('warorot'))
-    return 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=80';
-  // Day 9: 甜點蛋糕
-  if (name.includes('cake'))
-    return 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80';
-  // Day 9: 高級餐廳
-  if (name.includes('ginger'))
-    return 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80';
-
-  // 萬用預設圖 - 清邁風景
-  return 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
+// ============================================
+// 1. 圖片處理 (改為自動對應 dayX_Y.jpg)
+// ============================================
+const getLocationImage = (day, index) => {
+  // 直接回傳對應的檔案路徑
+  // 例如 Day 1 第 1 個行程 -> /images/day1_1.jpg
+  return process.env.PUBLIC_URL + `/images/day${day}_${index}.jpg`;
 };
 
 // ============================================
@@ -944,7 +838,8 @@ const OutfitGuide = () => {
 // update地點卡片移除內部重複標示)
 // update: 地點卡片 (V5 - 標籤分行顯示，不再擋字)
 // 修正: 爛腳標籤移到時間旁邊 (flex-row layout)
-const LocationCard = ({ item }) => {
+// update: 地點卡片 (接收 day 和 index 來抓圖片)
+const LocationCard = ({ item, day, index }) => { // 👈 這裡多了 day, index
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
@@ -985,30 +880,24 @@ const LocationCard = ({ item }) => {
           {getIcon()}
         </div>
         <div className="flex-1 min-w-0">
-          {/* Header: 時間 + 爛腳標籤 + Highlight */}
-          <div className="flex flex-wrap justify-between items-start mb-1">
-             <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
-                  {item.time}
+          <div className="flex justify-between items-start mb-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">{item.time}</span>
+              {item.difficulty && (
+                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
+                  🦵 {item.difficulty}
                 </span>
-                {/* 爛腳標籤在這裡！ */}
-                {item.difficulty && (
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
-                    🦵 {item.difficulty}
-                  </span>
-                )}
-             </div>
-             {item.highlight && (
-                <span className="inline-block px-2 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full border border-amber-100 flex-shrink-0 ml-2">
-                  ★ {item.highlight}
-                </span>
-             )}
+              )}
+            </div>
+            {item.highlight && (
+              <span className="inline-block px-2 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full border border-amber-100 flex-shrink-0 ml-2">
+                ★ {item.highlight}
+              </span>
+            )}
           </div>
-
           <h3 className="font-bold text-stone-800 text-lg leading-tight mb-2 pr-2">
             {item.name}
           </h3>
-          
           <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
              {item.note}
           </p>
@@ -1026,7 +915,15 @@ const LocationCard = ({ item }) => {
                 <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
               </div>
             )}
-            <img src={getLocationImage(item.name)} alt={item.name} onLoad={() => setIsImageLoaded(true)} className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} />
+            {/* 👇 重點在這裡：把 day 和 index 傳給函式 👇 */}
+            <img 
+              src={getLocationImage(day, index)} 
+              alt={item.name} 
+              onLoad={() => setIsImageLoaded(true)} 
+              className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} 
+              // 這裡加個 onError 預防萬一圖檔名打錯還有個底圖
+              onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80'; }}
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1">
               <Camera size={10} /> Image for reference
@@ -1115,7 +1012,13 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
       {isOpen && (
         <div className="mt-4 pl-4 border-l-2 border-stone-200/50 space-y-4 pb-4 animate-fadeIn">
           {dayData.locations.map((loc, idx) => (
-            <LocationCard key={idx} item={loc} />
+            <LocationCard 
+              key={idx} 
+              item={loc}
+              // 👇 這裡要加上這兩行 👇
+              day={dayData.day} 
+              index={idx + 1} 
+            />
           ))}
         </div>
       )}
