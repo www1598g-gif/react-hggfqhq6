@@ -1261,9 +1261,14 @@ const FlightCard = ({
 // ============================================
 // 修正後的 CurrencySection
 // ============================================
+// ============================================
+// 修正後的 CurrencySection (補回遺失的 thb 變數)
+// ============================================
 const CurrencySection = () => {
-  const [rate, setRate] = useState(1.08); // 預設匯率 (避免 API 掛掉 在這放綠色乖乖ㄌ)
+  const [rate, setRate] = useState(1.08); 
   const [twd, setTwd] = useState('');
+  // 👇👇👇 就是補上這一行！ 👇👇👇
+  const [thb, setThb] = useState(''); 
   const [lastUpdate, setLastUpdate] = useState('');
 
   // 抓取即時匯率
