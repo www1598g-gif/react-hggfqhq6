@@ -2309,7 +2309,7 @@ export default function TravelApp() {
 
           {/* 中央內容區 */}
           <div
-            className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-32 pb-20 transition-opacity duration-500 ${
+            className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 pb-20 transition-opacity duration-500 ${
               isUnlocking ? 'opacity-0' : 'opacity-100'
             }`}
           >
