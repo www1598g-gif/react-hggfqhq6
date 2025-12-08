@@ -1011,9 +1011,8 @@ const LocationCard = ({ item }) => {
   return (
     <div
       onClick={() => setIsExpanded(!isExpanded)}
-      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${
-        isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
-      }`}
+      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
+        }`}
     >
       <div className="p-4 flex items-start gap-4">
         <div className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center border border-stone-100">
@@ -1034,20 +1033,24 @@ const LocationCard = ({ item }) => {
           <h3 className="font-bold text-stone-800 text-lg leading-tight mb-1 truncate pr-2">
             {item.name}
           </h3>
-          
+
           {/* 在這裡加入爛腳指數的小標籤 (未展開時也看得到) */}
+          {/* 修正防止擋住文字 */}
           {item.difficulty && (
-            <div className="flex items-center gap-2 mt-1">
-               <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
-                 🦵 {item.difficulty}
-               </span>
-               <span className="text-xs text-stone-400 truncate flex-1">{item.note}</span>
+            // 
+            <div className="flex items-center gap-2 mt-1 min-w-0">
+              {/* 修改加入 flex-shrink-0*/}
+              <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 flex-shrink-0 ${getDifficultyColor(item.difficulty)}`}>
+                🦵 {item.difficulty}
+              </span>
+              {/* 修改文字部分保持 truncate */}
+              <span className="text-xs text-stone-400 truncate flex-1">{item.note}</span>
             </div>
           )}
           {!item.difficulty && (
-             <p className="text-sm text-stone-500 leading-relaxed line-clamp-1">
-               {item.note}
-             </p>
+            <p className="text-sm text-stone-500 leading-relaxed line-clamp-1">
+              {item.note}
+            </p>
           )}
         </div>
         <div className="mt-8 text-stone-300">
@@ -1067,9 +1070,8 @@ const LocationCard = ({ item }) => {
               src={getLocationImage(item.name)}
               alt={item.name}
               onLoad={() => setIsImageLoaded(true)}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${
-                isImageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
+              className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1">
@@ -1081,9 +1083,9 @@ const LocationCard = ({ item }) => {
             <div className="mb-5">
               {/* 這裡顯示詳細的爛腳建議 */}
               {item.difficulty && (
-                 <div className={`mb-3 p-2 rounded-lg text-xs font-bold border ${getDifficultyColor(item.difficulty)} bg-opacity-20 border-opacity-20`}>
-                    ⚠️ 爛腳人注意：{item.difficulty}
-                 </div>
+                <div className={`mb-3 p-2 rounded-lg text-xs font-bold border ${getDifficultyColor(item.difficulty)} bg-opacity-20 border-opacity-20`}>
+                  ⚠️ 爛腳人注意：{item.difficulty}
+                </div>
               )}
 
               <h4 className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
@@ -1118,12 +1120,40 @@ const LocationCard = ({ item }) => {
 
 const DayCard = ({ dayData, isOpen, toggle }) => {
   const cardRef = useRef(null);
+  // 👇👇👇 1. 把這個函式貼在這裡 (這是新加入的捲動功能) 👇👇👇
+  const smoothScrollTo = (element, duration = 300) => {
+    // -120 是為了留一點頭部空間 (避開上面的天氣卡片)
+    const targetPosition = element.getBoundingClientRect().top + window.pageYOffset - 120;
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    let startTime = null;
 
+    const animation = (currentTime) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const run = ease(timeElapsed, startPosition, distance, duration);
+      window.scrollTo(0, run);
+      if (timeElapsed < duration) requestAnimationFrame(animation);
+    };
+
+    // 緩動公式 (讓滑動順暢，不是生硬的直線)
+    const ease = (t, b, c, d) => {
+      t /= d / 2;
+      if (t < 1) return (c / 2) * t * t + b;
+      t--;
+      return (-c / 2) * (t * (t - 2) - 1) + b;
+    };
+
+    requestAnimationFrame(animation);
+  };
   useEffect(() => {
     if (isOpen && cardRef.current) {
+      //  setTimeout(() => {
+      //   cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // }, 20);
       setTimeout(() => {
-        cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 20);
+        smoothScrollTo(cardRef.current, 300); // 想更快就把 300 改成 150
+      }, 50);
     }
   }, [isOpen]);
 
@@ -1132,15 +1162,15 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
       <div
         onClick={toggle}
         className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen
-            ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
-            : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
+          ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
+          : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
           }`}
       >
         <div className="flex items-center gap-4">
           <div
             className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen
-                ? 'bg-stone-700 border-stone-600'
-                : 'bg-stone-50 border-stone-200'
+              ? 'bg-stone-700 border-stone-600'
+              : 'bg-stone-50 border-stone-200'
               }`}
           >
             <span
@@ -1225,8 +1255,8 @@ const FlightCard = ({
         <div className="flex justify-between items-center mb-4">
           <span
             className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${type === '去程'
-                ? 'bg-amber-100 text-amber-800'
-                : 'bg-stone-100 text-stone-600'
+              ? 'bg-amber-100 text-amber-800'
+              : 'bg-stone-100 text-stone-600'
               }`}
           >
             {type}
@@ -1448,8 +1478,8 @@ const CurrencySection = () => {
           <div
             key={i}
             className={`flex justify-between items-center p-3 rounded-xl border transition-all ${i < 3
-                ? 'bg-white border-stone-200 shadow-sm'
-                : 'bg-stone-50 border-stone-100 opacity-80'
+              ? 'bg-white border-stone-200 shadow-sm'
+              : 'bg-stone-50 border-stone-100 opacity-80'
               }`}
           >
             <div>
@@ -2001,8 +2031,8 @@ const PackingPage = ({ isKonamiActive }) => {
               key={user}
               onClick={() => setCurrentUser(user)}
               className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
-                  ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
-                  : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
+                ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
+                : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
                 }`}
             >
               {/* 判斷：如果有觸發彩蛋，就顯示圖片；否則顯示文字 */}
@@ -2081,22 +2111,22 @@ const PackingPage = ({ isKonamiActive }) => {
                 key={index}
                 onClick={() => toggleItem(currentUser, index)}
                 className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${item.checked
-                    ? 'bg-stone-100 border-transparent opacity-60'
-                    : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
+                  ? 'bg-stone-100 border-transparent opacity-60'
+                  : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
                   }`}
               >
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${item.checked
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : 'border-stone-300 bg-stone-50'
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'border-stone-300 bg-stone-50'
                     }`}
                 >
                   {item.checked && <CheckCircle size={14} strokeWidth={3} />}
                 </div>
                 <span
                   className={`flex-1 font-medium ${item.checked
-                      ? 'text-stone-400 line-through decoration-stone-400'
-                      : 'text-stone-700'
+                    ? 'text-stone-400 line-through decoration-stone-400'
+                    : 'text-stone-700'
                     }`}
                 >
                   {item.name}
@@ -2331,7 +2361,7 @@ export default function TravelApp() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] font-sans text-stone-800 max-w-md mx-auto relative shadow-2xl overflow-hidden overscroll-behavior-none select-none">
-      
+
       {/* 橫向模式遮罩 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
@@ -2341,16 +2371,15 @@ export default function TravelApp() {
 
       {/* 鎖定畫面 */}
       {isLocked && (
-        <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900">
-          
+        <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900 h-[100dvh] w-full">
+
           {/* 內層容器限制 max-w-md (手機寬度) */}
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
-            
+
             {/* 左半邊葉子門 */}
             <div
-              className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
-                isUnlocking ? '-translate-x-full' : 'translate-x-0'
-              }`}
+              className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'
+                }`}
               style={{
                 backgroundImage: `url(${JUNGLE_BG})`,
                 backgroundSize: '200% 120%',
@@ -2363,9 +2392,8 @@ export default function TravelApp() {
 
             {/* 右半邊葉子門 */}
             <div
-              className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
-                isUnlocking ? 'translate-x-full' : 'translate-x-0'
-              }`}
+              className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'
+                }`}
               style={{
                 backgroundImage: `url(${JUNGLE_BG})`,
                 backgroundSize: '200% 120%',
@@ -2381,9 +2409,8 @@ export default function TravelApp() {
               // 🚀 關鍵修改在這裡：
               // 1. pb-8 (原本是 pb-20，太高了，改成 8 讓它沉到底部)
               // 2. pt-40 (上方留白保持 40，讓標題維持在上面)
-              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 pb-8 transition-opacity duration-500 ${
-                isUnlocking ? 'opacity-0' : 'opacity-100'
-              }`}
+              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 pb-8 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'
+                }`}
             >
               <div
                 onMouseDown={handlePressStart}
@@ -2538,18 +2565,16 @@ export default function TravelApp() {
       <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-4 pb-8 z-40 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)]">
         <button
           onClick={() => setActiveTab('itinerary')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${
-            activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'
-          }`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'
+            }`}
         >
           <MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
           <span className="text-[10px] font-bold tracking-wide">行程</span>
         </button>
         <button
           onClick={() => setActiveTab('packing')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${
-            activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'
-          }`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'
+            }`}
         >
           <CheckCircle
             size={22}
@@ -2559,9 +2584,8 @@ export default function TravelApp() {
         </button>
         <button
           onClick={() => setActiveTab('utils')}
-          className={`flex flex-col items-center gap-1.5 transition-colors ${
-            activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'
-          }`}
+          className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'
+            }`}
         >
           <Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} />
           <span className="text-[10px] font-bold tracking-wide">工具</span>
