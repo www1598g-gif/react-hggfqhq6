@@ -2278,7 +2278,7 @@ export default function TravelApp() {
     <div className="min-h-screen bg-[#FDFBF7] font-sans text-stone-800 max-w-md mx-auto relative shadow-2xl overflow-hidden overscroll-behavior-none select-none">
       {/* 鎖定畫面 */}
       {isLocked && (
-       <div className="fixed inset-0 z-[100] flex items-start justify-center pt-80 overflow-hidden bg-stone-900">
+       <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-stone-900">
           {/* 左半邊葉子門 */}
           <div
             className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'
@@ -2309,8 +2309,9 @@ export default function TravelApp() {
 
           {/* 中央內容區 */}
           <div
-            className={`relative z-10 flex flex-col items-center w-full px-8 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'
-              }`}
+            className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-32 pb-20 transition-opacity duration-500 ${
+              isUnlocking ? 'opacity-0' : 'opacity-100'
+            }`}
           >
             {/* 優化加入問號按鈕加上 touch-none 和禁止右鍵 防止長按選取 */}
             <div
@@ -2341,7 +2342,7 @@ export default function TravelApp() {
               Jungle Adventure
             </p>
 
-            <div className="w-full relative mb-6">
+           <div className="w-full relative mb-6 mt-auto"> {/* 加入 mt-auto */}
               <KeyRound
                 size={18}
                 className="absolute left-4 top-4 text-emerald-700"
