@@ -2320,9 +2320,9 @@ export default function TravelApp() {
               <div className="absolute inset-0 bg-black/20"></div>
             </div>
 
-            {/* 中央內容區 (這層現在已經在正確的容器內了) */}
+            {/* 中央內容區 *****/}
             <div
-              className={`relative z-10 flex flex-col items-center w-full px-8 h-full transition-opacity duration-500 ${
+              className={`relative z-10 flex flex-col items-center w-full px-8 pt-40 transition-opacity duration-500 ${
                 isUnlocking ? 'opacity-0' : 'opacity-100'
               }`}
             >
