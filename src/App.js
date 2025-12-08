@@ -2285,8 +2285,8 @@ export default function TravelApp() {
               }`}
             style={{
               backgroundImage: `url(${JUNGLE_BG})`,
-              backgroundSize: 'auto 100%',
-              backgroundPosition: '60% center',
+              backgroundSize: '200% 100%',
+              backgroundPosition: 'left center',
               backgroundRepeat: 'no-repeat',
             }}
           >
@@ -2299,8 +2299,8 @@ export default function TravelApp() {
               }`}
             style={{
               backgroundImage: `url(${JUNGLE_BG})`,
-              backgroundSize: 'auto 100%',
-              backgroundPosition: '40% center',
+              backgroundSize: '200% 100%',
+              backgroundPosition: 'right center',
               backgroundRepeat: 'no-repeat',
             }}
           >
