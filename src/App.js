@@ -2050,6 +2050,7 @@ const PackingPage = ({ isKonamiActive }) => {
 // Main App (V8 - 最終回退修復版：移除陰影、降低選單、修復白底)
 // Main App (V9 - 解決鍵盤露餡 + 移除頂部醜陰影)
 // Main App (V10 - 最終優化：無陰影、無白底、低導覽列)
+// Main App (V11 - iOS 底部安全區完美適配版)
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2061,42 +2062,22 @@ export default function TravelApp() {
   const [activeTab, setActiveTab] = useState('itinerary');
   const [openDay, setOpenDay] = useState(0);
   const [itinerary, setItinerary] = useState(INITIAL_ITINERARY_DATA);
-  useEffect(() => {
-    // 只有在「解鎖後」才開始預載，避免拖慢鎖定畫面的速度
-    if (!isLocked) {
-      const preloadImages = () => {
-        // 1. 先預載背景圖
-        const bgImg = new Image();
-        bgImg.src = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
-        // 2. 預載所有行程圖片
-        itinerary.forEach((day) => {
-          day.locations.forEach((_, idx) => {
-            const img = new Image();
-            // 這裡的邏輯必須跟 getLocationImage 一模一樣
-            img.src = process.env.PUBLIC_URL + `/images/day${day.day}_${idx + 1}.jpg`;
-          });
-        });
-      };
-
-      // 延遲 1 秒再開始載，讓主介面動畫先跑完，比較順暢
-      const timer = setTimeout(() => {
-        preloadImages();
-        console.log('🖼️ 背景預載圖片啟動...');
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isLocked, itinerary]);
+  // 彩蛋狀態
   const [shakeCount, setShakeCount] = useState(0);
   const [showShakeEgg, setShowShakeEgg] = useState(false);
+
+  // 滑動彩蛋
   const touchStartRef = useRef({ x: 0, y: 0 });
   const [konamiSequence, setKonamiSequence] = useState([]);
   const [isKonamiActive, setIsKonamiActive] = useState(false);
+
   const MY_PASSWORD = '1314520';
+
+  // 使用俯視的熱帶叢林
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
-  // (Event Listeners 省略，保持原樣)
+  // 1. 搖晃彩蛋邏輯
   useEffect(() => {
     let lastShakeTime = 0;
     const handleShake = (e) => {
@@ -2105,96 +2086,323 @@ export default function TravelApp() {
       const total = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
       if (total > 20 && Date.now() - lastShakeTime > 300) {
         lastShakeTime = Date.now();
-        setShakeCount((prev) => { const newCount = prev + 1; if (newCount >= 8) { setShowShakeEgg(true); return 0; } return newCount; });
+        setShakeCount((prev) => {
+          const newCount = prev + 1;
+          if (newCount >= 8) {
+            setShowShakeEgg(true);
+            return 0;
+          }
+          return newCount;
+        });
       }
     };
     window.addEventListener('devicemotion', handleShake);
     return () => window.removeEventListener('devicemotion', handleShake);
   }, []);
 
-  const requestMotionPermission = async () => { if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') { try { await DeviceMotionEvent.requestPermission(); } catch (e) { console.error(e); } } };
+  const requestMotionPermission = async () => {
+    if (
+      typeof DeviceMotionEvent !== 'undefined' &&
+      typeof DeviceMotionEvent.requestPermission === 'function'
+    ) {
+      try {
+        await DeviceMotionEvent.requestPermission();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
 
+  // 2. 滑動彩蛋邏輯
   useEffect(() => {
-    const handleStart = (clientX, clientY) => { touchStartRef.current = { x: clientX, y: clientY }; };
+    const handleStart = (clientX, clientY) => {
+      touchStartRef.current = { x: clientX, y: clientY };
+    };
     const handleEnd = (clientX, clientY) => {
       const diffX = clientX - touchStartRef.current.x;
       const diffY = clientY - touchStartRef.current.y;
       if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
       let direction = '';
-      if (Math.abs(diffX) > Math.abs(diffY)) direction = diffX > 0 ? 'right' : 'left'; else direction = diffY > 0 ? 'down' : 'up';
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        direction = diffX > 0 ? 'right' : 'left';
+      } else {
+        direction = diffY > 0 ? 'down' : 'up';
+      }
       setKonamiSequence((prev) => [...prev, direction].slice(-4));
     };
-    const onTouchStart = (e) => handleStart(e.touches[0].clientX, e.touches[0].clientY);
-    const onTouchEnd = (e) => handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+
+    const onTouchStart = (e) =>
+      handleStart(e.touches[0].clientX, e.touches[0].clientY);
+    const onTouchEnd = (e) =>
+      handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
     const onMouseDown = (e) => handleStart(e.clientX, e.clientY);
     const onMouseUp = (e) => handleEnd(e.clientX, e.clientY);
-    window.addEventListener('touchstart', onTouchStart); window.addEventListener('touchend', onTouchEnd); window.addEventListener('mousedown', onMouseDown); window.addEventListener('mouseup', onMouseUp);
-    return () => { window.removeEventListener('touchstart', onTouchStart); window.removeEventListener('touchend', onTouchEnd); window.removeEventListener('mousedown', onMouseDown); window.removeEventListener('mouseup', onMouseUp); };
+
+    window.addEventListener('touchstart', onTouchStart);
+    window.addEventListener('touchend', onTouchEnd);
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
+
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
   }, []);
 
-  useEffect(() => { if (konamiSequence.join(' ') === 'up down left right') { setIsKonamiActive((prev) => !prev); setKonamiSequence([]); } }, [konamiSequence]);
+  useEffect(() => {
+    if (konamiSequence.join(' ') === 'up down left right') {
+      setIsKonamiActive((prev) => !prev);
+      setKonamiSequence([]);
+    }
+  }, [konamiSequence]);
 
+  // 3. 氣象更新
   useEffect(() => {
     const updateWeatherForecast = async () => {
-      const today = new Date(); if (!itinerary || itinerary.length === 0) return;
-      const firstDayStr = itinerary[0].date; const lastDayStr = itinerary[itinerary.length - 1].date;
-      const tripStart = new Date(firstDayStr); const diffTime = tripStart - today; const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const today = new Date();
+      if (!itinerary || itinerary.length === 0) return;
+
+      const firstDayStr = itinerary[0].date;
+      const lastDayStr = itinerary[itinerary.length - 1].date;
+      const tripStart = new Date(firstDayStr);
+      const diffTime = tripStart - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
       if (diffDays > 14) return;
+
       try {
-        const cityRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`);
+        const cityRes = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`
+        );
         const cityData = await cityRes.json();
-        const mountainRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=18.58&longitude=98.48&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`);
+        const mountainRes = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=18.58&longitude=98.48&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${firstDayStr}&end_date=${lastDayStr}`
+        );
         const mountainData = await mountainRes.json();
-        setItinerary((prev) => prev.map((item, i) => {
-          if (!cityData.daily || !cityData.daily.time[i]) return item;
-          let max, min, code;
-          if (item.day === 6 && mountainData.daily) { max = Math.round(mountainData.daily.temperature_2m_max[i]); min = Math.round(mountainData.daily.temperature_2m_min[i]); code = mountainData.daily.weather_code[i]; }
-          else { max = Math.round(cityData.daily.temperature_2m_max[i]); min = Math.round(cityData.daily.temperature_2m_min[i]); code = cityData.daily.weather_code[i]; }
-          return { ...item, weather: { ...item.weather, temp: `${min}-${max}°C`, icon: code <= 3 ? 'sunny' : 'cloudy', realData: true } };
-        }));
-      } catch (e) { console.error(e); }
+
+        setItinerary((prevItinerary) => {
+          return prevItinerary.map((dayItem, index) => {
+            if (!cityData.daily || !cityData.daily.time[index]) return dayItem;
+            let maxTemp, minTemp, code;
+            if (
+              dayItem.day === 6 &&
+              mountainData.daily &&
+              mountainData.daily.time[index]
+            ) {
+              maxTemp = Math.round(
+                mountainData.daily.temperature_2m_max[index]
+              );
+              minTemp = Math.round(
+                mountainData.daily.temperature_2m_min[index]
+              );
+              code = mountainData.daily.weather_code[index];
+            } else {
+              maxTemp = Math.round(cityData.daily.temperature_2m_max[index]);
+              minTemp = Math.round(cityData.daily.temperature_2m_min[index]);
+              code = cityData.daily.weather_code[index];
+            }
+            return {
+              ...dayItem,
+              weather: {
+                ...dayItem.weather,
+                temp: `${minTemp}-${maxTemp}°C`,
+                icon: code <= 3 ? 'sunny' : 'cloudy',
+                realData: true,
+              },
+            };
+          });
+        });
+      } catch (e) {
+        console.error('氣象同步失敗:', e);
+      }
     };
     updateWeatherForecast();
   }, []);
 
   const handleUnlock = () => {
     requestMotionPermission();
-    if (inputPwd === '1314520') { setIsAdmin(true); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
-    else if (inputPwd === '8888') { setIsAdmin(false); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
-    else { alert('密碼錯誤！再試一次吧 🔒'); setInputPwd(''); }
+
+    if (inputPwd === '1314520') {
+      setIsAdmin(true);
+      setIsUnlocking(true);
+      setTimeout(() => setIsLocked(false), 800);
+    } else if (inputPwd === '8888') {
+      setIsAdmin(false);
+      setIsUnlocking(true);
+      setTimeout(() => setIsLocked(false), 800);
+    } else {
+      alert('密碼錯誤！再試一次吧 🔒');
+      setInputPwd('');
+    }
   };
-  const handlePressStart = () => { pressTimerRef.current = setTimeout(() => setShowHelloKitty(true), 2000); };
-  const handlePressEnd = () => { if (pressTimerRef.current) clearTimeout(pressTimerRef.current); };
+
+  const handlePressStart = () => {
+    pressTimerRef.current = setTimeout(() => setShowHelloKitty(true), 2000);
+  };
+  const handlePressEnd = () => {
+    if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
+  };
+
+  // 背景預載圖片邏輯
+  useEffect(() => {
+    if (!isLocked) {
+      const preloadImages = () => {
+        const bgImg = new Image();
+        bgImg.src = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
+        itinerary.forEach((day) => {
+          day.locations.forEach((_, idx) => {
+            const img = new Image();
+            img.src = process.env.PUBLIC_URL + `/images/day${day.day}_${idx + 1}.jpg`;
+          });
+        });
+      };
+      const timer = setTimeout(() => {
+        preloadImages();
+        console.log('🖼️ 背景預載圖片啟動...');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLocked, itinerary]);
 
   return (
-    // 修正1: 移除 shadow-2xl。鎖定時用 bg-stone-900 解決白底。
+    // 外層容器：根據 isLocked 切換背景色 (解決鍵盤彈出露白底問題)
     <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
+      
+      {/* 橫向模式遮罩 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
         <p className="text-lg font-bold tracking-widest">請將手機轉為直向</p>
         <p className="text-xs text-stone-500 mt-2">Please rotate your phone</p>
       </div>
 
+      {/* 鎖定畫面 */}
       {isLocked && (
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900 h-screen w-full">
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
-            <div className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'left center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
-            <div className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
-
-            <div className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'}`}>
-              <div onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onMouseLeave={handlePressEnd} onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onContextMenu={(e) => e.preventDefault()} className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none" style={{ WebkitUserSelect: 'none', userSelect: 'none' }}><HelpCircle size={40} className="text-white drop-shadow-md" strokeWidth={2.5} /></div>
-              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
-              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
-              <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">Jungle Adventure</p>
-
-              <div className="w-full relative mb-6 mt-auto">
-                <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
-                <input type="password" value={inputPwd} onChange={(e) => setInputPwd(e.target.value)} placeholder="Passcode" className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" />
-              </div>
-              <button onClick={handleUnlock} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10">Start Journey <ArrowRight size={18} /></button>
-              <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">System Ver. 9.3 清邁4人團🧋</div>
+            
+            {/* 左半邊葉子門 */}
+            <div
+              className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
+                isUnlocking ? '-translate-x-full' : 'translate-x-0'
+              }`}
+              style={{
+                backgroundImage: `url(${JUNGLE_BG})`,
+                backgroundSize: '200% 120%',
+                backgroundPosition: 'left center',
+                backgroundRepeat: 'no-repeat',
+              }}
+            >
+              <div className="absolute inset-0 bg-black/20"></div>
             </div>
-            {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div onClick={(e) => e.stopPropagation()} className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"><button onClick={() => setShowHelloKitty(false)} className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold">×</button><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" alt="Hello Kitty Surprise" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md" /><h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">Surprise!</h3><p className="text-pink-400 text-sm font-bold">發現隱藏彩蛋 🎉</p></div></div>)}
+
+            {/* 右半邊葉子門 */}
+            <div
+              className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
+                isUnlocking ? 'translate-x-full' : 'translate-x-0'
+              }`}
+              style={{
+                backgroundImage: `url(${JUNGLE_BG})`,
+                backgroundSize: '200% 120%',
+                backgroundPosition: 'right center',
+                backgroundRepeat: 'no-repeat',
+              }}
+            >
+              <div className="absolute inset-0 bg-black/20"></div>
+            </div>
+
+            {/* 中央內容區 */}
+            <div
+              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${
+                isUnlocking ? 'opacity-0' : 'opacity-100'
+              }`}
+            >
+              <div
+                onMouseDown={handlePressStart}
+                onMouseUp={handlePressEnd}
+                onMouseLeave={handlePressEnd}
+                onTouchStart={handlePressStart}
+                onTouchEnd={handlePressEnd}
+                onContextMenu={(e) => e.preventDefault()}
+                className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"
+                style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+              >
+                <HelpCircle
+                  size={40}
+                  className="text-white drop-shadow-md"
+                  strokeWidth={2.5}
+                />
+              </div>
+
+              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">
+                Chiang Mai
+              </h2>
+
+              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">
+                佑任・軒寶・學弟・腳慢
+              </p>
+              <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">
+                Jungle Adventure
+              </p>
+
+              {/* 輸入框 */}
+              <div className="w-full relative mb-6 mt-auto">
+                <KeyRound
+                  size={18}
+                  className="absolute left-4 top-4 text-emerald-100"
+                />
+                <input
+                  type="password"
+                  value={inputPwd}
+                  onChange={(e) => setInputPwd(e.target.value)}
+                  placeholder="Passcode"
+                  className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg"
+                />
+              </div>
+
+              <button
+                onClick={handleUnlock}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10" 
+              >
+                Start Journey <ArrowRight size={18} />
+              </button>
+
+              <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">
+                System Ver. 9.3 清邁4人團🧋
+              </div>
+            </div>
+
+            {/* Hello Kitty 彩蛋 */}
+            {showHelloKitty && (
+              <div
+                onClick={() => setShowHelloKitty(false)}
+                className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"
+              >
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"
+                >
+                  <button
+                    onClick={() => setShowHelloKitty(false)}
+                    className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold"
+                  >
+                    ×
+                  </button>
+                  <img
+                    src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg"
+                    alt="Hello Kitty Surprise"
+                    className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md"
+                  />
+                  <h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">
+                    Surprise!
+                  </h3>
+                  <p className="text-pink-400 text-sm font-bold">
+                    發現隱藏彩蛋 🎉
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -2219,8 +2427,45 @@ export default function TravelApp() {
             {activeTab === 'packing' && <PackingPage isKonamiActive={isKonamiActive} />}
             {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} />}
           </main>
-          {/* 修正2: pb-8 -> pb-4，降低底部高度 */}
-          <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 pb-4 z-40">
+          
+          {/* 搖晃彩蛋 */}
+          {showShakeEgg && (
+            <div
+              onClick={() => setShowShakeEgg(false)}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"
+              >
+                <button
+                  onClick={() => setShowShakeEgg(false)}
+                  className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold z-10"
+                >
+                  ×
+                </button>
+                <img
+                  src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif"
+                  alt="Shake Surprise"
+                  className="w-full rounded-xl mb-4"
+                />
+                <h3 className="text-2xl font-bold text-pink-600 mb-2 font-serif">
+                  搖出驚喜!
+                </h3>
+                <p className="text-pink-500 mb-2">大家的旅途一定會超順利~</p>
+              </div>
+            </div>
+          )}
+
+          {/* 🚀 底部導覽列 iOS 修正版 
+            1. py-3 -> 保持上方間距
+            2. paddingBottom: 'calc(16px + env(safe-area-inset-bottom))'
+               這行是關鍵！它會自動加上 iPhone 底部的黑線高度，再加上原本的 16px (pb-4) 
+          */}
+          <nav 
+            className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 z-40 transition-all duration-300"
+            style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom))' }}
+          >
             <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'}`}><MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">行程</span></button>
             <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'}`}><CheckCircle size={22} strokeWidth={activeTab === 'packing' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">準備</span></button>
             <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'}`}><Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">工具</span></button>
