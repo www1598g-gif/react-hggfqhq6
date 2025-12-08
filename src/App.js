@@ -786,7 +786,7 @@ const OutfitGuide = () => {
       >
         <ChevronUp size={18} />
       </button>
-      
+
       {/* 第一部分：穿搭 */}
       <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 text-base mb-3">
         <Shirt size={18} className="text-amber-500" /> 2月穿搭指南
@@ -837,16 +837,16 @@ const OutfitGuide = () => {
         </h3>
         <div className="grid grid-cols-1 gap-2 text-xs">
           <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-emerald-100">
-             <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold whitespace-nowrap">低 / 零</span>
-             <span className="text-stone-600">全程坐車、平地，有冷氣或座位。</span>
+            <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold whitespace-nowrap">低 / 零</span>
+            <span className="text-stone-600">全程坐車、平地，有冷氣或座位。</span>
           </div>
           <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-amber-100">
-             <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold whitespace-nowrap">中</span>
-             <span className="text-stone-600">一般步行、有些微階梯或泥土路。</span>
+            <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold whitespace-nowrap">中</span>
+            <span className="text-stone-600">一般步行、有些微階梯或泥土路。</span>
           </div>
           <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-rose-100">
-             <span className="bg-rose-100 text-rose-700 px-2 py-0.5 rounded font-bold whitespace-nowrap">高 / 極高</span>
-             <span className="text-stone-600">陡坡、長途步行、人潮擁擠 (如夜市)。</span>
+            <span className="bg-rose-100 text-rose-700 px-2 py-0.5 rounded font-bold whitespace-nowrap">高 / 極高</span>
+            <span className="text-stone-600">陡坡、長途步行、人潮擁擠 (如夜市)。</span>
           </div>
         </div>
       </div>
@@ -906,30 +906,30 @@ const LocationCard = ({ item, day, index }) => {
         <div className="flex-1 min-w-0">
           {/* Header: 時間 + 標籤們 */}
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
-             <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
-               {item.time}
-             </span>
-             
-             {/* 爛腳標籤：改成圓角更明顯的 Tag，放在時間旁 */}
-             {item.difficulty && (
-               <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
-                 {item.difficulty}
-               </span>
-             )}
+            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
+              {item.time}
+            </span>
 
-             {item.highlight && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-md border border-amber-100 bg-amber-50 text-amber-700 font-bold">
-                  ★ {item.highlight}
-                </span>
-             )}
+            {/* 爛腳標籤：改成圓角更明顯的 Tag，放在時間旁 */}
+            {item.difficulty && (
+              <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
+                {item.difficulty}
+              </span>
+            )}
+
+            {item.highlight && (
+              <span className="text-[9px] px-1.5 py-0.5 rounded-md border border-amber-100 bg-amber-50 text-amber-700 font-bold">
+                ★ {item.highlight}
+              </span>
+            )}
           </div>
 
           <h3 className="font-bold text-stone-800 text-lg leading-tight mb-1 pr-2">
             {item.name}
           </h3>
-          
+
           <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
-             {item.note}
+            {item.note}
           </p>
         </div>
         <div className="mt-8 text-stone-300 flex-shrink-0">
@@ -945,11 +945,11 @@ const LocationCard = ({ item, day, index }) => {
                 <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
               </div>
             )}
-            <img 
-              src={getLocationImage(day, index)} 
-              alt={item.name} 
-              onLoad={() => setIsImageLoaded(true)} 
-              className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} 
+            <img
+              src={getLocationImage(day, index)}
+              alt={item.name}
+              onLoad={() => setIsImageLoaded(true)}
+              className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
               onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80'; }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -989,7 +989,7 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
   const smoothScrollTo = (element, duration = 10) => {
     // 1. 抓取卡片目前在整個網頁的絕對位置
     const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-    
+
     // 2. 計算偏移量：讓卡片的頂部停在「螢幕高度的一半再往上一點點」
     // window.innerHeight / 2 = 螢幕正中間
     // - 60 = 標題高度的一半 (這樣標題就會剛好掛在正中間)
@@ -1030,40 +1030,35 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
     <div ref={cardRef} className="mb-3 px-2">
       <div
         onClick={toggle}
-        className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${
-          isOpen
+        className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen
             ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
             : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
-        }`}
+          }`}
       >
         <div className="flex items-center gap-4">
           <div
-            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${
-              isOpen
+            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen
                 ? 'bg-stone-700 border-stone-600'
                 : 'bg-stone-50 border-stone-200'
-            }`}
+              }`}
           >
             <span
-              className={`text-[10px] font-bold uppercase ${
-                isOpen ? 'text-stone-400' : 'text-stone-400'
-              }`}
+              className={`text-[10px] font-bold uppercase ${isOpen ? 'text-stone-400' : 'text-stone-400'
+                }`}
             >
               Day
             </span>
             <span
-              className={`text-xl font-serif font-bold ${
-                isOpen ? 'text-amber-400' : 'text-stone-800'
-              }`}
+              className={`text-xl font-serif font-bold ${isOpen ? 'text-amber-400' : 'text-stone-800'
+                }`}
             >
               {dayData.day}
             </span>
           </div>
           <div>
             <div
-              className={`text-xs font-bold mb-0.5 ${
-                isOpen ? 'text-stone-400' : 'text-stone-500'
-              }`}
+              className={`text-xs font-bold mb-0.5 ${isOpen ? 'text-stone-400' : 'text-stone-500'
+                }`}
             >
               {dayData.displayDate}
             </div>
@@ -1078,9 +1073,8 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
               <Signal size={10} className="text-green-500 animate-pulse" />
             )}
             <span
-              className={`text-sm font-medium ${
-                isOpen ? 'text-stone-300' : 'text-stone-600'
-              }`}
+              className={`text-sm font-medium ${isOpen ? 'text-stone-300' : 'text-stone-600'
+                }`}
             >
               {dayData.weather.temp}
             </span>
@@ -2067,7 +2061,33 @@ export default function TravelApp() {
   const [activeTab, setActiveTab] = useState('itinerary');
   const [openDay, setOpenDay] = useState(0);
   const [itinerary, setItinerary] = useState(INITIAL_ITINERARY_DATA);
+  useEffect(() => {
+    // 只有在「解鎖後」才開始預載，避免拖慢鎖定畫面的速度
+    if (!isLocked) {
+      const preloadImages = () => {
+        // 1. 先預載背景圖
+        const bgImg = new Image();
+        bgImg.src = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
+        // 2. 預載所有行程圖片
+        itinerary.forEach((day) => {
+          day.locations.forEach((_, idx) => {
+            const img = new Image();
+            // 這裡的邏輯必須跟 getLocationImage 一模一樣
+            img.src = process.env.PUBLIC_URL + `/images/day${day.day}_${idx + 1}.jpg`;
+          });
+        });
+      };
+
+      // 延遲 1 秒再開始載，讓主介面動畫先跑完，比較順暢
+      const timer = setTimeout(() => {
+        preloadImages();
+        console.log('🖼️ 背景預載圖片啟動...');
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLocked, itinerary]);
   const [shakeCount, setShakeCount] = useState(0);
   const [showShakeEgg, setShowShakeEgg] = useState(false);
   const touchStartRef = useRef({ x: 0, y: 0 });
@@ -2160,13 +2180,13 @@ export default function TravelApp() {
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
             <div className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'left center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
             <div className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
-            
+
             <div className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'}`}>
               <div onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onMouseLeave={handlePressEnd} onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onContextMenu={(e) => e.preventDefault()} className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none" style={{ WebkitUserSelect: 'none', userSelect: 'none' }}><HelpCircle size={40} className="text-white drop-shadow-md" strokeWidth={2.5} /></div>
               <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
               <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
               <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">Jungle Adventure</p>
-              
+
               <div className="w-full relative mb-6 mt-auto">
                 <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
                 <input type="password" value={inputPwd} onChange={(e) => setInputPwd(e.target.value)} placeholder="Passcode" className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" />
