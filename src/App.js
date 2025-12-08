@@ -1074,15 +1074,15 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
       <div
         onClick={toggle}
         className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen
-            ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
-            : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
+          ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
+          : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
           }`}
       >
         <div className="flex items-center gap-4">
           <div
             className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen
-                ? 'bg-stone-700 border-stone-600'
-                : 'bg-stone-50 border-stone-200'
+              ? 'bg-stone-700 border-stone-600'
+              : 'bg-stone-50 border-stone-200'
               }`}
           >
             <span
@@ -1167,8 +1167,8 @@ const FlightCard = ({
         <div className="flex justify-between items-center mb-4">
           <span
             className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${type === '去程'
-                ? 'bg-amber-100 text-amber-800'
-                : 'bg-stone-100 text-stone-600'
+              ? 'bg-amber-100 text-amber-800'
+              : 'bg-stone-100 text-stone-600'
               }`}
           >
             {type}
@@ -1390,8 +1390,8 @@ const CurrencySection = () => {
           <div
             key={i}
             className={`flex justify-between items-center p-3 rounded-xl border transition-all ${i < 3
-                ? 'bg-white border-stone-200 shadow-sm'
-                : 'bg-stone-50 border-stone-100 opacity-80'
+              ? 'bg-white border-stone-200 shadow-sm'
+              : 'bg-stone-50 border-stone-100 opacity-80'
               }`}
           >
             <div>
@@ -1943,8 +1943,8 @@ const PackingPage = ({ isKonamiActive }) => {
               key={user}
               onClick={() => setCurrentUser(user)}
               className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
-                  ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
-                  : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
+                ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
+                : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
                 }`}
             >
               {/* 判斷：如果有觸發彩蛋，就顯示圖片；否則顯示文字 */}
@@ -2023,22 +2023,22 @@ const PackingPage = ({ isKonamiActive }) => {
                 key={index}
                 onClick={() => toggleItem(currentUser, index)}
                 className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${item.checked
-                    ? 'bg-stone-100 border-transparent opacity-60'
-                    : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
+                  ? 'bg-stone-100 border-transparent opacity-60'
+                  : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
                   }`}
               >
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${item.checked
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : 'border-stone-300 bg-stone-50'
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'border-stone-300 bg-stone-50'
                     }`}
                 >
                   {item.checked && <CheckCircle size={14} strokeWidth={3} />}
                 </div>
                 <span
                   className={`flex-1 font-medium ${item.checked
-                      ? 'text-stone-400 line-through decoration-stone-400'
-                      : 'text-stone-700'
+                    ? 'text-stone-400 line-through decoration-stone-400'
+                    : 'text-stone-700'
                     }`}
                 >
                   {item.name}
@@ -2285,10 +2285,9 @@ export default function TravelApp() {
               }`}
             style={{
               backgroundImage: `url(${JUNGLE_BG})`,
-              backgroundSize: '200% auto',
-              backgroundPosition: 'left center',
+              backgroundSize: 'cover',        
+              backgroundPosition: 'center',   // 圖片置中對齊
               backgroundRepeat: 'no-repeat',
-              backgroundColor: '#1c1917'
             }}
           >
             <div className="absolute inset-0 bg-black/20"></div>
@@ -2300,10 +2299,9 @@ export default function TravelApp() {
               }`}
             style={{
               backgroundImage: `url(${JUNGLE_BG})`,
-              backgroundSize: '200% auto',
-              backgroundPosition: 'right center',
+              backgroundSize: 'cover',        /
+              backgroundPosition: 'center',   // 圖片置中對齊
               backgroundRepeat: 'no-repeat',
-              backgroundColor: '#1c1917'
             }}
           >
             <div className="absolute inset-0 bg-black/20"></div>
