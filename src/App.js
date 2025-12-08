@@ -2273,8 +2273,8 @@ export default function TravelApp() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] font-sans text-stone-800 max-w-md mx-auto relative shadow-2xl overflow-hidden overscroll-behavior-none select-none">
       
-      {/* 🚀 新增：橫向模式遮罩 (Landscape Blocker) */}
-      {/* 當螢幕轉橫 (landscape) 時顯示，直向 (portrait) 時隱藏 */}
+      {/* 新增：橫向模式遮罩 (Landscape Blocker) */}
+      {/* 當螢幕轉橫 時顯示 直向時隱藏 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
         <p className="text-lg font-bold tracking-widest">請將手機轉為直向</p>
@@ -2283,11 +2283,11 @@ export default function TravelApp() {
 
       {/* 鎖定畫面 */}
       {isLocked && (
-        // 🚀 修改：外層加上 flex justify-center，讓內容在電腦版也能置中
+        //  修改：外層加上 flex justify-center，讓內容在電腦版也能置中
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900">
           
-          {/* 🚀 新增：內層容器限制 max-w-md (手機寬度) */}
-          {/* 這樣在電腦上看，門就只會是手機那麼寬，不會被拉扁！ */}
+          {/* 新增：內層容器限制 max-w-md (手機寬度) */}
+          {/* 這樣在電腦上看 門就只會是手機那麼寬 不會被拉扁 */}
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center pt-40 pb-20">
             
             {/* 左半邊葉子門 */}
@@ -2323,7 +2323,7 @@ export default function TravelApp() {
             {/* 中央內容區 *****/}
             {/* 中央內容區 */}
           <div
-            className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-24 pb-20 transition-opacity duration-500 ${
+            className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-10 pb-20 transition-opacity duration-500 ${
               isUnlocking ? 'opacity-0' : 'opacity-100'
             }`}
           >
