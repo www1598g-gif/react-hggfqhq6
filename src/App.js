@@ -2076,6 +2076,7 @@ const PackingPage = ({ isKonamiActive }) => {
 
 // Main App (20261208 卡通叢林 + 防誤觸 + 名單回歸)
 // Main App (20261208 優化 透明度調整 + 電腦版防扁 + 橫向遮罩)
+// Main App (20261208 最終修正版：輸入框沉底 + 美樂蒂露臉)
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2102,7 +2103,7 @@ export default function TravelApp() {
   // 使用俯視的熱帶叢林
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
-  // 1. 搖晃彩蛋邏輯 (省略...維持原樣)
+  // 1. 搖晃彩蛋邏輯
   useEffect(() => {
     let lastShakeTime = 0;
     const handleShake = (e) => {
@@ -2138,7 +2139,7 @@ export default function TravelApp() {
     }
   };
 
-  // 2. 滑動彩蛋邏輯 (省略...維持原樣)
+  // 2. 滑動彩蛋邏輯
   useEffect(() => {
     const handleStart = (clientX, clientY) => {
       touchStartRef.current = { x: clientX, y: clientY };
@@ -2183,7 +2184,7 @@ export default function TravelApp() {
     }
   }, [konamiSequence]);
 
-  // 3. 氣象更新 (省略...維持原樣)
+  // 3. 氣象更新
   useEffect(() => {
     const updateWeatherForecast = async () => {
       const today = new Date();
@@ -2273,8 +2274,7 @@ export default function TravelApp() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] font-sans text-stone-800 max-w-md mx-auto relative shadow-2xl overflow-hidden overscroll-behavior-none select-none">
       
-      {/* 新增：橫向模式遮罩 (Landscape Blocker) */}
-      {/* 當螢幕轉橫 時顯示 直向時隱藏 */}
+      {/* 橫向模式遮罩 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
         <p className="text-lg font-bold tracking-widest">請將手機轉為直向</p>
@@ -2283,12 +2283,10 @@ export default function TravelApp() {
 
       {/* 鎖定畫面 */}
       {isLocked && (
-        //  修改：外層加上 flex justify-center，讓內容在電腦版也能置中
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900">
           
-          {/* 新增：內層容器限制 max-w-md (手機寬度) */}
-          {/* 這樣在電腦上看 門就只會是手機那麼寬 不會被拉扁 */}
-          <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center pt-40 pb-20">
+          {/* 內層容器限制 max-w-md (手機寬度) */}
+          <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
             
             {/* 左半邊葉子門 */}
             <div
@@ -2320,13 +2318,15 @@ export default function TravelApp() {
               <div className="absolute inset-0 bg-black/20"></div>
             </div>
 
-            {/* 中央內容區 *****/}
             {/* 中央內容區 */}
-          <div
-            className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-10 pb-20 transition-opacity duration-500 ${
-              isUnlocking ? 'opacity-0' : 'opacity-100'
-            }`}
-          >
+            <div
+              // 🚀 關鍵修改在這裡：
+              // 1. pb-8 (原本是 pb-20，太高了，改成 8 讓它沉到底部)
+              // 2. pt-40 (上方留白保持 40，讓標題維持在上面)
+              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 pb-8 transition-opacity duration-500 ${
+                isUnlocking ? 'opacity-0' : 'opacity-100'
+              }`}
+            >
               <div
                 onMouseDown={handlePressStart}
                 onMouseUp={handlePressEnd}
@@ -2355,12 +2355,13 @@ export default function TravelApp() {
                 Jungle Adventure
               </p>
 
+              {/* mt-auto 會負責把這塊推到最下面 */}
               <div className="w-full relative mb-6 mt-auto">
                 <KeyRound
                   size={18}
                   className="absolute left-4 top-4 text-emerald-100"
                 />
-               <input
+                <input
                   type="password"
                   value={inputPwd}
                   onChange={(e) => setInputPwd(e.target.value)}
