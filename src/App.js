@@ -1031,15 +1031,15 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
       <div
         onClick={toggle}
         className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen
-          ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
-          : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
+            ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
+            : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
           }`}
       >
         <div className="flex items-center gap-4">
           <div
             className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen
-              ? 'bg-stone-700 border-stone-600'
-              : 'bg-stone-50 border-stone-200'
+                ? 'bg-stone-700 border-stone-600'
+                : 'bg-stone-50 border-stone-200'
               }`}
           >
             <span
@@ -2268,8 +2268,7 @@ export default function TravelApp() {
 
   return (
     // 外層容器：根據 isLocked 切換背景色 (解決鍵盤彈出露白底問題)
-     <div className={`h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
-      
+    <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
       {/* 橫向模式遮罩 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
@@ -2281,11 +2280,12 @@ export default function TravelApp() {
       {isLocked && (
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900 h-screen w-full">
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
-
+            
             {/* 左半邊葉子門 */}
             <div
-              className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'
-                }`}
+              className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
+                isUnlocking ? '-translate-x-full' : 'translate-x-0'
+              }`}
               style={{
                 backgroundImage: `url(${JUNGLE_BG})`,
                 backgroundSize: '200% 120%',
@@ -2298,8 +2298,9 @@ export default function TravelApp() {
 
             {/* 右半邊葉子門 */}
             <div
-              className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'
-                }`}
+              className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
+                isUnlocking ? 'translate-x-full' : 'translate-x-0'
+              }`}
               style={{
                 backgroundImage: `url(${JUNGLE_BG})`,
                 backgroundSize: '200% 120%',
@@ -2312,8 +2313,9 @@ export default function TravelApp() {
 
             {/* 中央內容區 */}
             <div
-              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'
-                }`}
+              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${
+                isUnlocking ? 'opacity-0' : 'opacity-100'
+              }`}
             >
               <div
                 onMouseDown={handlePressStart}
@@ -2360,7 +2362,7 @@ export default function TravelApp() {
 
               <button
                 onClick={handleUnlock}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10" 
               >
                 Start Journey <ArrowRight size={18} />
               </button>
@@ -2424,7 +2426,7 @@ export default function TravelApp() {
             {activeTab === 'packing' && <PackingPage isKonamiActive={isKonamiActive} />}
             {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} />}
           </main>
-
+          
           {/* 搖晃彩蛋 */}
           {showShakeEgg && (
             <div
@@ -2459,7 +2461,7 @@ export default function TravelApp() {
             2. paddingBottom: 'calc(16px + env(safe-area-inset-bottom))'
                這行是關鍵！它會自動加上 iPhone 底部的黑線高度，再加上原本的 16px (pb-4) 
           */}
-          <nav
+          <nav 
             className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 z-40 transition-all duration-300"
             style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom))' }}
           >
