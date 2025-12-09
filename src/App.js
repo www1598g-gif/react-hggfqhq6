@@ -1469,7 +1469,7 @@ const UtilsPage = ({ isAdmin }) => {
                     <Phone size={12} /> 聯絡
                   </a>
                 </div>
-                {/* 只有當 isAdmin 為 true (輸入 1314520) 時 ，偶才會顯示 Airbnb 按鈕 */}
+                {/* 只有當 isAdmin 為 true (輸入團員密碼) 時 ，偶才會顯示 Airbnb 按鈕 */}
                 {isAdmin && acc.airbnbUrl && (
                   <div className="grid grid-cols-2 gap-2 animate-fadeIn">
                     <a
@@ -1926,7 +1926,7 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
             </div>
             <div>
               <div className="font-bold text-sm text-amber-50">訪客模式 Read Only</div>
-              <div className="text-[10px] text-stone-300 mt-0.5">請輸入團員密碼 (1314520) 才能編輯</div>
+              <div className="text-[10px] text-stone-300 mt-0.5">請輸入團員密碼才能編輯</div>
             </div>
           </div>
         </div>
