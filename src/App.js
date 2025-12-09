@@ -38,22 +38,21 @@ import {
 } from 'lucide-react';
 
 // ============================================
-// 1.圖片XD
+// 圖片XD
 // ============================================
 // ============================================
-// 1. 圖片處理 (改為自動對應 dayX_Y.jpg)
+// 圖片處理自動對應 dayX_Y.jpg
 // ============================================
 const getLocationImage = (day, index) => {
   // 直接回傳對應的檔案路徑
-  // 例如 Day 1 第 1 個行程 -> /images/day1_1.jpg
   return process.env.PUBLIC_URL + `/images/day${day}_${index}.jpg`;
 };
 
 // ============================================
-// 2. 初始行程資料 日期改回 2026ㄌ
+// 初始行程資料 日期改回 2026ㄌ
 // ============================================
 // ============================================
-// 2. 初始行程資料 (V23 最終定案版 - 2026/02)
+// 初始行程資料 最終定案2026/02)
 // ============================================
 
 const INITIAL_ITINERARY_DATA = [
@@ -579,15 +578,15 @@ const UTILS_DATA = {
 // note:天氣 Widget (防當機 Crash Guard)
 // note:天氣 Widget (修ㄌ跨夜問題 + 24小時預報 + 橫向捲動)
 // 天氣 Widget (移除點擊彩蛋20251206)
-// 修正: 移除最外層的 shadow-xl，讓頂部變平滑
-// 3. UIUX part (V14 - 加入倒數計時)
+// 修正: 移除最外層的 shadow-xl 讓頂部變平滑
+// UIUX part 加入倒數計時
 const WeatherHero = () => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
   const [daysLeft, setDaysLeft] = useState(0);
 
   useEffect(() => {
-    // 1. 倒數計時邏輯 (修正版：立即執行)
+    // 倒數計時邏輯
     const calcTime = () => {
       const targetDate = new Date('2026-02-19T00:00:00+07:00'); // 清邁時間
       const now = new Date();
@@ -598,7 +597,7 @@ const WeatherHero = () => {
     calcTime(); // 一載入馬上算
     const timer = setInterval(calcTime, 60000); // 之後每分鐘更新
 
-    // 2. 天氣抓取邏輯
+    // 天氣抓取邏輯
     const fetchWeather = async () => {
       try {
         const res = await fetch(
@@ -776,7 +775,7 @@ const FloatingStatus = ({ itinerary }) => {
   );
 };
 
-// update: 穿搭指南 + 爛腳圖例
+// update穿搭指南 + 爛腳圖例
 const OutfitGuide = () => {
   const [isOpen, setIsOpen] = useState(false); // 預設關閉
 
@@ -799,7 +798,7 @@ const OutfitGuide = () => {
         <ChevronUp size={18} />
       </button>
 
-      {/* 第一部分：穿搭 */}
+      {/* 第一部分 穿搭 */}
       <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 text-base mb-3">
         <Shirt size={18} className="text-amber-500" /> 2月穿搭指南
       </h3>
@@ -842,7 +841,7 @@ const OutfitGuide = () => {
         </div>
       </div>
 
-      {/* 第二部分：爛腳圖例*/}
+      {/* 第二部分 爛腳圖例*/}
       <div className="pt-4 border-t border-amber-200/50">
         <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 text-base mb-3">
           <span className="text-lg">🦵</span> 爛腳指數說明
@@ -869,20 +868,20 @@ const OutfitGuide = () => {
 
 
 // update地點卡片 爛腳標籤獨立一行
-// update地點卡片移除內部重複標示)
-// update: 地點卡片 (V5 - 標籤分行顯示，不再擋字)
-// 修正: 爛腳標籤移到時間旁邊 (flex-row layout)
-// update: 地點卡片 (接收 day 和 index 來抓圖片)
-// update: 地點卡片 (V11 - 標籤美化 + 跟隨時間)
-// update: 地點卡片 (V13 - 修正圖片錯誤處理邏輯)
-// update: 地點卡片 (V16 - 修正版：穩定的清邁圖 + Grok的防卡死邏輯)
+// update地點卡片移除內部重複標示
+// update: 地點卡片 標籤分行顯示
+// 修正: 爛腳標籤移到時間旁邊
+// 
+// update地點卡片標籤美化
+// update修正圖片錯誤處理邏輯
+// update修正版清邁圖 + Grok的防卡死邏輯)
 const LocationCard = ({ item, day, index }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   // 用來記錄是否已經切換到備援圖片
   const [hasError, setHasError] = useState(false); 
 
-  // 備援圖片：一張穩定的清邁古城/寺廟風景圖 (來自 Pexels 高速圖床)
+  // 備援圖片
   const BACKUP_IMAGE = 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
 
   const getIcon = () => {
@@ -953,7 +952,7 @@ const LocationCard = ({ item, day, index }) => {
         <div className="animate-fadeIn">
           {/* 圖片容器 */}
           <div className="w-full h-48 overflow-hidden relative bg-stone-100">
-            {/* 只有在還沒載入完成、且還沒發生錯誤時，才顯示轉圈圈 */}
+            {/* 只有在還沒載入完成且還沒發生錯誤時 才顯示轉圈圈 */}
             {!isImageLoaded && !hasError && (
               <div className="absolute inset-0 flex items-center justify-center bg-stone-50">
                 <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
@@ -963,7 +962,7 @@ const LocationCard = ({ item, day, index }) => {
             <img 
               // 加上 key 強制 React 在網址改變時重新處理這張圖
               key={`${day}-${index}-${hasError}`}
-              // 如果有錯就用「固定的清邁風景圖」，沒錯就用原本的
+              // 如果有錯就用固定清邁圖 沒錯就用原本的
               src={
                 hasError
                   ? BACKUP_IMAGE
@@ -972,15 +971,15 @@ const LocationCard = ({ item, day, index }) => {
               alt={item.name} 
               loading="lazy" 
               
-              // 圖片載入成功：關閉 Loading
+              // 圖片載入成功 關閉 Loading
               onLoad={() => setIsImageLoaded(true)} 
               
-              // 圖片載入失敗：切換模式
+              // 圖片載入失敗 切換模式
               onError={(e) => { 
                 if (!hasError) {
                   console.log(`圖片載入失敗，切換備援: day${day}_${index}`);
-                  setHasError(true);      // 標記發生錯誤，下次 render 會換網址
-                  setIsImageLoaded(true); // 🚀 關鍵：強制告訴系統「載完了(雖然是備援)」，讓轉圈圈消失
+                  setHasError(true);      // 標記發生錯誤 下次 render 換網
+                  setIsImageLoaded(true); // 強制轉圈圈消失
                 }
               }}
               
@@ -1018,18 +1017,18 @@ const LocationCard = ({ item, day, index }) => {
 };
 
 
-// 修正: 滑動速度由 300ms 提升到 100ms
-// 修正: 點擊後將卡片置於「螢幕垂直置中」的位置，且速度極快
+// 
+// 
 const DayCard = ({ dayData, isOpen, toggle }) => {
   const cardRef = useRef(null);
 
   const smoothScrollTo = (element, duration = 10) => {
-    // 1. 抓取卡片目前在整個網頁的絕對位置
+    // 抓取卡片目前在整個網頁的絕對位置
     const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
 
-    // 2. 計算偏移量：讓卡片的頂部停在「螢幕高度的一半再往上一點點」
+    // 計算偏移量：讓卡片的頂部停在「螢幕高度的一半再往上一點點」
     // window.innerHeight / 2 = 螢幕正中間
-    // - 60 = 標題高度的一半 (這樣標題就會剛好掛在正中間)
+    // - 60 = 標題高度的一半 標題置中
     const offsetPosition = elementPosition - (window.innerHeight / 2) + 60;
 
     const startPosition = window.pageYOffset;
@@ -1056,7 +1055,7 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
 
   useEffect(() => {
     if (isOpen && cardRef.current) {
-      // 延遲 50ms 確保 Day 1 收合動畫稍微跑一下，位置重算後再跳轉
+      // 
       setTimeout(() => {
         smoothScrollTo(cardRef.current, 10); // 10ms 極速
       }, 50);
@@ -1139,9 +1138,8 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
     </div>
   );
 };
-// update 航班卡片組件
-// 新增 航廈顯示版
-// update 航班卡片組件 (修正間距 避免飛機擋住文字20251206)
+
+// update 航班卡片組件 修正擋住文字20251206
 const FlightCard = ({
   type,
   date,
@@ -1192,7 +1190,7 @@ const FlightCard = ({
             </div>
           </div>
 
-          {/* 飛機圖示 (修正：加大上下間距 mb-2 mt-2) */}
+          {/* 飛機圖示 */}
           <div className="flex-1 px-3 flex flex-col items-center">
             <div className="text-xs font-bold text-stone-500 mb-2">
               {flightNo}
@@ -1246,17 +1244,12 @@ const FlightCard = ({
     </div>
   );
 };
-// 新增 換匯計算機and推薦換匯所
-// ============================================
-// 修正後的 CurrencySection
-// ============================================
-// ============================================
-// 修正後的 CurrencySection (補回遺失的 thb 變數)
-// ============================================
+// 新增換匯計算機and推薦換匯所
+// 修正CurrencySection
+// 幹不想上班
 const CurrencySection = () => {
   const [rate, setRate] = useState(1.08);
   const [twd, setTwd] = useState('');
-  // 👇👇👇 就是補上這一行！ 👇👇👇
   const [thb, setThb] = useState('');
   const [lastUpdate, setLastUpdate] = useState('');
 
@@ -1427,7 +1420,7 @@ const CurrencySection = () => {
   );
 };
 
-// 修改 UtilsPage 的 return 部分：
+// 修改 UtilsPage
 const UtilsPage = ({ isAdmin }) => {
   return (
     <div className="p-6 space-y-6 pb-24 animate-fade-in bg-[#FDFBF7] min-h-screen">
@@ -1435,7 +1428,7 @@ const UtilsPage = ({ isAdmin }) => {
         實用工具
       </h2>
 
-      {/* 1. 航班資訊區塊 */}
+      {/* 航班資訊區塊 */}
       <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
         <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
           <Plane size={18} className="text-blue-500" /> 航班資訊
@@ -1455,7 +1448,7 @@ const UtilsPage = ({ isAdmin }) => {
         </a>
       </section>
 
-      {/* 2. 住宿資訊區塊 */}
+      {/* 住宿資訊區塊 */}
       <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
         <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
           <Home size={18} className="text-orange-500" /> 住宿導航
@@ -1502,11 +1495,11 @@ const UtilsPage = ({ isAdmin }) => {
                     <Phone size={12} /> 聯絡
                   </a>
                 </div>
-                {/* 只有當 isAdmin 為 true (輸入團員密碼) 時 ，偶才會顯示 Airbnb 按鈕 */}
+                {/* 當 isAdmin 為 true 輸入團員密碼時 偶才顯示 Airbnb 按鈕 */}
                 {isAdmin && acc.airbnbUrl && (
                   <div className="grid grid-cols-2 gap-2 animate-fadeIn">
                     <a
-                      href={acc.airbnbUrl} // 這裡是 Base64 解碼後的連結
+                      href={acc.airbnbUrl} //  Base64 解碼後
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center justify-center gap-1.5 py-2 bg-[#FF385C] text-white rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm"
@@ -1523,7 +1516,7 @@ const UtilsPage = ({ isAdmin }) => {
                     </a>
                   </div>
                 )}
-                {/* 如果不是 Admin 顯示這行字給朋友看 */}
+                {/* 不是 Admin 顯示這行 */}
                 {!isAdmin && acc.name === 'Lucky Charm House' && (
                   <div className="text-center py-2 bg-stone-50 rounded-lg text-[10px] text-stone-400">
                     🔒 房源連結僅供團員存取
@@ -1534,7 +1527,7 @@ const UtilsPage = ({ isAdmin }) => {
           ))}
         </div>
 
-        {/* 下面的憑證按鈕加入 isAdmin 保護 */}
+        {/* 憑證按鈕加入 isAdmin 保護 */}
         {isAdmin && (
           <a
             href={UTILS_DATA.driveUrl}
@@ -1547,7 +1540,7 @@ const UtilsPage = ({ isAdmin }) => {
         )}
       </section>
 
-      {/* 3. 租車資訊區塊 */}
+      {/* 租車資訊區塊 */}
       <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 mb-6">
         <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
           <Car size={18} className="text-amber-600" /> 租車資訊
@@ -1608,7 +1601,7 @@ const UtilsPage = ({ isAdmin }) => {
         </div>
       </section>
 
-      {/* 4. LINE 分帳 (綠色區塊) - 只有 Admin 可見 */}
+      {/* LINE 分帳 (綠色區塊) Admin 可見 */}
       {isAdmin && (
         <section className="bg-[#06C755] p-6 rounded-2xl shadow-lg shadow-green-900/10 text-white relative overflow-hidden mb-6 animate-fadeIn">
           <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
@@ -1632,10 +1625,10 @@ const UtilsPage = ({ isAdmin }) => {
         </section>
       )}
 
-      {/*  5. 匯率計算機 */}
+      {/*  匯率計算機 */}
       <CurrencySection />
 
-      {/* 6. 緊急救援 (紅色區塊) */}
+      {/* 緊急救援 (紅色區塊) */}
       <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 mb-6">
         <h3 className="flex items-center gap-2 font-bold text-red-700 mb-4 border-b border-stone-100 pb-3">
           <AlertCircle size={18} className="text-red-600" /> 緊急救援中心
@@ -1734,9 +1727,9 @@ const UtilsPage = ({ isAdmin }) => {
   );
 };
 
-// ============================================
-// 4.行李清單 &泰國需知
-// ============================================
+// 
+// 行李清單 &泰國需知
+// =====================
 
 const DEFAULT_ITEMS = [
   '乳液、凡士林',
@@ -1848,15 +1841,15 @@ const ThaiTips = () => {
   );
 };
 
-// 修改 PackingPage: 接收 isKonamiActive 來切換顯示模式
-// 修改 PackingPage: 加入 isAdmin 控制，訪客只能看不能改
-// 修改 PackingPage: V15 - 加入 Toast 通知 + LocalStorage 保護
+// 修改 PackingPage 接收 isKonamiActive 來切換顯示模式
+// 修改 PackingPage 加入 isAdmin 控制 訪客只能看
+// 修改 PackingPage 加入 Toast 通知 以及LocalStorage 保護
 const PackingPage = ({ isKonamiActive, isAdmin }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [packingData, setPackingData] = useState({});
   const [newItem, setNewItem] = useState('');
   
-  // ✨ 新增：控制 Toast 顯示的狀態
+  // 控制 Toast 顯示的狀態
   const [showToast, setShowToast] = useState(false);
 
   const CHARACTER_MAP = {
@@ -1883,11 +1876,11 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
     }
   }, []);
 
-  // 🛡️ 優化：加入 try-catch 與容量檢查
+  // 優化 加入 try-catch 與容量檢查
   const saveToStorage = (newData) => {
     try {
       const dataStr = JSON.stringify(newData);
-      // 檢查是否超過 4MB (雖然純文字很難超過，但這是好習慣)
+      // 檢查是否超過 4MB 
       if (dataStr.length > 4000000) {
         alert('⚠️ 行李清單太長了！請刪除一些不必要的項目');
         return;
@@ -1901,7 +1894,7 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
   };
 
   const toggleItem = (user, index) => {
-    // 🛡️ 訪客模式：改用 Toast 提示，不跳 alert
+    // 訪客模式改用 Toast 提示
     if (!isAdmin) {
       setShowToast(true);
       // 3秒後自動消失
@@ -1950,7 +1943,7 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
     <div className="pb-24 min-h-screen bg-[#FDFBF7] relative">
       <ThaiTips />
 
-      {/* ✨ Toast 通知元件 (浮動在下方) */}
+      {/* toast 通知元件 */}
       {showToast && (
         <div className="fixed bottom-24 left-6 right-6 z-50 animate-bounce">
           <div className="bg-stone-800/95 backdrop-blur text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-stone-700">
@@ -2061,7 +2054,7 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
             </div>
           )}
           
-          {/* 如果是訪客，顯示一條靜態提示 */}
+          {/* 如果是訪客 顯示靜態提示 */}
           {!isAdmin && (
             <div className="mb-4 text-center">
                <span className="text-[10px] bg-stone-100 text-stone-400 px-3 py-1 rounded-full border border-stone-200">
@@ -2133,16 +2126,16 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
 };
 
 
-// Main App (20261208 卡通叢林 + 防誤觸 + 名單回歸)
-// Main App (20261208 優化 透明度調整 + 電腦版防扁 + 橫向遮罩)
-// Main App (20261208 最終修正版：輸入框沉底 + 美樂蒂露臉)
-// Main App (20261208 修復白底 + 文字顯示優化)
-// Main App (20261209回歸穩定版：修復白底透出、移除頂部陰影、調整導覽列高度)
-// Main App (解決鍵盤露餡 + 移除頂部醜陰影)
-// Main App (最終優化：無陰影、無白底、低導覽列)
-// Main App (iOS 底部安全區完美適配版)
-// Main App (穩定版：修復搖晃記憶體問題)
-// Main App (V14 - 加入行李清單權限控管)
+// Main App 20261208 卡通叢林 + 防誤觸 + 名單回歸
+// Main App 20261208 優化 透明度調整 + 電腦版防扁 + 橫向遮罩
+// Main App 20261208 最終修正版：輸入框沉底 + 美樂蒂露臉
+// Main App 20261208 修復白底 + 文字顯示優化
+// Main App 20261209修復白底透出、移除頂部陰影、調整導覽列高度
+// Main App 解決鍵盤露餡 + 移除頂部醜陰影
+// Main App 最終優化：無陰影、無白底、低導覽列
+// Main App iOS 底部安全區完美適配版
+// Main App 穩定版：修復搖晃記憶體問題
+// Main App 加入行李清單權限控管
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2166,7 +2159,7 @@ export default function TravelApp() {
   const MY_PASSWORD = '1314520';
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
-  // 1. 搖晃彩蛋邏輯
+  // 搖晃彩蛋邏輯
   useEffect(() => {
     const handleShake = (e) => {
       const acc = e.accelerationIncludingGravity || e.acceleration;
@@ -2204,7 +2197,7 @@ export default function TravelApp() {
     }
   };
 
-  // 2. 滑動彩蛋邏輯
+  // 滑動彩蛋邏輯
   useEffect(() => {
     const handleStart = (clientX, clientY) => {
       touchStartRef.current = { x: clientX, y: clientY };
@@ -2249,7 +2242,7 @@ export default function TravelApp() {
     }
   }, [konamiSequence]);
 
-  // 3. 氣象更新
+  // 氣象更新
   useEffect(() => {
     const updateWeatherForecast = async () => {
       const today = new Date();
@@ -2408,7 +2401,7 @@ export default function TravelApp() {
               </div>
             )}
             
-            {/* 👇👇👇 這裡把 isAdmin 傳進去了 👇👇👇 */}
+            {/*  */}
             {activeTab === 'packing' && <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} />}
             
             {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} />}
