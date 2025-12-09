@@ -580,34 +580,45 @@ const UTILS_DATA = {
 // note:天氣 Widget (修ㄌ跨夜問題 + 24小時預報 + 橫向捲動)
 // 天氣 Widget (移除點擊彩蛋20251206)
 // 修正: 移除最外層的 shadow-xl，讓頂部變平滑
+// 3. UIUX part (V14 - 加入倒數計時)
 const WeatherHero = () => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
+  const [daysLeft, setDaysLeft] = useState(0);
 
   useEffect(() => {
+    // 1. 倒數計時邏輯 (修正版：立即執行)
+    const calcTime = () => {
+      const targetDate = new Date('2026-02-19T00:00:00+07:00'); // 清邁時間
+      const now = new Date();
+      const diff = targetDate - now;
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      setDaysLeft(days);
+    };
+    calcTime(); // 一載入馬上算
+    const timer = setInterval(calcTime, 60000); // 之後每分鐘更新
+
+    // 2. 天氣抓取邏輯
     const fetchWeather = async () => {
       try {
         const res = await fetch(
           'https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&current=temperature_2m,weather_code,relative_humidity_2m&hourly=temperature_2m,weather_code&forecast_days=2&timezone=Asia%2FBangkok'
         );
         const json = await res.json();
-        if (json && json.current) {
-          setData(json);
-        }
-        try {
-          const aqiRes = await fetch(
-            'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=18.7883&longitude=98.9853&current=us_aqi'
-          );
-          const aqiJson = await aqiRes.json();
-          if (aqiJson.current) setAqi(aqiJson.current.us_aqi);
-        } catch (e) {
-          console.warn('AQI fetch failed, using default');
-        }
+        if (json && json.current) setData(json);
+
+        const aqiRes = await fetch(
+          'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=18.7883&longitude=98.9853&current=us_aqi'
+        );
+        const aqiJson = await aqiRes.json();
+        if (aqiJson.current) setAqi(aqiJson.current.us_aqi);
       } catch (e) {
-        console.error('Weather load fail', e);
+        console.error(e);
       }
     };
     fetchWeather();
+
+    return () => clearInterval(timer);
   }, []);
 
   const getWeatherIcon = (code, size = 20) => {
@@ -642,13 +653,19 @@ const WeatherHero = () => {
   const nextHours = getNext24Hours();
 
   return (
-    // 這裡原本有 shadow-xl 刪掉ㄌ
-    <div className="relative bg-[#FDFBF7] pt-6 pb-8 px-6 border-b border-stone-200 rounded-b-[2.5rem] z-10 overflow-hidden">
+    <div className="relative bg-[#FDFBF7] pt-0 pb-8 px-6 border-b border-stone-200 rounded-b-[2.5rem] z-10 overflow-hidden">
+      {/* 新增：倒數計時條 */}
+      {daysLeft > 0 && (
+        <div className="absolute top-0 left-0 right-0 bg-amber-100 text-amber-800 text-[10px] font-bold text-center py-1.5 z-20 shadow-sm">
+          ✈️ 距離出發還有 <span className="text-amber-600 text-sm mx-1">{daysLeft}</span> 天！
+        </div>
+      )}
+
       <div className="absolute top-[-20px] right-[-20px] text-[8rem] font-serif text-amber-50 opacity-50 select-none leading-none pointer-events-none">
         Thai
       </div>
 
-      <div className="relative z-10">
+      <div className="relative z-10 mt-10"> {/* mt-10 是為了避開倒數條 */}
         <div className="flex justify-between items-end mb-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -702,7 +719,6 @@ const WeatherHero = () => {
               <div className="text-[10px] font-bold text-stone-400 writing-vertical-rl rotate-180 border-l pl-3 mr-3 border-stone-200 h-10 flex items-center justify-center tracking-widest flex-shrink-0">
                 FUTURE 24H
               </div>
-
               <div className="flex overflow-x-auto gap-4 pb-2 w-full no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {nextHours.map((h, idx) => (
                   <div key={idx} className="flex flex-col items-center gap-1 min-w-[3.5rem] flex-shrink-0">
@@ -859,11 +875,15 @@ const OutfitGuide = () => {
 // update: 地點卡片 (接收 day 和 index 來抓圖片)
 // update: 地點卡片 (V11 - 標籤美化 + 跟隨時間)
 // update: 地點卡片 (V13 - 修正圖片錯誤處理邏輯)
+// update: 地點卡片 (V16 - 修正版：穩定的清邁圖 + Grok的防卡死邏輯)
 const LocationCard = ({ item, day, index }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  // 新增：用來記錄是否已經嘗試過備用圖片 防止無限迴圈
+  // 用來記錄是否已經切換到備援圖片
   const [hasError, setHasError] = useState(false); 
+
+  // 備援圖片：一張穩定的清邁古城/寺廟風景圖 (來自 Pexels 高速圖床)
+  const BACKUP_IMAGE = 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
 
   const getIcon = () => {
     switch (item.type) {
@@ -931,35 +951,48 @@ const LocationCard = ({ item, day, index }) => {
 
       {isExpanded && (
         <div className="animate-fadeIn">
+          {/* 圖片容器 */}
           <div className="w-full h-48 overflow-hidden relative bg-stone-100">
+            {/* 只有在還沒載入完成、且還沒發生錯誤時，才顯示轉圈圈 */}
             {!isImageLoaded && !hasError && (
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center bg-stone-50">
                 <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
               </div>
             )}
+            
             <img 
-              src={getLocationImage(day, index)} 
+              // 加上 key 強制 React 在網址改變時重新處理這張圖
+              key={`${day}-${index}-${hasError}`}
+              // 如果有錯就用「固定的清邁風景圖」，沒錯就用原本的
+              src={
+                hasError
+                  ? BACKUP_IMAGE
+                  : getLocationImage(day, index)
+              }
               alt={item.name} 
               loading="lazy" 
+              
+              // 圖片載入成功：關閉 Loading
               onLoad={() => setIsImageLoaded(true)} 
-              className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} 
-              // 修正重點：防止無限重試
+              
+              // 圖片載入失敗：切換模式
               onError={(e) => { 
                 if (!hasError) {
-                  // 第一次失敗：嘗試載入 Unsplash 備用圖
-                  setHasError(true);
-                  e.target.src = 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80'; 
-                } else {
-                  // 第二次失敗（備用圖也掛了）：直接隱藏圖片，避免當機
-                  e.target.style.display = 'none';
+                  console.log(`圖片載入失敗，切換備援: day${day}_${index}`);
+                  setHasError(true);      // 標記發生錯誤，下次 render 會換網址
+                  setIsImageLoaded(true); // 🚀 關鍵：強制告訴系統「載完了(雖然是備援)」，讓轉圈圈消失
                 }
               }}
+              
+              className={`w-full h-full object-cover transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} 
             />
+            
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1">
               <Camera size={10} /> Image for reference
             </div>
           </div>
+
           <div className="p-5 bg-stone-50/50">
             <div className="mb-5">
               <h4 className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
