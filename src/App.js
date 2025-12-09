@@ -53,10 +53,6 @@ const getLocationImage = (day, index) => {
 // 2. 初始行程資料 日期改回 2026ㄌ
 // ============================================
 // ============================================
-// 2. 初始行程資料 (V23 最終版 - 含爛腳人挑戰)
-// ============================================
-
-// ============================================
 // 2. 初始行程資料 (V23 最終定案版 - 2026/02)
 // ============================================
 
@@ -511,8 +507,8 @@ const INITIAL_ITINERARY_DATA = [
 // 修改原本的 UTILS_DATA (填入正確航班資訊20251201)
 // 修改原本的 UTILS_DATA (含航廈資訊20251202)
 // 修改原本的 UTILS_DATA (精準對應截圖20251202)
-// 修改原本的 UTILS_DATA (V4.1 微調備註20251205)
-// 修改原本的 UTILS_DATA (V5.0 加入詳細住宿資料結構20251206)
+// 修改原本的 UTILS_DATA (微調備註20251205)
+// 修改原本的 UTILS_DATA (加入詳細住宿資料結構20251206)
 const UTILS_DATA = {
   flights: [
     {
@@ -646,7 +642,7 @@ const WeatherHero = () => {
   const nextHours = getNext24Hours();
 
   return (
-    // 這裡原本有 shadow-xl，我刪掉了
+    // 這裡原本有 shadow-xl 刪掉ㄌ
     <div className="relative bg-[#FDFBF7] pt-6 pb-8 px-6 border-b border-stone-200 rounded-b-[2.5rem] z-10 overflow-hidden">
       <div className="absolute top-[-20px] right-[-20px] text-[8rem] font-serif text-amber-50 opacity-50 select-none leading-none pointer-events-none">
         Thai
@@ -766,7 +762,7 @@ const FloatingStatus = ({ itinerary }) => {
 
 // update: 穿搭指南 + 爛腳圖例
 const OutfitGuide = () => {
-  const [isOpen, setIsOpen] = useState(false); // 預設關閉，保持版面清爽
+  const [isOpen, setIsOpen] = useState(false); // 預設關閉
 
   if (!isOpen)
     return (
@@ -830,7 +826,7 @@ const OutfitGuide = () => {
         </div>
       </div>
 
-      {/* 第二部分：爛腳圖例 (新增) */}
+      {/* 第二部分：爛腳圖例*/}
       <div className="pt-4 border-t border-amber-200/50">
         <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 text-base mb-3">
           <span className="text-lg">🦵</span> 爛腳指數說明
@@ -862,9 +858,12 @@ const OutfitGuide = () => {
 // 修正: 爛腳標籤移到時間旁邊 (flex-row layout)
 // update: 地點卡片 (接收 day 和 index 來抓圖片)
 // update: 地點卡片 (V11 - 標籤美化 + 跟隨時間)
+// update: 地點卡片 (V13 - 修正圖片錯誤處理邏輯)
 const LocationCard = ({ item, day, index }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  // 新增：用來記錄是否已經嘗試過備用圖片 防止無限迴圈
+  const [hasError, setHasError] = useState(false); 
 
   const getIcon = () => {
     switch (item.type) {
@@ -875,7 +874,6 @@ const LocationCard = ({ item, day, index }) => {
   };
 
   const getDifficultyColor = (diff) => {
-    // 使用柔和一點的背景色，讓視覺更舒服
     if (!diff) return 'bg-gray-100 text-gray-500';
     if (diff.includes('低') || diff.includes('零')) return 'bg-emerald-50 text-emerald-700 border-emerald-100';
     if (diff.includes('中')) return 'bg-amber-50 text-amber-700 border-amber-100';
@@ -904,32 +902,26 @@ const LocationCard = ({ item, day, index }) => {
           {getIcon()}
         </div>
         <div className="flex-1 min-w-0">
-          {/* Header: 時間 + 標籤們 */}
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
-            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
-              {item.time}
-            </span>
-
-            {/* 爛腳標籤：改成圓角更明顯的 Tag，放在時間旁 */}
-            {item.difficulty && (
-              <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
-                {item.difficulty}
-              </span>
-            )}
-
-            {item.highlight && (
-              <span className="text-[9px] px-1.5 py-0.5 rounded-md border border-amber-100 bg-amber-50 text-amber-700 font-bold">
-                ★ {item.highlight}
-              </span>
-            )}
+             <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
+               {item.time}
+             </span>
+             {item.difficulty && (
+               <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
+                 {item.difficulty}
+               </span>
+             )}
+             {item.highlight && (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-md border border-amber-100 bg-amber-50 text-amber-700 font-bold">
+                  ★ {item.highlight}
+                </span>
+             )}
           </div>
-
           <h3 className="font-bold text-stone-800 text-lg leading-tight mb-1 pr-2">
             {item.name}
           </h3>
-
           <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
-            {item.note}
+             {item.note}
           </p>
         </div>
         <div className="mt-8 text-stone-300 flex-shrink-0">
@@ -940,17 +932,28 @@ const LocationCard = ({ item, day, index }) => {
       {isExpanded && (
         <div className="animate-fadeIn">
           <div className="w-full h-48 overflow-hidden relative bg-stone-100">
-            {!isImageLoaded && (
+            {!isImageLoaded && !hasError && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
               </div>
             )}
-            <img
-              src={getLocationImage(day, index)}
-              alt={item.name}
-              onLoad={() => setIsImageLoaded(true)}
-              className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
-              onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80'; }}
+            <img 
+              src={getLocationImage(day, index)} 
+              alt={item.name} 
+              loading="lazy" 
+              onLoad={() => setIsImageLoaded(true)} 
+              className={`w-full h-full object-cover transition-opacity duration-500 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} 
+              // 修正重點：防止無限重試
+              onError={(e) => { 
+                if (!hasError) {
+                  // 第一次失敗：嘗試載入 Unsplash 備用圖
+                  setHasError(true);
+                  e.target.src = 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80'; 
+                } else {
+                  // 第二次失敗（備用圖也掛了）：直接隱藏圖片，避免當機
+                  e.target.style.display = 'none';
+                }
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1">
@@ -980,6 +983,7 @@ const LocationCard = ({ item, day, index }) => {
     </div>
   );
 };
+
 
 // 修正: 滑動速度由 300ms 提升到 100ms
 // 修正: 點擊後將卡片置於「螢幕垂直置中」的位置，且速度極快
@@ -1812,12 +1816,16 @@ const ThaiTips = () => {
 };
 
 // 修改 PackingPage: 接收 isKonamiActive 來切換顯示模式
-const PackingPage = ({ isKonamiActive }) => {
+// 修改 PackingPage: 加入 isAdmin 控制，訪客只能看不能改
+// 修改 PackingPage: V15 - 加入 Toast 通知 + LocalStorage 保護
+const PackingPage = ({ isKonamiActive, isAdmin }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [packingData, setPackingData] = useState({});
   const [newItem, setNewItem] = useState('');
+  
+  // ✨ 新增：控制 Toast 顯示的狀態
+  const [showToast, setShowToast] = useState(false);
 
-  // 角色圖片對照表
   const CHARACTER_MAP = {
     佑任: 'https://www.sanrio.co.jp/special/characterranking/2025/assets/img/results/img_rank1.png', // 布丁狗
     軒寶: 'https://www.sanrio.co.jp/special/characterranking/2025/assets/img/characters/hellokitty.png', // Kitty
@@ -1842,12 +1850,32 @@ const PackingPage = ({ isKonamiActive }) => {
     }
   }, []);
 
+  // 🛡️ 優化：加入 try-catch 與容量檢查
   const saveToStorage = (newData) => {
-    setPackingData(newData);
-    localStorage.setItem('cm_packing_list_v2', JSON.stringify(newData));
+    try {
+      const dataStr = JSON.stringify(newData);
+      // 檢查是否超過 4MB (雖然純文字很難超過，但這是好習慣)
+      if (dataStr.length > 4000000) {
+        alert('⚠️ 行李清單太長了！請刪除一些不必要的項目');
+        return;
+      }
+      localStorage.setItem('cm_packing_list_v2', dataStr);
+      setPackingData(newData);
+    } catch (e) {
+      console.error('儲存失敗:', e);
+      alert('❌ 儲存失敗，您的手機空間可能不足');
+    }
   };
 
   const toggleItem = (user, index) => {
+    // 🛡️ 訪客模式：改用 Toast 提示，不跳 alert
+    if (!isAdmin) {
+      setShowToast(true);
+      // 3秒後自動消失
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+
     const newData = { ...packingData };
     newData[user][index].checked = !newData[user][index].checked;
     saveToStorage(newData);
@@ -1886,8 +1914,23 @@ const PackingPage = ({ isKonamiActive }) => {
   };
 
   return (
-    <div className="pb-24 min-h-screen bg-[#FDFBF7]">
+    <div className="pb-24 min-h-screen bg-[#FDFBF7] relative">
       <ThaiTips />
+
+      {/* ✨ Toast 通知元件 (浮動在下方) */}
+      {showToast && (
+        <div className="fixed bottom-24 left-6 right-6 z-50 animate-bounce">
+          <div className="bg-stone-800/95 backdrop-blur text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-stone-700">
+            <div className="bg-stone-700 p-2 rounded-full">
+               <Lock size={20} className="text-amber-400" />
+            </div>
+            <div>
+              <div className="font-bold text-sm text-amber-50">訪客模式 Read Only</div>
+              <div className="text-[10px] text-stone-300 mt-0.5">請輸入團員密碼 (1314520) 才能編輯</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="px-6 mt-2 mb-4">
         <h2 className="text-2xl font-serif font-bold text-stone-800 flex items-center gap-2">
@@ -1908,20 +1951,20 @@ const PackingPage = ({ isKonamiActive }) => {
             <button
               key={user}
               onClick={() => setCurrentUser(user)}
-              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
-                ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
-                : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
-                }`}
+              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${
+                currentUser === user
+                  ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
+                  : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
+              }`}
             >
-              {/* 判斷：如果有觸發彩蛋，就顯示圖片；否則顯示文字 */}
               {isKonamiActive ? (
                 <div className="flex flex-col items-center animate-bounce">
-                  {/* 針對學弟(大耳狗)做特別放大處理 scale-125 */}
                   <img
                     src={CHARACTER_MAP[user]}
                     alt={user}
-                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${user === '學弟' ? 'scale-125' : ''
-                      }`}
+                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${
+                      user === '學弟' ? 'scale-125' : ''
+                    }`}
                   />
                   <span className="text-[10px] opacity-80">{user}</span>
                 </div>
@@ -1945,7 +1988,6 @@ const PackingPage = ({ isKonamiActive }) => {
           <div className="flex justify-between items-end mb-4">
             <h2 className="text-2xl font-serif font-bold text-stone-800 flex items-center gap-2">
               <span className="text-amber-600">{currentUser}</span> 的清單
-              {/* 如果觸發彩蛋，標題旁也顯示小圖 */}
               {isKonamiActive && (
                 <img
                   src={CHARACTER_MAP[currentUser]}
@@ -1966,58 +2008,76 @@ const PackingPage = ({ isKonamiActive }) => {
             />
           </div>
 
-          <div className="mb-6 flex gap-2">
-            <input
-              type="text"
-              value={newItem}
-              onChange={(e) => setNewItem(e.target.value)}
-              placeholder="新增個人項目..."
-              className="flex-1 p-3 rounded-xl border border-stone-200 focus:outline-none focus:border-amber-500 bg-white shadow-sm"
-              onKeyPress={(e) => e.key === 'Enter' && addItem()}
-            />
-            <button
-              onClick={addItem}
-              className="bg-stone-800 text-amber-50 px-5 rounded-xl font-bold active:scale-95 transition-transform shadow-md"
-            >
-              +
-            </button>
-          </div>
+          {/* 只有 Admin 才能看到新增欄位 */}
+          {isAdmin && (
+            <div className="mb-6 flex gap-2">
+              <input
+                type="text"
+                value={newItem}
+                onChange={(e) => setNewItem(e.target.value)}
+                placeholder="新增個人項目..."
+                className="flex-1 p-3 rounded-xl border border-stone-200 focus:outline-none focus:border-amber-500 bg-white shadow-sm"
+                onKeyPress={(e) => e.key === 'Enter' && addItem()}
+              />
+              <button
+                onClick={addItem}
+                className="bg-stone-800 text-amber-50 px-5 rounded-xl font-bold active:scale-95 transition-transform shadow-md"
+              >
+                +
+              </button>
+            </div>
+          )}
+          
+          {/* 如果是訪客，顯示一條靜態提示 */}
+          {!isAdmin && (
+            <div className="mb-4 text-center">
+               <span className="text-[10px] bg-stone-100 text-stone-400 px-3 py-1 rounded-full border border-stone-200">
+                 🔒 訪客模式：點擊項目可查看權限提示
+               </span>
+            </div>
+          )}
 
           <div className="space-y-3">
             {packingData[currentUser]?.map((item, index) => (
               <div
                 key={index}
                 onClick={() => toggleItem(currentUser, index)}
-                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${item.checked
-                  ? 'bg-stone-100 border-transparent opacity-60'
-                  : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
-                  }`}
+                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${
+                  item.checked
+                    ? 'bg-stone-100 border-transparent opacity-60'
+                    : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
+                }`}
               >
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${item.checked
-                    ? 'bg-green-500 border-green-500 text-white'
-                    : 'border-stone-300 bg-stone-50'
-                    }`}
+                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${
+                    item.checked
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : 'border-stone-300 bg-stone-50'
+                  }`}
                 >
                   {item.checked && <CheckCircle size={14} strokeWidth={3} />}
                 </div>
                 <span
-                  className={`flex-1 font-medium ${item.checked
-                    ? 'text-stone-400 line-through decoration-stone-400'
-                    : 'text-stone-700'
-                    }`}
+                  className={`flex-1 font-medium ${
+                    item.checked
+                      ? 'text-stone-400 line-through decoration-stone-400'
+                      : 'text-stone-700'
+                  }`}
                 >
                   {item.name}
                 </span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteItem(index);
-                  }}
-                  className="p-2 text-stone-300 hover:text-red-400 transition-colors"
-                >
-                  ×
-                </button>
+                {/* 只有 Admin 才能看到刪除按鈕 */}
+                {isAdmin && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteItem(index);
+                    }}
+                    className="p-2 text-stone-300 hover:text-red-400 transition-colors"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -2044,13 +2104,12 @@ const PackingPage = ({ isKonamiActive }) => {
 // Main App (20261208 優化 透明度調整 + 電腦版防扁 + 橫向遮罩)
 // Main App (20261208 最終修正版：輸入框沉底 + 美樂蒂露臉)
 // Main App (20261208 修復白底 + 文字顯示優化)
-// Main App (20261208 )
-// Main App (20261208 回歸穩定版 + 黑底防破圖)
 // Main App (20261209回歸穩定版：修復白底透出、移除頂部陰影、調整導覽列高度)
-// Main App (V8 - 最終回退修復版：移除陰影、降低選單、修復白底)
-// Main App (V9 - 解決鍵盤露餡 + 移除頂部醜陰影)
-// Main App (V10 - 最終優化：無陰影、無白底、低導覽列)
-// Main App (V11 - iOS 底部安全區完美適配版)
+// Main App (解決鍵盤露餡 + 移除頂部醜陰影)
+// Main App (最終優化：無陰影、無白底、低導覽列)
+// Main App (iOS 底部安全區完美適配版)
+// Main App (穩定版：修復搖晃記憶體問題)
+// Main App (V14 - 加入行李清單權限控管)
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2063,29 +2122,28 @@ export default function TravelApp() {
   const [openDay, setOpenDay] = useState(0);
   const [itinerary, setItinerary] = useState(INITIAL_ITINERARY_DATA);
 
-  // 彩蛋狀態
   const [shakeCount, setShakeCount] = useState(0);
   const [showShakeEgg, setShowShakeEgg] = useState(false);
-
-  // 滑動彩蛋
+  
+  const lastShakeTimeRef = useRef(0);
+  
   const touchStartRef = useRef({ x: 0, y: 0 });
   const [konamiSequence, setKonamiSequence] = useState([]);
   const [isKonamiActive, setIsKonamiActive] = useState(false);
-
   const MY_PASSWORD = '1314520';
-
-  // 使用俯視的熱帶叢林
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
   // 1. 搖晃彩蛋邏輯
   useEffect(() => {
-    let lastShakeTime = 0;
     const handleShake = (e) => {
       const acc = e.accelerationIncludingGravity || e.acceleration;
       if (!acc) return;
       const total = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
-      if (total > 20 && Date.now() - lastShakeTime > 300) {
-        lastShakeTime = Date.now();
+      
+      const now = Date.now();
+
+      if (total > 20 && now - lastShakeTimeRef.current > 300) {
+        lastShakeTimeRef.current = now;
         setShakeCount((prev) => {
           const newCount = prev + 1;
           if (newCount >= 8) {
@@ -2267,141 +2325,34 @@ export default function TravelApp() {
   }, [isLocked, itinerary]);
 
   return (
-    // 外層容器：根據 isLocked 切換背景色 (解決鍵盤彈出露白底問題)
     <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
-      {/* 橫向模式遮罩 */}
+      
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
         <p className="text-lg font-bold tracking-widest">請將手機轉為直向</p>
         <p className="text-xs text-stone-500 mt-2">Please rotate your phone</p>
       </div>
 
-      {/* 鎖定畫面 */}
       {isLocked && (
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900 h-screen w-full">
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
+            <div className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'left center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
+            <div className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
             
-            {/* 左半邊葉子門 */}
-            <div
-              className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
-                isUnlocking ? '-translate-x-full' : 'translate-x-0'
-              }`}
-              style={{
-                backgroundImage: `url(${JUNGLE_BG})`,
-                backgroundSize: '200% 120%',
-                backgroundPosition: 'left center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            >
-              <div className="absolute inset-0 bg-black/20"></div>
-            </div>
-
-            {/* 右半邊葉子門 */}
-            <div
-              className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${
-                isUnlocking ? 'translate-x-full' : 'translate-x-0'
-              }`}
-              style={{
-                backgroundImage: `url(${JUNGLE_BG})`,
-                backgroundSize: '200% 120%',
-                backgroundPosition: 'right center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            >
-              <div className="absolute inset-0 bg-black/20"></div>
-            </div>
-
-            {/* 中央內容區 */}
-            <div
-              className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${
-                isUnlocking ? 'opacity-0' : 'opacity-100'
-              }`}
-            >
-              <div
-                onMouseDown={handlePressStart}
-                onMouseUp={handlePressEnd}
-                onMouseLeave={handlePressEnd}
-                onTouchStart={handlePressStart}
-                onTouchEnd={handlePressEnd}
-                onContextMenu={(e) => e.preventDefault()}
-                className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"
-                style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
-              >
-                <HelpCircle
-                  size={40}
-                  className="text-white drop-shadow-md"
-                  strokeWidth={2.5}
-                />
-              </div>
-
-              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">
-                Chiang Mai
-              </h2>
-
-              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">
-                佑任・軒寶・學弟・腳慢
-              </p>
-              <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">
-                Jungle Adventure
-              </p>
-
-              {/* 輸入框 */}
+            <div className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'}`}>
+              <div onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onMouseLeave={handlePressEnd} onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onContextMenu={(e) => e.preventDefault()} className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none" style={{ WebkitUserSelect: 'none', userSelect: 'none' }}><HelpCircle size={40} className="text-white drop-shadow-md" strokeWidth={2.5} /></div>
+              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
+              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
+              <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">Jungle Adventure</p>
+              
               <div className="w-full relative mb-6 mt-auto">
-                <KeyRound
-                  size={18}
-                  className="absolute left-4 top-4 text-emerald-100"
-                />
-                <input
-                  type="password"
-                  value={inputPwd}
-                  onChange={(e) => setInputPwd(e.target.value)}
-                  placeholder="Passcode"
-                  className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg"
-                />
+                <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
+                <input type="password" value={inputPwd} onChange={(e) => setInputPwd(e.target.value)} placeholder="Passcode" className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" />
               </div>
-
-              <button
-                onClick={handleUnlock}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10" 
-              >
-                Start Journey <ArrowRight size={18} />
-              </button>
-
-              <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">
-                System Ver. 9.3 清邁4人團🧋
-              </div>
+              <button onClick={handleUnlock} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10">Start Journey <ArrowRight size={18} /></button>
+              <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">System Ver. 9.3 清邁4人團🧋</div>
             </div>
-
-            {/* Hello Kitty 彩蛋 */}
-            {showHelloKitty && (
-              <div
-                onClick={() => setShowHelloKitty(false)}
-                className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"
-              >
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"
-                >
-                  <button
-                    onClick={() => setShowHelloKitty(false)}
-                    className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold"
-                  >
-                    ×
-                  </button>
-                  <img
-                    src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg"
-                    alt="Hello Kitty Surprise"
-                    className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md"
-                  />
-                  <h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">
-                    Surprise!
-                  </h3>
-                  <p className="text-pink-400 text-sm font-bold">
-                    發現隱藏彩蛋 🎉
-                  </p>
-                </div>
-              </div>
-            )}
+            {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div onClick={(e) => e.stopPropagation()} className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"><button onClick={() => setShowHelloKitty(false)} className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold">×</button><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" alt="Hello Kitty Surprise" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md" /><h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">Surprise!</h3><p className="text-pink-400 text-sm font-bold">發現隱藏彩蛋 🎉</p></div></div>)}
           </div>
         </div>
       )}
@@ -2423,48 +2374,16 @@ export default function TravelApp() {
                 <FloatingStatus itinerary={itinerary} />
               </div>
             )}
-            {activeTab === 'packing' && <PackingPage isKonamiActive={isKonamiActive} />}
+            
+            {/* 👇👇👇 這裡把 isAdmin 傳進去了 👇👇👇 */}
+            {activeTab === 'packing' && <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} />}
+            
             {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} />}
           </main>
           
-          {/* 搖晃彩蛋 */}
-          {showShakeEgg && (
-            <div
-              onClick={() => setShowShakeEgg(false)}
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"
-            >
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"
-              >
-                <button
-                  onClick={() => setShowShakeEgg(false)}
-                  className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold z-10"
-                >
-                  ×
-                </button>
-                <img
-                  src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif"
-                  alt="Shake Surprise"
-                  className="w-full rounded-xl mb-4"
-                />
-                <h3 className="text-2xl font-bold text-pink-600 mb-2 font-serif">
-                  搖出驚喜!
-                </h3>
-                <p className="text-pink-500 mb-2">大家的旅途一定會超順利~</p>
-              </div>
-            </div>
-          )}
+          {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div onClick={(e) => e.stopPropagation()} className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"><button onClick={() => setShowShakeEgg(false)} className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold">×</button><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" alt="Shake Surprise" className="w-full rounded-xl mb-4" /><h3 className="text-2xl font-bold text-pink-600 mb-2 font-serif">搖出驚喜!</h3><p className="text-pink-500 mb-2">大家的旅途一定會超順利~</p></div></div>)}
 
-          {/* 🚀 底部導覽列 iOS 修正版 
-            1. py-3 -> 保持上方間距
-            2. paddingBottom: 'calc(16px + env(safe-area-inset-bottom))'
-               這行是關鍵！它會自動加上 iPhone 底部的黑線高度，再加上原本的 16px (pb-4) 
-          */}
-          <nav 
-            className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 z-40 transition-all duration-300"
-            style={{ paddingBottom: 'calc(16px + env(safe-area-inset-bottom))' }}
-          >
+          <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 pb-4 z-40">
             <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'}`}><MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">行程</span></button>
             <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'}`}><CheckCircle size={22} strokeWidth={activeTab === 'packing' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">準備</span></button>
             <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'}`}><Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">工具</span></button>
