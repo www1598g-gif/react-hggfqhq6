@@ -879,7 +879,7 @@ const LocationCard = ({ item, day, index }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   // 用來記錄是否已經切換到備援圖片
-  const [hasError, setHasError] = useState(false); 
+  const [hasError, setHasError] = useState(false);
 
   // 備援圖片
   const BACKUP_IMAGE = 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
@@ -922,25 +922,25 @@ const LocationCard = ({ item, day, index }) => {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
-             <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
-               {item.time}
-             </span>
-             {item.difficulty && (
-               <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
-                 {item.difficulty}
-               </span>
-             )}
-             {item.highlight && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-md border border-amber-100 bg-amber-50 text-amber-700 font-bold">
-                  ★ {item.highlight}
-                </span>
-             )}
+            <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
+              {item.time}
+            </span>
+            {item.difficulty && (
+              <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
+                {item.difficulty}
+              </span>
+            )}
+            {item.highlight && (
+              <span className="text-[9px] px-1.5 py-0.5 rounded-md border border-amber-100 bg-amber-50 text-amber-700 font-bold">
+                ★ {item.highlight}
+              </span>
+            )}
           </div>
           <h3 className="font-bold text-stone-800 text-lg leading-tight mb-1 pr-2">
             {item.name}
           </h3>
           <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
-             {item.note}
+            {item.note}
           </p>
         </div>
         <div className="mt-8 text-stone-300 flex-shrink-0">
@@ -958,8 +958,8 @@ const LocationCard = ({ item, day, index }) => {
                 <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
               </div>
             )}
-            
-            <img 
+
+            <img
               // 加上 key 強制 React 在網址改變時重新處理這張圖
               key={`${day}-${index}-${hasError}`}
               // 如果有錯就用固定清邁圖 沒錯就用原本的
@@ -968,24 +968,24 @@ const LocationCard = ({ item, day, index }) => {
                   ? BACKUP_IMAGE
                   : getLocationImage(day, index)
               }
-              alt={item.name} 
-              loading="lazy" 
-              
+              alt={item.name}
+              loading="lazy"
+
               // 圖片載入成功 關閉 Loading
-              onLoad={() => setIsImageLoaded(true)} 
-              
+              onLoad={() => setIsImageLoaded(true)}
+
               // 圖片載入失敗 切換模式
-              onError={(e) => { 
+              onError={(e) => {
                 if (!hasError) {
                   console.log(`圖片載入失敗，切換備援: day${day}_${index}`);
                   setHasError(true);      // 標記發生錯誤 下次 render 換網
                   setIsImageLoaded(true); // 強制轉圈圈消失
                 }
               }}
-              
-              className={`w-full h-full object-cover transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`} 
+
+              className={`w-full h-full object-cover transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
             />
-            
+
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1">
               <Camera size={10} /> Image for reference
@@ -1067,15 +1067,15 @@ const DayCard = ({ dayData, isOpen, toggle }) => {
       <div
         onClick={toggle}
         className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen
-            ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
-            : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
+          ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
+          : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
           }`}
       >
         <div className="flex items-center gap-4">
           <div
             className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen
-                ? 'bg-stone-700 border-stone-600'
-                : 'bg-stone-50 border-stone-200'
+              ? 'bg-stone-700 border-stone-600'
+              : 'bg-stone-50 border-stone-200'
               }`}
           >
             <span
@@ -1848,7 +1848,7 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [packingData, setPackingData] = useState({});
   const [newItem, setNewItem] = useState('');
-  
+
   // 控制 Toast 顯示的狀態
   const [showToast, setShowToast] = useState(false);
 
@@ -1948,7 +1948,7 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
         <div className="fixed bottom-24 left-6 right-6 z-50 animate-bounce">
           <div className="bg-stone-800/95 backdrop-blur text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-stone-700">
             <div className="bg-stone-700 p-2 rounded-full">
-               <Lock size={20} className="text-amber-400" />
+              <Lock size={20} className="text-amber-400" />
             </div>
             <div>
               <div className="font-bold text-sm text-amber-50">訪客模式 Read Only</div>
@@ -1977,20 +1977,18 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
             <button
               key={user}
               onClick={() => setCurrentUser(user)}
-              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${
-                currentUser === user
+              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
                   ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
                   : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
-              }`}
+                }`}
             >
               {isKonamiActive ? (
                 <div className="flex flex-col items-center animate-bounce">
                   <img
                     src={CHARACTER_MAP[user]}
                     alt={user}
-                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${
-                      user === '學弟' ? 'scale-125' : ''
-                    }`}
+                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${user === '學弟' ? 'scale-125' : ''
+                      }`}
                   />
                   <span className="text-[10px] opacity-80">{user}</span>
                 </div>
@@ -2053,13 +2051,13 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
               </button>
             </div>
           )}
-          
+
           {/* 如果是訪客 顯示靜態提示 */}
           {!isAdmin && (
             <div className="mb-4 text-center">
-               <span className="text-[10px] bg-stone-100 text-stone-400 px-3 py-1 rounded-full border border-stone-200">
-                 🔒 訪客模式：點擊項目可查看權限提示
-               </span>
+              <span className="text-[10px] bg-stone-100 text-stone-400 px-3 py-1 rounded-full border border-stone-200">
+                🔒 訪客模式：點擊項目可查看權限提示
+              </span>
             </div>
           )}
 
@@ -2068,27 +2066,24 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
               <div
                 key={index}
                 onClick={() => toggleItem(currentUser, index)}
-                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${
-                  item.checked
+                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${item.checked
                     ? 'bg-stone-100 border-transparent opacity-60'
                     : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
-                }`}
+                  }`}
               >
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${
-                    item.checked
+                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${item.checked
                       ? 'bg-green-500 border-green-500 text-white'
                       : 'border-stone-300 bg-stone-50'
-                  }`}
+                    }`}
                 >
                   {item.checked && <CheckCircle size={14} strokeWidth={3} />}
                 </div>
                 <span
-                  className={`flex-1 font-medium ${
-                    item.checked
+                  className={`flex-1 font-medium ${item.checked
                       ? 'text-stone-400 line-through decoration-stone-400'
                       : 'text-stone-700'
-                  }`}
+                    }`}
                 >
                   {item.name}
                 </span>
@@ -2150,9 +2145,9 @@ export default function TravelApp() {
 
   const [shakeCount, setShakeCount] = useState(0);
   const [showShakeEgg, setShowShakeEgg] = useState(false);
-  
+
   const lastShakeTimeRef = useRef(0);
-  
+
   const touchStartRef = useRef({ x: 0, y: 0 });
   const [konamiSequence, setKonamiSequence] = useState([]);
   const [isKonamiActive, setIsKonamiActive] = useState(false);
@@ -2165,7 +2160,7 @@ export default function TravelApp() {
       const acc = e.accelerationIncludingGravity || e.acceleration;
       if (!acc) return;
       const total = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
-      
+
       const now = Date.now();
 
       if (total > 20 && now - lastShakeTimeRef.current > 300) {
@@ -2352,7 +2347,7 @@ export default function TravelApp() {
 
   return (
     <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
-      
+
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
         <p className="text-lg font-bold tracking-widest">請將手機轉為直向</p>
@@ -2364,58 +2359,63 @@ export default function TravelApp() {
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
             <div className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'left center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
             <div className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
-            
+
             <div className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'}`}>
               <div onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onMouseLeave={handlePressEnd} onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onContextMenu={(e) => e.preventDefault()} className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none" style={{ WebkitUserSelect: 'none', userSelect: 'none' }}><HelpCircle size={40} className="text-white drop-shadow-md" strokeWidth={2.5} /></div>
               <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
               <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
               <p className="text-white/80 text-xs mb-8 text-center tracking-wider font-sans drop-shadow">Jungle Adventure</p>
-              
+
               <div className="w-full relative mb-6 mt-auto">
                 <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
                 <input type="password" value={inputPwd} onChange={(e) => setInputPwd(e.target.value)} placeholder="Passcode" className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" />
               </div>
-              <button onClick={handleUnlock} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2 mb-10">Start Journey <ArrowRight size={18} /></button>
-              <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">System Ver. 10.0 清邁4人團🧋</div>
-            </div>
-            {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div onClick={(e) => e.stopPropagation()} className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"><button onClick={() => setShowHelloKitty(false)} className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold">×</button><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" alt="Hello Kitty Surprise" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md" /><h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">Surprise!</h3><p className="text-pink-400 text-sm font-bold">發現隱藏彩蛋 🎉</p></div></div>)}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2"
+              style={{ marginBottom: 'calc(60px + env(safe-area-inset-bottom))' }}
+              >Start Journey <ArrowRight size={18} /></button>
+            <div className="absolute bottom-3 text-white/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm">System Ver. 10.0 清邁4人團🧋</div>
           </div>
+          {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div onClick={(e) => e.stopPropagation()} className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"><button onClick={() => setShowHelloKitty(false)} className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold">×</button><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" alt="Hello Kitty Surprise" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4 border-2 border-pink-100 shadow-md" /><h3 className="text-2xl font-bold text-pink-500 mb-2 font-serif">Surprise!</h3><p className="text-pink-400 text-sm font-bold">發現隱藏彩蛋 🎉</p></div></div>)}
         </div>
-      )}
-
-      {/* 只有解鎖後才渲染內容 */}
-      {!isLocked && (
-        <div className="bg-[#FDFBF7] min-h-screen">
-          <WeatherHero />
-          <main className="pb-28">
-            {activeTab === 'itinerary' && (
-              <div className="pb-4">
-                <OutfitGuide />
-                <div className="p-4 mt-2">
-                  {itinerary.map((day, idx) => (
-                    <DayCard key={day.day} dayData={day} isOpen={openDay === idx} toggle={() => setOpenDay(openDay === idx ? -1 : idx)} />
-                  ))}
-                  <div className="text-center text-xs text-stone-400 mt-12 mb-8 font-serif italic">— Journey to Chiang Mai —</div>
-                </div>
-                <FloatingStatus itinerary={itinerary} />
-              </div>
-            )}
-            
-            {/*  */}
-            {activeTab === 'packing' && <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} />}
-            
-            {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} />}
-          </main>
-          
-          {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div onClick={(e) => e.stopPropagation()} className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"><button onClick={() => setShowShakeEgg(false)} className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold">×</button><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" alt="Shake Surprise" className="w-full rounded-xl mb-4" /><h3 className="text-2xl font-bold text-pink-600 mb-2 font-serif">搖出驚喜!</h3><p className="text-pink-500 mb-2">大家的旅途一定會超順利~</p></div></div>)}
-
-          <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 pb-4 z-40">
-            <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'}`}><MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">行程</span></button>
-            <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'}`}><CheckCircle size={22} strokeWidth={activeTab === 'packing' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">準備</span></button>
-            <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'}`}><Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">工具</span></button>
-          </nav>
         </div>
-      )}
+  )
+}
+
+{/* 只有解鎖後才渲染內容 */ }
+{
+  !isLocked && (
+    <div className="bg-[#FDFBF7] min-h-screen">
+      <WeatherHero />
+      <main className="pb-28">
+        {activeTab === 'itinerary' && (
+          <div className="pb-4">
+            <OutfitGuide />
+            <div className="p-4 mt-2">
+              {itinerary.map((day, idx) => (
+                <DayCard key={day.day} dayData={day} isOpen={openDay === idx} toggle={() => setOpenDay(openDay === idx ? -1 : idx)} />
+              ))}
+              <div className="text-center text-xs text-stone-400 mt-12 mb-8 font-serif italic">— Journey to Chiang Mai —</div>
+            </div>
+            <FloatingStatus itinerary={itinerary} />
+          </div>
+        )}
+
+        {/*  */}
+        {activeTab === 'packing' && <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} />}
+
+        {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} />}
+      </main>
+
+      {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div onClick={(e) => e.stopPropagation()} className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl max-w-sm relative border-4 border-pink-200 text-center"><button onClick={() => setShowShakeEgg(false)} className="absolute top-2 right-4 text-pink-400 hover:text-pink-600 text-2xl font-bold">×</button><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" alt="Shake Surprise" className="w-full rounded-xl mb-4" /><h3 className="text-2xl font-bold text-pink-600 mb-2 font-serif">搖出驚喜!</h3><p className="text-pink-500 mb-2">大家的旅途一定會超順利~</p></div></div>)}
+
+      <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 pb-4 z-40">
+        <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800' : 'text-stone-400'}`}><MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">行程</span></button>
+        <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800' : 'text-stone-400'}`}><CheckCircle size={22} strokeWidth={activeTab === 'packing' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">準備</span></button>
+        <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800' : 'text-stone-400'}`}><Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">工具</span></button>
+      </nav>
     </div>
+  )
+}
+    </div >
   );
 }
