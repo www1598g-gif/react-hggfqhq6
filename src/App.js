@@ -1686,7 +1686,7 @@ const CurrencySection = () => {
 };
 
 // 修改 UtilsPage
-const UtilsPage = ({ isAdmin, isMember }) => {
+const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
   return (
     <div className="p-6 space-y-6 pb-24 animate-fade-in bg-[#FDFBF7] min-h-screen">
       <h2 className="text-2xl font-serif font-bold text-stone-800 mb-6">
