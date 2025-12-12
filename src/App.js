@@ -2902,6 +2902,7 @@ useEffect(() => {
               <PackingPage
                 isKonamiActive={isKonamiActive} // 🔥 修正：這裡改成傳入 state 變數，而不是 false
                 isAdmin={isAdmin}
+                isMember={isMember}
               />
             )}
             {/* 🔥 5. 把 systemInfo 傳進 UtilsPage 讓你在裡面改 */}
