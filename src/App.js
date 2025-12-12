@@ -2299,7 +2299,7 @@ const TippingGuide = () => {
 // 修改 PackingPage 接收 isKonamiActive 來切換顯示模式
 // 修改 PackingPage 加入 isAdmin 控制 訪客只能看
 // 修改 PackingPage 加入 Toast 通知 以及LocalStorage 保護
-const PackingPage = ({ isKonamiActive, isAdmin }) => {
+const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [packingData, setPackingData] = useState({});
   const [newItem, setNewItem] = useState('');
@@ -2350,7 +2350,7 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
 
   const toggleItem = (user, index) => {
     // 訪客模式改用 Toast 提示
-    if (!isAdmin) {
+     if (!isAdmin && !isMember) { 
       setShowToast(true);
       // 3秒後自動消失
       setTimeout(() => setShowToast(false), 3000);
@@ -2492,7 +2492,7 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
           </div>
 
           {/* 只有 Admin 才能看到新增欄位 */}
-          {isAdmin && (
+          {(isAdmin || isMember) && (
             <div className="mb-6 flex gap-2">
               <input
                 type="text"
@@ -2512,7 +2512,7 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
           )}
 
           {/* 如果是訪客 顯示靜態提示 */}
-          {!isAdmin && (
+          {!isAdmin && !isMember && (
             <div className="mb-4 text-center">
               <span className="text-[10px] bg-stone-100 text-stone-400 px-3 py-1 rounded-full border border-stone-200">
                 🔒 訪客模式：點擊項目可查看權限提示
@@ -2547,7 +2547,7 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
                   {item.name}
                 </span>
                 {/* 只有 Admin 才能看到刪除按鈕 */}
-                {isAdmin && (
+                {(isAdmin || isMember) && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
