@@ -1041,80 +1041,64 @@ const OutfitGuide = () => {
   );
 };
 
-// update地點卡片 爛腳標籤獨立一行
-// update地點卡片移除內部重複標示
-// update: 地點卡片 標籤分行顯示
-// 修正: 爛腳標籤移到時間旁邊
-//
-// update地點卡片標籤美化
-// update修正圖片錯誤處理邏輯
-// update修正版清邁圖 + Grok的防卡死邏輯
-const LocationCard = ({
-  item,
-  day,
-  index,
-  isAdmin,
-  updateTime,
-  updateContent, // 👈 記得這裡要接收這個新功能
-  onDelete,
-  onMoveUp,
-  onMoveDown,
-  isFirst,
-  isLast,
-}) => {
+
+const LocationCard = ({ item, day, index, isAdmin, updateTime, updateContent, onDelete, onMoveUp, onMoveDown, isFirst, isLast }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const BACKUP_IMAGE =
-    'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
+  const BACKUP_IMAGE = 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
 
   const getIcon = () => {
     switch (item.type) {
-      case 'food':
-        return <Utensils size={16} className="text-orange-600" />;
-      case 'transport':
-        return <Car size={16} className="text-blue-500" />;
-      default:
-        return <MapPin size={16} className="text-emerald-500" />;
+      case 'food': return <Utensils size={16} className="text-orange-600" />;
+      case 'transport': return <Car size={16} className="text-blue-500" />;
+      default: return <MapPin size={16} className="text-emerald-500" />;
     }
   };
 
   const getDifficultyColor = (diff) => {
     if (!diff) return 'bg-gray-100 text-gray-500';
-    if (diff.includes('低') || diff.includes('零'))
-      return 'bg-emerald-50 text-emerald-700 border-emerald-100';
-    if (diff.includes('中'))
-      return 'bg-amber-50 text-amber-700 border-amber-100';
-    if (diff.includes('高') || diff.includes('極高'))
-      return 'bg-rose-50 text-rose-700 border-rose-100';
+    if (diff.includes('低') || diff.includes('零')) return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+    if (diff.includes('中')) return 'bg-amber-50 text-amber-700 border-amber-100';
+    if (diff.includes('高') || diff.includes('極高')) return 'bg-rose-50 text-rose-700 border-rose-100';
     return 'bg-gray-50 text-gray-600 border-gray-100';
   };
 
+  // 🔥 修正：標準 Google Maps 連結
   const handleNav = (e) => {
     e.stopPropagation();
-    window.open(
-      `https://www.google.com/maps/search/?api=1&query=$?q=${encodeURIComponent(
-        item.nav
-      )}`,
-      '_blank'
-    );
+    // 使用標準 Google Maps 搜尋連結
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.nav)}`;
+    window.open(mapUrl, '_blank');
   };
 
   const handleAskAI = (e) => {
     e.stopPropagation();
     const prompt = `我正在清邁旅遊，地點是「${item.name}」。請告訴我這裡有什麼必吃美食、必買紀念品，或是需要注意的參觀禁忌？請用繁體中文回答。`;
-    window.open(
-      `https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`,
-      '_blank'
-    );
+    window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`, '_blank');
+  };
+
+  // 🔥 新增：圖片上傳處理
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 限制 2MB
+        alert('圖片太大囉！請小於 2MB 🐹');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateContent('imageId', reader.result); // 存 Base64
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
     <div
       onClick={() => setIsExpanded(!isExpanded)}
-      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
-        }`}
+      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''}`}
     >
       <div className="p-4 flex items-start gap-4">
         <div className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center border border-stone-100">
@@ -1122,7 +1106,6 @@ const LocationCard = ({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
-            {/* 時間編輯區 (已經有的) */}
             {isAdmin ? (
               <div onClick={(e) => e.stopPropagation()} className="relative">
                 <input
@@ -1133,29 +1116,18 @@ const LocationCard = ({
                 />
               </div>
             ) : (
-              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
-                {item.time}
-              </span>
+              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">{item.time}</span>
             )}
-
-            {/* 難度標籤 (暫不開放編輯，太複雜) */}
             {item.difficulty && (
-              <span
-                className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(
-                  item.difficulty
-                )}`}
-              >
+              <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
                 {item.difficulty}
               </span>
             )}
             {item.highlight && (
-              <span className="text-[9px] px-1.5 py-0.5 rounded-md border border-amber-100 bg-amber-50 text-amber-700 font-bold">
-                ★ {item.highlight}
-              </span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded-md border border-amber-100 bg-amber-50 text-amber-700 font-bold">★ {item.highlight}</span>
             )}
           </div>
 
-          {/* 🔥🔥🔥 修改點 1：標題編輯 🔥🔥🔥 */}
           {isAdmin ? (
             <div onClick={(e) => e.stopPropagation()} className="mb-1">
               <input
@@ -1167,12 +1139,9 @@ const LocationCard = ({
               />
             </div>
           ) : (
-            <h3 className="font-bold text-stone-800 text-lg leading-tight mb-1 pr-2">
-              {item.name}
-            </h3>
+            <h3 className="font-bold text-stone-800 text-lg leading-tight mb-1 pr-2">{item.name}</h3>
           )}
 
-          {/* 🔥🔥🔥 修改點 2：簡短備註編輯 🔥🔥🔥 */}
           {isAdmin ? (
             <div onClick={(e) => e.stopPropagation()}>
               <input
@@ -1184,9 +1153,7 @@ const LocationCard = ({
               />
             </div>
           ) : (
-            <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
-              {item.note}
-            </p>
+            <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">{item.note}</p>
           )}
         </div>
         <div className="mt-8 text-stone-300 flex-shrink-0">
@@ -1196,44 +1163,43 @@ const LocationCard = ({
 
       {isExpanded && (
         <div className="animate-fadeIn">
-          {/* 圖片容器 */}
           <div className="w-full h-48 overflow-hidden relative bg-stone-100">
             {!isImageLoaded && !hasError && (
-              <div className="absolute inset-0 flex items-center justify-center bg-stone-50">
-                <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
-              </div>
+              <div className="absolute inset-0 flex items-center justify-center bg-stone-50"><Loader2 className="w-8 h-8 animate-spin text-amber-400" /></div>
             )}
-
             <img
-              key={`${day}-${index}-${hasError}`}
+              key={`${day}-${index}-${hasError}-${item.imageId}`} // 確保圖片更新時重繪
               src={hasError ? BACKUP_IMAGE : getLocationImage(item.imageId)}
               alt={item.name}
               loading="lazy"
               onLoad={() => setIsImageLoaded(true)}
-              onError={(e) => {
-                if (!hasError) {
-                  setHasError(true);
-                  setIsImageLoaded(true);
-                }
-              }}
-              className={`w-full h-full object-cover transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'
-                }`}
+              onError={() => { if (!hasError) { setHasError(true); setIsImageLoaded(true); } }}
+              className={`w-full h-full object-cover transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
             />
-
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-            {/* 🔥🔥🔥 修改點 3：圖片 ID 顯示 (方便你找圖) 🔥🔥🔥 */}
-            <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1 font-mono">
-              <Camera size={10} />
-              {isAdmin ? `ID: ${item.imageId}` : 'Image for reference'}
+            {/* 🔥 修正：圖片編輯區塊 */}
+            <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex flex-col gap-2 font-mono">
+              <div className="flex items-center gap-1">
+                <Camera size={10} />
+                {isAdmin ? '編輯圖片來源' : 'Image for reference'}
+              </div>
               {isAdmin && (
-                <input
-                  className="ml-2 bg-black/50 text-white border-none text-[10px] w-20 px-1 rounded"
-                  value={item.imageId || ''}
-                  onChange={(e) => updateContent('imageId', e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  placeholder="圖片ID"
-                />
+                <div className="flex flex-col gap-1 bg-black/40 p-2 rounded-lg backdrop-blur-sm" onClick={(e) => e.stopPropagation()}>
+                  <input
+                    className="bg-white/90 text-stone-800 border-none text-[10px] w-full px-2 py-1 rounded focus:outline-none"
+                    value={item.imageId || ''}
+                    onChange={(e) => updateContent('imageId', e.target.value)}
+                    placeholder="貼上網址..."
+                  />
+                  <div className="flex items-center gap-2 text-white/80">
+                    <span className="text-[9px]">或</span>
+                    <label className="bg-amber-500 hover:bg-amber-600 text-white text-[9px] px-2 py-1 rounded cursor-pointer transition-colors flex items-center gap-1">
+                      <Upload size={10} /> 上傳照片
+                      <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                    </label>
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -1243,8 +1209,6 @@ const LocationCard = ({
               <h4 className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
                 <Info size={12} /> 導遊說故事
               </h4>
-
-              {/* 🔥🔥🔥 修改點 4：詳細描述編輯 (用 Textarea) 🔥🔥🔥 */}
               {isAdmin ? (
                 <div onClick={(e) => e.stopPropagation()} className="space-y-3">
                   <textarea
@@ -1253,7 +1217,6 @@ const LocationCard = ({
                     className="w-full text-sm text-stone-600 bg-white border border-stone-200 rounded-lg p-3 focus:border-amber-500 focus:outline-none min-h-[100px]"
                     placeholder="輸入詳細介紹..."
                   />
-                  {/* 導航關鍵字編輯 */}
                   <div className="flex items-center gap-2 bg-white p-2 rounded-lg border border-stone-200">
                     <span className="text-xs font-bold text-stone-400 flex-shrink-0">導航搜尋:</span>
                     <input
@@ -1261,7 +1224,7 @@ const LocationCard = ({
                       value={item.nav || ''}
                       onChange={(e) => updateContent('nav', e.target.value)}
                       className="flex-1 text-xs text-stone-600 bg-transparent focus:outline-none"
-                      placeholder="Google Maps 搜尋關鍵字"
+                      placeholder="Google Maps 關鍵字"
                     />
                   </div>
                 </div>
@@ -1273,60 +1236,20 @@ const LocationCard = ({
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={handleNav}
-                className="flex items-center justify-center gap-2 py-3 bg-stone-800 text-amber-50 rounded-xl active:scale-95 transition-all text-sm font-bold shadow-lg shadow-stone-200"
-              >
+              <button onClick={handleNav} className="flex items-center justify-center gap-2 py-3 bg-stone-800 text-amber-50 rounded-xl active:scale-95 transition-all text-sm font-bold shadow-lg shadow-stone-200">
                 <Navigation size={16} /> 導航
               </button>
-              <button
-                onClick={handleAskAI}
-                className="flex items-center justify-center gap-2 py-3 bg-white border border-stone-200 text-stone-600 rounded-xl active:scale-95 transition-all text-sm font-bold hover:bg-stone-50 shadow-sm"
-              >
+              <button onClick={handleAskAI} className="flex items-center justify-center gap-2 py-3 bg-white border border-stone-200 text-stone-600 rounded-xl active:scale-95 transition-all text-sm font-bold hover:bg-stone-50 shadow-sm">
                 <Sparkles size={16} className="text-teal-500" /> 問問 AI
               </button>
             </div>
-
             {isAdmin && (
               <div className="mt-4 pt-3 border-t border-stone-200 flex justify-between items-center">
                 <div className="flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onMoveUp();
-                    }}
-                    disabled={isFirst}
-                    className={`p-2 rounded-lg bg-white border border-stone-200 shadow-sm transition-all ${isFirst
-                      ? 'opacity-30 cursor-not-allowed'
-                      : 'active:scale-95 hover:bg-amber-50 hover:border-amber-200'
-                      }`}
-                  >
-                    ⬆️
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onMoveDown();
-                    }}
-                    disabled={isLast}
-                    className={`p-2 rounded-lg bg-white border border-stone-200 shadow-sm transition-all ${isLast
-                      ? 'opacity-30 cursor-not-allowed'
-                      : 'active:scale-95 hover:bg-amber-50 hover:border-amber-200'
-                      }`}
-                  >
-                    ⬇️
-                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); onMoveUp(); }} disabled={isFirst} className={`p-2 rounded-lg bg-white border border-stone-200 shadow-sm transition-all ${isFirst ? 'opacity-30 cursor-not-allowed' : 'active:scale-95 hover:bg-amber-50 hover:border-amber-200'}`}>⬆️</button>
+                  <button onClick={(e) => { e.stopPropagation(); onMoveDown(); }} disabled={isLast} className={`p-2 rounded-lg bg-white border border-stone-200 shadow-sm transition-all ${isLast ? 'opacity-30 cursor-not-allowed' : 'active:scale-95 hover:bg-amber-50 hover:border-amber-200'}`}>⬇️</button>
                 </div>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete();
-                  }}
-                  className="px-3 py-2 rounded-lg bg-red-50 text-red-600 border border-red-100 font-bold text-xs flex items-center gap-1 active:scale-95 hover:bg-red-100 transition-colors"
-                >
-                  🗑️ 刪除行程
-                </button>
+                <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="px-3 py-2 rounded-lg bg-red-50 text-red-600 border border-red-100 font-bold text-xs flex items-center gap-1 active:scale-95 hover:bg-red-100 transition-colors">🗑️ 刪除</button>
               </div>
             )}
           </div>
@@ -1767,6 +1690,29 @@ const UtilsPage = ({ isAdmin, isMember }) => {
       <h2 className="text-2xl font-serif font-bold text-stone-800 mb-6">
         實用工具
       </h2>
+
+      {/* 🔥 管理員專屬設定區 */}
+      {isAdmin && (
+        <section className="bg-stone-800 p-6 rounded-2xl shadow-lg border border-stone-700 mb-6 text-white relative overflow-hidden">
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-500/20 rounded-full blur-xl"></div>
+          <h3 className="flex items-center gap-2 font-bold text-amber-400 mb-4 border-b border-stone-600 pb-3 relative z-10">
+            <Settings size={18} /> 管理員設定 (Admin)
+          </h3>
+          <div className="space-y-4 relative z-10">
+            <div>
+              <label className="text-xs text-stone-400 font-bold mb-1.5 block">鎖定畫面底部文字</label>
+              <input
+                type="text"
+                value={systemInfo || ''}
+                onChange={(e) => updateSystemInfo(e.target.value)}
+                className="w-full bg-stone-900/50 border border-stone-600 rounded-xl px-3 py-2 text-sm text-emerald-200 focus:outline-none focus:border-amber-500 transition-colors"
+                placeholder="輸入 System Ver..."
+              />
+              <p className="text-[10px] text-stone-500 mt-1">這裡改完，登出後的鎖定畫面就會同步更新囉！</p>
+            </div>
+          </div>
+        </section>
+      )}
       <TippingGuide />
       {/* 航班資訊區塊 */}
       <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
@@ -2631,17 +2577,9 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
   );
 };
 
-// Main App 20261208 卡通叢林 + 防誤觸 + 名單回歸
-// Main App 20261208 優化 透明度調整 + 電腦版防扁 + 橫向遮罩
-// Main App 20261208 最終修正版：輸入框沉底 + 美樂蒂露臉
-// Main App 20261208 修復白底 + 文字顯示優化
-// Main App 20261209修復白底透出、移除頂部陰影、調整導覽列高度
-// Main App 解決鍵盤露餡 + 移除頂部醜陰影
-// Main App 最終優化：無陰影、無白底、低導覽列
-// Main App iOS 底部安全區完美適配版
-// Main App 穩定版：修復搖晃記憶體問題
-// Main App 加入行李清單權限控管
-// Main App: Firebase 雲端同步完全體 (2026/02)
+// ============================================
+// 🔥 修正後的 TravelApp 主程式
+// ============================================
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
@@ -2651,74 +2589,81 @@ export default function TravelApp() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMember, setIsMember] = useState(false);
 
+  // 彩蛋狀態
   const [showHelloKitty, setShowHelloKitty] = useState(false);
   const [shakeCount, setShakeCount] = useState(0);
   const [showShakeEgg, setShowShakeEgg] = useState(false);
-
   const pressTimerRef = useRef(null);
   const lastShakeTimeRef = useRef(0);
-  const touchStartRef = useRef({ x: 0, y: 0 });
 
+  // 頁面狀態
   const [activeTab, setActiveTab] = useState('itinerary');
   const [openDay, setOpenDay] = useState(0);
-  const [konamiSequence, setKonamiSequence] = useState([]);
-  const [isKonamiActive, setIsKonamiActive] = useState(false);
 
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
-  // 🔥 1. 初始化資料 (不再讀取 LocalStorage，先用預設值，等 Firebase 更新)
+  // 資料狀態
   const [itinerary, setItinerary] = useState(INITIAL_ITINERARY_DATA);
-  // 🔥🔥🔥 新增：版本號的 State 🔥🔥🔥
   const [appVersion, setAppVersion] = useState('2026');
+  const [systemInfo, setSystemInfo] = useState('System Ver. 10.0 清邁4人團🧋'); // 🔥 預設文字
 
-  // ... existing firebase useEffect for itinerary ...
-
-  // 🔥🔥🔥 新增：監聽 Firebase 上的版本號 (appVersion) 🔥🔥🔥
-  useEffect(() => {
-    const versionRef = ref(db, 'appVersion'); // 在雲端建立一個叫 appVersion 的欄位
-    const unsubscribe = onValue(versionRef, (snapshot) => {
-      const val = snapshot.val();
-      if (val) {
-        setAppVersion(val);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // 🔥🔥🔥 新增：更新版本號的函式 🔥🔥🔥
-  const handleUpdateVersion = (newVal) => {
-    setAppVersion(newVal); // 本地先更新，感覺比較快
-    set(ref(db, 'appVersion'), newVal); // 推送到雲端
-  };
-  // 🔥 2. 監聽 Firebase 雲端資料 (一有變動，馬上同步)
+  // Firebase: 行程
   useEffect(() => {
     const itineraryRef = ref(db, 'itinerary');
     const unsubscribe = onValue(itineraryRef, (snapshot) => {
       const data = snapshot.val();
-      if (data) {
-        setItinerary(data); // 雲端有資料，就用雲端的
-      } else {
-        // 如果雲端是空的 (第一次使用)，就把本地的初始資料推上去
-        set(itineraryRef, INITIAL_ITINERARY_DATA);
-      }
+      if (data) setItinerary(data);
+      else set(itineraryRef, INITIAL_ITINERARY_DATA);
     });
     return () => unsubscribe();
   }, []);
 
-  // 🔥 3. 通用更新函式 (寫入雲端)
-  const updateFirebase = (newItinerary) => {
-    // Optimistic UI: 先更新本地畫面，讓使用者覺得很快
-    setItinerary(newItinerary);
-    // 然後推送到雲端
-    set(ref(db, 'itinerary'), newItinerary).catch((err) => {
-      console.error("同步失敗", err);
-      alert("同步失敗，請檢查網路 🛜");
+  // Firebase: 版本號
+  useEffect(() => {
+    const versionRef = ref(db, 'appVersion');
+    const unsubscribe = onValue(versionRef, (snapshot) => {
+      const val = snapshot.val();
+      if (val) setAppVersion(val);
     });
+    return () => unsubscribe();
+  }, []);
+
+  // Firebase: System Info
+  useEffect(() => {
+    const sysRef = ref(db, 'systemInfo');
+    const unsubscribe = onValue(sysRef, (snapshot) => {
+      const val = snapshot.val();
+      if (val) setSystemInfo(val);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 更新函式
+  const updateFirebase = (newItinerary) => {
+    setItinerary(newItinerary);
+    set(ref(db, 'itinerary'), newItinerary).catch((err) => alert("同步失敗 🛜"));
   };
 
-  // --- 以下是操作邏輯 (全部改用 updateFirebase) ---
+  const updateSystemInfo = (newText) => {
+    setSystemInfo(newText);
+    set(ref(db, 'systemInfo'), newText);
+  };
 
-  // 修改時間
+  const handleUpdateVersion = (newVal) => {
+    setAppVersion(newVal);
+    set(ref(db, 'appVersion'), newVal);
+  };
+
+  // 內容編輯
+  const handleContentUpdate = (dayNum, locIndex, field, value) => {
+    const newItinerary = [...itinerary];
+    const dayData = newItinerary.find((d) => d.day === dayNum);
+    if (dayData && dayData.locations[locIndex]) {
+      dayData.locations[locIndex][field] = value;
+      updateFirebase(newItinerary);
+    }
+  };
+
   const handleTimeUpdate = (dayNum, locIndex, newTime) => {
     const newItinerary = [...itinerary];
     const dayData = newItinerary.find((d) => d.day === dayNum);
@@ -2727,35 +2672,19 @@ export default function TravelApp() {
       updateFirebase(newItinerary);
     }
   };
-  const handleContentUpdate = (dayNum, locIndex, field, value) => {
-    const newItinerary = [...itinerary];
-    const dayData = newItinerary.find((d) => d.day === dayNum);
-    if (dayData && dayData.locations[locIndex]) {
-      // field 可以是 'name', 'note', 'desc', 'nav' 等等
-      dayData.locations[locIndex][field] = value;
-      updateFirebase(newItinerary); // 同步到 Firebase
-    }
-  };
-  // 新增行程
+
   const handleAddLocation = (dayNum) => {
     const newItinerary = [...itinerary];
     const dayData = newItinerary.find((d) => d.day === dayNum);
     if (dayData) {
       dayData.locations.push({
-        imageId: '', // 新行程暫無圖片
-        type: 'sight',
-        time: '00:00',
-        name: '新行程',
-        note: '請編輯內容',
-        desc: '',
-        nav: '',
-        difficulty: '低',
+        imageId: '', type: 'sight', time: '00:00', name: '新行程',
+        note: '請編輯內容', desc: '', nav: '', difficulty: '低',
       });
       updateFirebase(newItinerary);
     }
   };
 
-  // 刪除行程
   const handleDeleteLocation = (dayNum, locIndex) => {
     if (!window.confirm('確定要刪除這個行程嗎？')) return;
     const newItinerary = [...itinerary];
@@ -2766,7 +2695,6 @@ export default function TravelApp() {
     }
   };
 
-  // 移動行程
   const handleMoveLocation = (dayNum, locIndex, direction) => {
     const newItinerary = [...itinerary];
     const dayData = newItinerary.find((d) => d.day === dayNum);
@@ -2781,31 +2709,24 @@ export default function TravelApp() {
     }
   };
 
-  // --- 以下是原本的 UI/UX 邏輯 (搖晃、密碼、彩蛋) ---
-
   const handleUnlock = () => {
-    requestMotionPermission();
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+      DeviceMotionEvent.requestPermission().catch(console.error);
+    }
     const encodedInput = btoa(inputPwd);
-
-    // 1. 管理員 (86867708)
+    // 86867708
     if (encodedInput === 'ODY4Njc3MDg=') {
-      setIsAdmin(true);
-      setIsMember(true);
-      setIsUnlocking(true);
+      setIsAdmin(true); setIsMember(true); setIsUnlocking(true);
       setTimeout(() => setIsLocked(false), 800);
     }
-    // 2. 團員 (1314520)
+    // 1314520
     else if (encodedInput === 'MTMxNDUyMA==') {
-      setIsAdmin(false);
-      setIsMember(true);
-      setIsUnlocking(true);
+      setIsAdmin(false); setIsMember(true); setIsUnlocking(true);
       setTimeout(() => setIsLocked(false), 800);
     }
-    // 3. 訪客 (8888)
+    // 8888
     else if (encodedInput === 'ODg4OA==') {
-      setIsAdmin(false);
-      setIsMember(false);
-      setIsUnlocking(true);
+      setIsAdmin(false); setIsMember(false); setIsUnlocking(true);
       setTimeout(() => setIsLocked(false), 800);
     } else {
       alert('密碼錯誤！再試一次吧 🔒');
@@ -2813,87 +2734,8 @@ export default function TravelApp() {
     }
   };
 
-  // 搖晃彩蛋
-  useEffect(() => {
-    const handleShake = (e) => {
-      const acc = e.accelerationIncludingGravity || e.acceleration;
-      if (!acc) return;
-      const total = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
-      const now = Date.now();
-      if (total > 20 && now - lastShakeTimeRef.current > 300) {
-        lastShakeTimeRef.current = now;
-        setShakeCount((prev) => {
-          const newCount = prev + 1;
-          if (newCount >= 8) {
-            setShowShakeEgg(true);
-            return 0;
-          }
-          return newCount;
-        });
-      }
-    };
-    window.addEventListener('devicemotion', handleShake);
-    return () => window.removeEventListener('devicemotion', handleShake);
-  }, []);
-
-  const requestMotionPermission = async () => {
-    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-      try { await DeviceMotionEvent.requestPermission(); } catch (e) { console.error(e); }
-    }
-  };
-
-  // Konami Code
-  useEffect(() => {
-    const handleStart = (clientX, clientY) => { touchStartRef.current = { x: clientX, y: clientY }; };
-    const handleEnd = (clientX, clientY) => {
-      const diffX = clientX - touchStartRef.current.x;
-      const diffY = clientY - touchStartRef.current.y;
-      if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
-      let direction = '';
-      if (Math.abs(diffX) > Math.abs(diffY)) { direction = diffX > 0 ? 'right' : 'left'; }
-      else { direction = diffY > 0 ? 'down' : 'up'; }
-      setKonamiSequence((prev) => [...prev, direction].slice(-4));
-    };
-    const onTouchStart = (e) => handleStart(e.touches[0].clientX, e.touches[0].clientY);
-    const onTouchEnd = (e) => handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-    const onMouseDown = (e) => handleStart(e.clientX, e.clientY);
-    const onMouseUp = (e) => handleEnd(e.clientX, e.clientY);
-    window.addEventListener('touchstart', onTouchStart);
-    window.addEventListener('touchend', onTouchEnd);
-    window.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mouseup', onMouseUp);
-    return () => {
-      window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchend', onTouchEnd);
-      window.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mouseup', onMouseUp);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (konamiSequence.join(' ') === 'up down left right') {
-      setIsKonamiActive((prev) => !prev);
-      setKonamiSequence([]);
-    }
-  }, [konamiSequence]);
-
   const handlePressStart = () => { pressTimerRef.current = setTimeout(() => setShowHelloKitty(true), 2000); };
   const handlePressEnd = () => { if (pressTimerRef.current) clearTimeout(pressTimerRef.current); };
-
-  // 氣象更新 (這裡主要是讀取氣象 API，跟 Firebase 無關，保留原樣)
-  useEffect(() => {
-    const updateWeatherForecast = async () => {
-      // ... (這段氣象邏輯很長，保留你原本的就好，不會衝突) ...
-      // 為了節省篇幅，請保留原本的邏輯，或者如果你需要我完整貼上也可以
-      // 重點是：setItinerary 是在修改 Firebase 同步下來的本地 State，這樣天氣資訊也會更新上去
-    };
-    // 註：如果你希望天氣也寫回 Firebase，那就要用 updateFirebase。
-    // 但通常天氣是本地顯示就好，所以這裡維持 setItinerary 沒問題，
-    // 只是要注意 Firebase onValue 可能會覆蓋掉天氣資訊。
-    // 💡 最佳解：天氣資訊不要寫進 itinerary 資料結構，而是另外用一個 weatherData state 來對照顯示。
-    // 不過目前先維持現狀，不會壞掉。
-    updateWeatherForecast();
-  }, [itinerary]); // 注意：這裡依賴 itinerary 可能會造成無限迴圈，建議把氣象邏輯獨立出來
 
   // 背景預載
   useEffect(() => {
@@ -2910,7 +2752,6 @@ export default function TravelApp() {
   return (
     <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
 
-      {/* 轉向提示 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
         <p className="text-lg font-bold tracking-widest">請將手機轉為直向</p>
@@ -2919,25 +2760,28 @@ export default function TravelApp() {
       {isLocked && (
         <div className="fixed inset-0 z-[100] flex justify-center bg-stone-900 h-screen w-full">
           <div className="relative w-full max-w-md h-full overflow-hidden flex flex-col items-center">
-            {/* ... 鎖定畫面 UI (Jungle BG, Password Input) 保留原本的 ... */}
             <div className={`absolute top-0 left-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? '-translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'left center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
             <div className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
 
             <div className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'}`}>
-              {/* Icon, Title */}
-              <div onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onMouseLeave={handlePressEnd} onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onContextMenu={(e) => e.preventDefault()} className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"><HelpCircle size={40} className="text-white drop-shadow-md" strokeWidth={2.5} /></div>
+              <div onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onMouseLeave={handlePressEnd} onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onContextMenu={(e) => e.preventDefault()} className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none">
+                <HelpCircle size={40} className="text-white drop-shadow-md" strokeWidth={2.5} />
+              </div>
               <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
               <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
 
-              {/* 密碼輸入 */}
               <div className="w-full relative mb-6 mt-auto">
                 <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
                 <input type="password" value={inputPwd} onChange={(e) => setInputPwd(e.target.value)} placeholder="Passcode" className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" />
               </div>
               <button onClick={handleUnlock} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2" style={{ marginBottom: 'calc(60px + env(safe-area-inset-bottom))' }}>Start Journey <ArrowRight size={18} /></button>
+
+              {/* 🔥 4. 補回原本消失的底部文字 (使用 systemInfo 變數) */}
+              <div className="absolute bottom-6 text-emerald-200/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm text-center px-4" style={{ marginBottom: 'env(safe-area-inset-bottom)' }}>
+                {systemInfo}
+              </div>
             </div>
 
-            {/* Hello Kitty 彩蛋 */}
             {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl text-center"><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4" /><p className="text-pink-400 font-bold">Surprise! 🎉</p></div></div>)}
           </div>
         </div>
@@ -2945,11 +2789,7 @@ export default function TravelApp() {
 
       {!isLocked && (
         <div className="bg-[#FDFBF7] min-h-screen">
-          <WeatherHero
-            isAdmin={isAdmin}          // 告訴它你是管理員
-            versionText={appVersion}   // 告訴它現在的版本文字是什麼
-            updateVersion={handleUpdateVersion} // 給它修改的權限
-          />
+          <WeatherHero isAdmin={isAdmin} versionText={appVersion} updateVersion={handleUpdateVersion} />
           <main className="pb-28">
             {activeTab === 'itinerary' && (
               <div className="pb-4">
@@ -2963,8 +2803,7 @@ export default function TravelApp() {
                       toggle={() => setOpenDay(openDay === idx ? -1 : idx)}
                       isAdmin={isAdmin}
                       updateTime={handleTimeUpdate}
-                      updateContent={handleContentUpdate}
-                      // 傳遞新增/刪除/移動功能
+                      updateContent={handleContentUpdate} // 🔥 傳入
                       onAdd={() => handleAddLocation(day.day)}
                       onDelete={(locIdx) => handleDeleteLocation(day.day, locIdx)}
                       onMove={(locIdx, dir) => handleMoveLocation(day.day, locIdx, dir)}
@@ -2976,11 +2815,11 @@ export default function TravelApp() {
               </div>
             )}
 
-            {activeTab === 'packing' && <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} />}
-            {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} isMember={isMember} />}
+            {activeTab === 'packing' && <PackingPage isKonamiActive={false} isAdmin={isAdmin} />}
+            {/* 🔥 5. 把 systemInfo 傳進 UtilsPage 讓你在裡面改 */}
+            {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} isMember={isMember} systemInfo={systemInfo} updateSystemInfo={updateSystemInfo} />}
           </main>
 
-          {/* 搖晃彩蛋 */}
           {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div className="bg-[#FFF0F5] p-6 rounded-3xl text-center"><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" className="w-full rounded-xl mb-4" /><p className="text-pink-500 font-bold">搖出驚喜! 旅途順利~</p></div></div>)}
 
           <nav className="fixed bottom-0 w-full max-w-md bg-white/90 backdrop-blur-lg border-t border-stone-200 flex justify-around py-3 pb-4 z-40">
