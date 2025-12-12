@@ -1868,6 +1868,8 @@ const UtilsPage = ({ isAdmin, isMember }) => {
 
       {/* LINE 分帳 (綠色區塊) Admin 可見 */}
       {/* 🟢 修改重點：只有團員 (isMember) 才顯示這個綠色分帳區塊 */}
+      {/* LINE 分帳 (綠色區塊) Admin 可見 */}
+      {/* 🟢 修改重點：只有團員 (isMember) 才顯示這個綠色分帳區塊 */}
       {isMember && (
         <section className="bg-[#06C755] p-6 rounded-2xl shadow-lg shadow-green-900/10 text-white relative overflow-hidden mb-6 animate-fadeIn">
           <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
@@ -1878,9 +1880,9 @@ const UtilsPage = ({ isAdmin, isMember }) => {
             所有公費支出請統一記錄在此，系統會自動結算每個人該付多少錢。
           </p>
           <a
-            // Lightsplit URL Base64 Encoded
+            // Lightsplit URL Base64 Encoded (Updated 2026/02)
             href={atob(
-              'aHR0cHM6Ly9saWZmLmxpbmUubWUvMTY1NTMyMDk5Mi1ZOEdvd0Vwdy9nL29tSkgzaVpDNWNya1hoNm1RdmFYZ1Q='
+              'aHR0cHM6Ly9hcHAubGlnaHRzcGxpdC5jb20vP2xpZmYuc3RhdGU9JTJGZyUyRm9tSkhaaVpDNWNya1hoNm1RdmFYZ1Q='
             )}
             target="_blank"
             rel="noreferrer"
