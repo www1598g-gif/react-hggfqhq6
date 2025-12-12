@@ -1038,7 +1038,7 @@ const OutfitGuide = () => {
 // update地點卡片標籤美化
 // update修正圖片錯誤處理邏輯
 // update修正版清邁圖 + Grok的防卡死邏輯
-const LocationCard = ({ item, day, isAdmin, updateTime, onDelete, onMoveUp, onMoveDown, isFirst, isLast }) => {
+const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveUp, onMoveDown, isFirst, isLast }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   // 用來記錄是否已經切換到備援圖片
@@ -2041,7 +2041,7 @@ const USERS = ['佑任', '軒寶', '學弟', '腳慢'];
 
 // 更新ThaiTips加入 2026 最新規定
 // ============================================
-// 修正泰國需知 合併生活須知2026新規定1
+// 修正泰國需知 合併生活須知2026新規定
 // ============================================
 
 const ThaiTips = () => {
