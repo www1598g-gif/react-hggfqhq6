@@ -57,7 +57,7 @@ import { db } from "./firebase"; // ⚠️ 前提：你要先建立 firebase.js 
 const getLocationImage = (imageId) => {
   // 如果這個行程沒有指定圖片 (例如新增加的)，就給一張預設圖
   if (!imageId) return 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
-  
+
   // 否則回傳對應的檔案 (假設你的圖檔名就是 imageId.jpg)
   return process.env.PUBLIC_URL + `/images/${imageId}.jpg`;
 };
@@ -632,24 +632,23 @@ const UTILS_DATA = {
 // 天氣 Widget (移除點擊彩蛋20251206)
 // 修正: 移除最外層的 shadow-xl 讓頂部變平滑
 // UIUX part 加入倒數計時
-const WeatherHero = () => {
+// 🔥🔥🔥 修改後的 WeatherHero (支援點擊修改版本號) 🔥🔥🔥
+const WeatherHero = ({ isAdmin, versionText, updateVersion }) => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
   const [daysLeft, setDaysLeft] = useState(0);
 
   useEffect(() => {
-    // 倒數計時邏輯
     const calcTime = () => {
-      const targetDate = new Date('2026-02-19T00:00:00+07:00'); // 清邁時間
+      const targetDate = new Date('2026-02-19T00:00:00+07:00');
       const now = new Date();
       const diff = targetDate - now;
       const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
       setDaysLeft(days);
     };
-    calcTime(); // 一載入馬上算
-    const timer = setInterval(calcTime, 60000); // 之後每分鐘更新
+    calcTime();
+    const timer = setInterval(calcTime, 60000);
 
-    // 天氣抓取邏輯
     const fetchWeather = async () => {
       try {
         const res = await fetch(
@@ -712,7 +711,6 @@ const WeatherHero = () => {
 
   return (
     <div className="relative bg-[#FDFBF7] pt-0 pb-8 px-6 border-b border-stone-200 rounded-b-[2.5rem] z-10 overflow-hidden">
-      {/* 新增：倒數計時條 */}
       {daysLeft > 0 && (
         <div className="absolute top-0 left-0 right-0 bg-amber-100 text-amber-800 text-[10px] font-bold text-center py-1.5 z-20 shadow-sm">
           ✈️ 距離出發還有{' '}
@@ -725,17 +723,30 @@ const WeatherHero = () => {
       </div>
 
       <div className="relative z-10 mt-10">
-        {' '}
-        {/* mt-10 是為了避開倒數條 */}
         <div className="flex justify-between items-end mb-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="px-2.5 py-1 bg-amber-100 text-amber-900 text-[10px] font-bold tracking-wider rounded-full">
                 佑任・軒寶・學弟・腳慢
               </span>
-              <span className="text-[10px] text-stone-400 font-bold tracking-widest">
-                2026
-              </span>
+
+              {/* 🔥🔥🔥 修改這裡：版本號邏輯 🔥🔥🔥 */}
+              {isAdmin ? (
+                // 如果是管理員，顯示輸入框
+                <input
+                  type="text"
+                  value={versionText || ''}
+                  onChange={(e) => updateVersion(e.target.value)}
+                  className="w-16 bg-transparent border-b border-amber-300 text-[10px] text-stone-600 font-bold tracking-widest focus:outline-none text-center"
+                />
+              ) : (
+                // 如果是普通人，顯示文字
+                <span className="text-[10px] text-stone-400 font-bold tracking-widest">
+                  {versionText || '2026'}
+                </span>
+              )}
+              {/* 🔥🔥🔥 修改結束 🔥🔥🔥 */}
+
             </div>
             <h1 className="text-4xl font-serif text-stone-800 tracking-tight leading-[0.9]">
               清邁
@@ -765,7 +776,8 @@ const WeatherHero = () => {
                     <Wind size={10} /> AQI {aqi}
                   </div>
                   <div className="text-xs text-stone-500 font-medium bg-white/50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <Droplets size={10} /> {data.current.relative_humidity_2m}%
+                    <Droplets size={10} />{' '}
+                    {data.current.relative_humidity_2m}%
                   </div>
                 </div>
               </div>
@@ -881,9 +893,8 @@ const FloatingStatus = ({ itinerary }) => {
       <div className="bg-stone-900/95 backdrop-blur-md text-stone-50 p-4 rounded-2xl shadow-2xl border border-stone-700/50 flex items-center justify-between">
         <div className="flex items-center gap-3 overflow-hidden">
           <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center text-stone-900 flex-shrink-0 ${
-              nextStop.finished ? 'bg-green-500' : 'bg-amber-500 animate-pulse'
-            }`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-stone-900 flex-shrink-0 ${nextStop.finished ? 'bg-green-500' : 'bg-amber-500 animate-pulse'
+              }`}
           >
             {nextStop.finished ? (
               <CheckCircle size={20} />
@@ -1038,13 +1049,23 @@ const OutfitGuide = () => {
 // update地點卡片標籤美化
 // update修正圖片錯誤處理邏輯
 // update修正版清邁圖 + Grok的防卡死邏輯
-const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveUp, onMoveDown, isFirst, isLast }) => {
+const LocationCard = ({
+  item,
+  day,
+  index,
+  isAdmin,
+  updateTime,
+  updateContent, // 👈 記得這裡要接收這個新功能
+  onDelete,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  // 用來記錄是否已經切換到備援圖片
   const [hasError, setHasError] = useState(false);
 
-  // 備援圖片
   const BACKUP_IMAGE =
     'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
 
@@ -1073,7 +1094,7 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveU
   const handleNav = (e) => {
     e.stopPropagation();
     window.open(
-      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      `https://www.google.com/maps/search/?api=1&query=$?q=${encodeURIComponent(
         item.nav
       )}`,
       '_blank'
@@ -1092,9 +1113,8 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveU
   return (
     <div
       onClick={() => setIsExpanded(!isExpanded)}
-      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${
-        isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
-      }`}
+      className={`bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-stone-100 mb-4 overflow-hidden transition-all duration-300 cursor-pointer ${isExpanded ? 'ring-2 ring-amber-100 shadow-md' : ''
+        }`}
     >
       <div className="p-4 flex items-start gap-4">
         <div className="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center border border-stone-100">
@@ -1102,26 +1122,23 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveU
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
+            {/* 時間編輯區 (已經有的) */}
             {isAdmin ? (
-              // 如果是管理員：顯示原生時間選擇器 (Time Picker)
               <div onClick={(e) => e.stopPropagation()} className="relative">
                 <input
                   type="time"
-                  // ⚠️ 防呆關鍵：如果原本資料是 "17:30-19:00"，我們只取前 5 個字 "17:30"
-                  // 這樣 input type="time" 才讀得懂，不會變成空白
                   value={item.time ? item.time.substring(0, 5) : ''}
-                  // 這裡 index-1 是為了對應陣列索引
                   onChange={(e) => updateTime(day, index - 1, e.target.value)}
-                  // 樣式微調：用 font-mono 讓數字等寬比較好看
                   className="bg-amber-50 border-b-2 border-amber-300 text-[14px] font-bold text-stone-800 focus:outline-none px-1 h-7 cursor-pointer font-mono rounded"
                 />
               </div>
             ) : (
-              // 如果是一般人：維持原本的顯示方式
               <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">
                 {item.time}
               </span>
             )}
+
+            {/* 難度標籤 (暫不開放編輯，太複雜) */}
             {item.difficulty && (
               <span
                 className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(
@@ -1137,12 +1154,40 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveU
               </span>
             )}
           </div>
-          <h3 className="font-bold text-stone-800 text-lg leading-tight mb-1 pr-2">
-            {item.name}
-          </h3>
-          <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
-            {item.note}
-          </p>
+
+          {/* 🔥🔥🔥 修改點 1：標題編輯 🔥🔥🔥 */}
+          {isAdmin ? (
+            <div onClick={(e) => e.stopPropagation()} className="mb-1">
+              <input
+                type="text"
+                value={item.name}
+                onChange={(e) => updateContent('name', e.target.value)}
+                className="w-full font-bold text-lg text-stone-800 bg-transparent border-b border-stone-300 focus:border-amber-500 focus:outline-none p-0"
+                placeholder="輸入地點名稱..."
+              />
+            </div>
+          ) : (
+            <h3 className="font-bold text-stone-800 text-lg leading-tight mb-1 pr-2">
+              {item.name}
+            </h3>
+          )}
+
+          {/* 🔥🔥🔥 修改點 2：簡短備註編輯 🔥🔥🔥 */}
+          {isAdmin ? (
+            <div onClick={(e) => e.stopPropagation()}>
+              <input
+                type="text"
+                value={item.note}
+                onChange={(e) => updateContent('note', e.target.value)}
+                className="w-full text-xs text-stone-600 bg-transparent border-b border-stone-300 focus:border-amber-500 focus:outline-none py-1"
+                placeholder="輸入簡短備註..."
+              />
+            </div>
+          ) : (
+            <p className="text-xs text-stone-500 font-medium leading-relaxed whitespace-normal opacity-90">
+              {item.note}
+            </p>
+          )}
         </div>
         <div className="mt-8 text-stone-300 flex-shrink-0">
           {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -1153,7 +1198,6 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveU
         <div className="animate-fadeIn">
           {/* 圖片容器 */}
           <div className="w-full h-48 overflow-hidden relative bg-stone-100">
-            {/* 只有在還沒載入完成且還沒發生錯誤時 才顯示轉圈圈 */}
             {!isImageLoaded && !hasError && (
               <div className="absolute inset-0 flex items-center justify-center bg-stone-50">
                 <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
@@ -1161,30 +1205,36 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveU
             )}
 
             <img
-              // 加上 key 強制 React 在網址改變時重新處理這張圖
               key={`${day}-${index}-${hasError}`}
-              // 如果有錯就用固定清邁圖 沒錯就用原本的
               src={hasError ? BACKUP_IMAGE : getLocationImage(item.imageId)}
               alt={item.name}
               loading="lazy"
-              // 圖片載入成功 關閉 Loading
               onLoad={() => setIsImageLoaded(true)}
-              // 圖片載入失敗 切換模式
               onError={(e) => {
                 if (!hasError) {
-                  console.log(`圖片載入失敗，切換備援: day${day}_${index}`);
-                  setHasError(true); // 標記發生錯誤 下次 render 換網
-                  setIsImageLoaded(true); // 強制轉圈圈消失
+                  setHasError(true);
+                  setIsImageLoaded(true);
                 }
               }}
-              className={`w-full h-full object-cover transition-opacity duration-700 ${
-                isImageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
+              className={`w-full h-full object-cover transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
             />
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-            <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1">
-              <Camera size={10} /> Image for reference
+
+            {/* 🔥🔥🔥 修改點 3：圖片 ID 顯示 (方便你找圖) 🔥🔥🔥 */}
+            <div className="absolute bottom-3 left-4 right-4 text-white/90 text-[10px] flex items-center gap-1 font-mono">
+              <Camera size={10} />
+              {isAdmin ? `ID: ${item.imageId}` : 'Image for reference'}
+              {isAdmin && (
+                <input
+                  className="ml-2 bg-black/50 text-white border-none text-[10px] w-20 px-1 rounded"
+                  value={item.imageId || ''}
+                  onChange={(e) => updateContent('imageId', e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
+                  placeholder="圖片ID"
+                />
+              )}
             </div>
           </div>
 
@@ -1193,10 +1243,35 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveU
               <h4 className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1.5 uppercase tracking-wider">
                 <Info size={12} /> 導遊說故事
               </h4>
-              <p className="text-sm text-stone-600 leading-relaxed text-justify whitespace-pre-line font-medium">
-                {item.desc || '暫無詳細介紹，但這裡絕對值得一去！'}
-              </p>
+
+              {/* 🔥🔥🔥 修改點 4：詳細描述編輯 (用 Textarea) 🔥🔥🔥 */}
+              {isAdmin ? (
+                <div onClick={(e) => e.stopPropagation()} className="space-y-3">
+                  <textarea
+                    value={item.desc}
+                    onChange={(e) => updateContent('desc', e.target.value)}
+                    className="w-full text-sm text-stone-600 bg-white border border-stone-200 rounded-lg p-3 focus:border-amber-500 focus:outline-none min-h-[100px]"
+                    placeholder="輸入詳細介紹..."
+                  />
+                  {/* 導航關鍵字編輯 */}
+                  <div className="flex items-center gap-2 bg-white p-2 rounded-lg border border-stone-200">
+                    <span className="text-xs font-bold text-stone-400 flex-shrink-0">導航搜尋:</span>
+                    <input
+                      type="text"
+                      value={item.nav || ''}
+                      onChange={(e) => updateContent('nav', e.target.value)}
+                      className="flex-1 text-xs text-stone-600 bg-transparent focus:outline-none"
+                      placeholder="Google Maps 搜尋關鍵字"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-stone-600 leading-relaxed text-justify whitespace-pre-line font-medium">
+                  {item.desc || '暫無詳細介紹，但這裡絕對值得一去！'}
+                </p>
+              )}
             </div>
+
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={handleNav}
@@ -1211,38 +1286,50 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveU
                 <Sparkles size={16} className="text-teal-500" /> 問問 AI
               </button>
             </div>
-            {/* 🔥🔥🔥 新增：管理員操作工具列 (只有 Admin 看得到) 🔥🔥🔥 */}
+
             {isAdmin && (
               <div className="mt-4 pt-3 border-t border-stone-200 flex justify-between items-center">
                 <div className="flex gap-2">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMoveUp();
+                    }}
                     disabled={isFirst}
-                    className={`p-2 rounded-lg bg-white border border-stone-200 shadow-sm transition-all ${isFirst ? 'opacity-30 cursor-not-allowed' : 'active:scale-95 hover:bg-amber-50 hover:border-amber-200'}`}
+                    className={`p-2 rounded-lg bg-white border border-stone-200 shadow-sm transition-all ${isFirst
+                      ? 'opacity-30 cursor-not-allowed'
+                      : 'active:scale-95 hover:bg-amber-50 hover:border-amber-200'
+                      }`}
                   >
                     ⬆️
                   </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMoveDown();
+                    }}
                     disabled={isLast}
-                    className={`p-2 rounded-lg bg-white border border-stone-200 shadow-sm transition-all ${isLast ? 'opacity-30 cursor-not-allowed' : 'active:scale-95 hover:bg-amber-50 hover:border-amber-200'}`}
+                    className={`p-2 rounded-lg bg-white border border-stone-200 shadow-sm transition-all ${isLast
+                      ? 'opacity-30 cursor-not-allowed'
+                      : 'active:scale-95 hover:bg-amber-50 hover:border-amber-200'
+                      }`}
                   >
                     ⬇️
                   </button>
                 </div>
-                
-                <button 
-                  onClick={(e) => { e.stopPropagation(); onDelete(); }}
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete();
+                  }}
                   className="px-3 py-2 rounded-lg bg-red-50 text-red-600 border border-red-100 font-bold text-xs flex items-center gap-1 active:scale-95 hover:bg-red-100 transition-colors"
                 >
                   🗑️ 刪除行程
                 </button>
               </div>
             )}
-            {/* 🔥🔥🔥 結束 🔥🔥🔥 */}
           </div>
-
-
         </div>
       )}
     </div>
@@ -1251,7 +1338,7 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveU
 
 //
 //
-const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, onAdd, onDelete, onMove }) => {
+const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, updateContent, onAdd, onDelete, onMove }) => {
   const cardRef = useRef(null);
 
   const smoothScrollTo = (element, duration = 10) => {
@@ -1299,40 +1386,35 @@ const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, onAdd, onDelete
     <div ref={cardRef} className="mb-3 px-2">
       <div
         onClick={toggle}
-        className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${
-          isOpen
-            ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
-            : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
-        }`}
+        className={`relative flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all duration-300 ${isOpen
+          ? 'bg-stone-800 text-stone-50 shadow-xl scale-[1.02]'
+          : 'bg-white text-stone-800 shadow-sm border border-stone-100 hover:shadow-md'
+          }`}
       >
         <div className="flex items-center gap-4">
           <div
-            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${
-              isOpen
-                ? 'bg-stone-700 border-stone-600'
-                : 'bg-stone-50 border-stone-200'
-            }`}
+            className={`flex flex-col items-center justify-center w-12 h-12 rounded-xl border ${isOpen
+              ? 'bg-stone-700 border-stone-600'
+              : 'bg-stone-50 border-stone-200'
+              }`}
           >
             <span
-              className={`text-[10px] font-bold uppercase ${
-                isOpen ? 'text-stone-400' : 'text-stone-400'
-              }`}
+              className={`text-[10px] font-bold uppercase ${isOpen ? 'text-stone-400' : 'text-stone-400'
+                }`}
             >
               Day
             </span>
             <span
-              className={`text-xl font-serif font-bold ${
-                isOpen ? 'text-amber-400' : 'text-stone-800'
-              }`}
+              className={`text-xl font-serif font-bold ${isOpen ? 'text-amber-400' : 'text-stone-800'
+                }`}
             >
               {dayData.day}
             </span>
           </div>
           <div>
             <div
-              className={`text-xs font-bold mb-0.5 ${
-                isOpen ? 'text-stone-400' : 'text-stone-500'
-              }`}
+              className={`text-xs font-bold mb-0.5 ${isOpen ? 'text-stone-400' : 'text-stone-500'
+                }`}
             >
               {dayData.displayDate}
             </div>
@@ -1347,9 +1429,8 @@ const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, onAdd, onDelete
               <Signal size={10} className="text-green-500 animate-pulse" />
             )}
             <span
-              className={`text-sm font-medium ${
-                isOpen ? 'text-stone-300' : 'text-stone-600'
-              }`}
+              className={`text-sm font-medium ${isOpen ? 'text-stone-300' : 'text-stone-600'
+                }`}
             >
               {dayData.weather.temp}
             </span>
@@ -1372,6 +1453,7 @@ const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, onAdd, onDelete
               index={idx + 1}
               isAdmin={isAdmin}
               updateTime={(d, l, t) => updateTime(d, idx, t)}
+              updateContent={(field, val) => updateContent(dayData.day, idx, field, val)}
               onDelete={() => onDelete(idx)}
               onMoveUp={() => onMove(idx, -1)}
               onMoveDown={() => onMove(idx, 1)}
@@ -1420,11 +1502,10 @@ const FlightCard = ({
       <div className="relative z-10">
         <div className="flex justify-between items-center mb-4">
           <span
-            className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${
-              type === '去程'
-                ? 'bg-amber-100 text-amber-800'
-                : 'bg-stone-100 text-stone-600'
-            }`}
+            className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${type === '去程'
+              ? 'bg-amber-100 text-amber-800'
+              : 'bg-stone-100 text-stone-600'
+              }`}
           >
             {type}
           </span>
@@ -1639,11 +1720,10 @@ const CurrencySection = () => {
         {exchanges.map((ex, i) => (
           <div
             key={i}
-            className={`flex justify-between items-center p-3 rounded-xl border transition-all ${
-              i < 3
-                ? 'bg-white border-stone-200 shadow-sm'
-                : 'bg-stone-50 border-stone-100 opacity-80'
-            }`}
+            className={`flex justify-between items-center p-3 rounded-xl border transition-all ${i < 3
+              ? 'bg-white border-stone-200 shadow-sm'
+              : 'bg-stone-50 border-stone-100 opacity-80'
+              }`}
           >
             <div>
               <div className="flex items-center gap-2 mb-0.5">
@@ -2408,20 +2488,18 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
             <button
               key={user}
               onClick={() => setCurrentUser(user)}
-              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${
-                currentUser === user
-                  ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
-                  : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
-              }`}
+              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
+                ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
+                : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
+                }`}
             >
               {isKonamiActive ? (
                 <div className="flex flex-col items-center animate-bounce">
                   <img
                     src={CHARACTER_MAP[user]}
                     alt={user}
-                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${
-                      user === '學弟' ? 'scale-125' : ''
-                    }`}
+                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${user === '學弟' ? 'scale-125' : ''
+                      }`}
                   />
                   <span className="text-[10px] opacity-80">{user}</span>
                 </div>
@@ -2499,27 +2577,24 @@ const PackingPage = ({ isKonamiActive, isAdmin }) => {
               <div
                 key={index}
                 onClick={() => toggleItem(currentUser, index)}
-                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${
-                  item.checked
-                    ? 'bg-stone-100 border-transparent opacity-60'
-                    : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
-                }`}
+                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${item.checked
+                  ? 'bg-stone-100 border-transparent opacity-60'
+                  : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
+                  }`}
               >
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${
-                    item.checked
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : 'border-stone-300 bg-stone-50'
-                  }`}
+                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${item.checked
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'border-stone-300 bg-stone-50'
+                    }`}
                 >
                   {item.checked && <CheckCircle size={14} strokeWidth={3} />}
                 </div>
                 <span
-                  className={`flex-1 font-medium ${
-                    item.checked
-                      ? 'text-stone-400 line-through decoration-stone-400'
-                      : 'text-stone-700'
-                  }`}
+                  className={`flex-1 font-medium ${item.checked
+                    ? 'text-stone-400 line-through decoration-stone-400'
+                    : 'text-stone-700'
+                    }`}
                 >
                   {item.name}
                 </span>
@@ -2571,29 +2646,50 @@ export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [inputPwd, setInputPwd] = useState('');
-  
+
   // 權限狀態
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMember, setIsMember] = useState(false);
-  
+
   const [showHelloKitty, setShowHelloKitty] = useState(false);
   const [shakeCount, setShakeCount] = useState(0);
   const [showShakeEgg, setShowShakeEgg] = useState(false);
-  
+
   const pressTimerRef = useRef(null);
   const lastShakeTimeRef = useRef(0);
   const touchStartRef = useRef({ x: 0, y: 0 });
-  
+
   const [activeTab, setActiveTab] = useState('itinerary');
   const [openDay, setOpenDay] = useState(0);
   const [konamiSequence, setKonamiSequence] = useState([]);
   const [isKonamiActive, setIsKonamiActive] = useState(false);
-  
+
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
   // 🔥 1. 初始化資料 (不再讀取 LocalStorage，先用預設值，等 Firebase 更新)
   const [itinerary, setItinerary] = useState(INITIAL_ITINERARY_DATA);
+  // 🔥🔥🔥 新增：版本號的 State 🔥🔥🔥
+  const [appVersion, setAppVersion] = useState('2026');
 
+  // ... existing firebase useEffect for itinerary ...
+
+  // 🔥🔥🔥 新增：監聽 Firebase 上的版本號 (appVersion) 🔥🔥🔥
+  useEffect(() => {
+    const versionRef = ref(db, 'appVersion'); // 在雲端建立一個叫 appVersion 的欄位
+    const unsubscribe = onValue(versionRef, (snapshot) => {
+      const val = snapshot.val();
+      if (val) {
+        setAppVersion(val);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 🔥🔥🔥 新增：更新版本號的函式 🔥🔥🔥
+  const handleUpdateVersion = (newVal) => {
+    setAppVersion(newVal); // 本地先更新，感覺比較快
+    set(ref(db, 'appVersion'), newVal); // 推送到雲端
+  };
   // 🔥 2. 監聽 Firebase 雲端資料 (一有變動，馬上同步)
   useEffect(() => {
     const itineraryRef = ref(db, 'itinerary');
@@ -2612,7 +2708,7 @@ export default function TravelApp() {
   // 🔥 3. 通用更新函式 (寫入雲端)
   const updateFirebase = (newItinerary) => {
     // Optimistic UI: 先更新本地畫面，讓使用者覺得很快
-    setItinerary(newItinerary); 
+    setItinerary(newItinerary);
     // 然後推送到雲端
     set(ref(db, 'itinerary'), newItinerary).catch((err) => {
       console.error("同步失敗", err);
@@ -2631,7 +2727,15 @@ export default function TravelApp() {
       updateFirebase(newItinerary);
     }
   };
-
+  const handleContentUpdate = (dayNum, locIndex, field, value) => {
+    const newItinerary = [...itinerary];
+    const dayData = newItinerary.find((d) => d.day === dayNum);
+    if (dayData && dayData.locations[locIndex]) {
+      // field 可以是 'name', 'note', 'desc', 'nav' 等等
+      dayData.locations[locIndex][field] = value;
+      updateFirebase(newItinerary); // 同步到 Firebase
+    }
+  };
   // 新增行程
   const handleAddLocation = (dayNum) => {
     const newItinerary = [...itinerary];
@@ -2746,7 +2850,7 @@ export default function TravelApp() {
       const diffY = clientY - touchStartRef.current.y;
       if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
       let direction = '';
-      if (Math.abs(diffX) > Math.abs(diffY)) { direction = diffX > 0 ? 'right' : 'left'; } 
+      if (Math.abs(diffX) > Math.abs(diffY)) { direction = diffX > 0 ? 'right' : 'left'; }
       else { direction = diffY > 0 ? 'down' : 'up'; }
       setKonamiSequence((prev) => [...prev, direction].slice(-4));
     };
@@ -2805,7 +2909,7 @@ export default function TravelApp() {
 
   return (
     <div className={`min-h-screen font-sans text-stone-800 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7]'}`}>
-      
+
       {/* 轉向提示 */}
       <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
         <Phone size={48} className="animate-pulse mb-4" />
@@ -2820,19 +2924,19 @@ export default function TravelApp() {
             <div className={`absolute top-0 right-0 w-1/2 h-full transition-transform duration-1000 ease-in-out ${isUnlocking ? 'translate-x-full' : 'translate-x-0'}`} style={{ backgroundImage: `url(${JUNGLE_BG})`, backgroundSize: '200% 120%', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat' }}><div className="absolute inset-0 bg-black/20"></div></div>
 
             <div className={`relative z-10 flex flex-col items-center w-full px-8 h-full pt-40 transition-opacity duration-500 ${isUnlocking ? 'opacity-0' : 'opacity-100'}`}>
-               {/* Icon, Title */}
-               <div onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onMouseLeave={handlePressEnd} onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onContextMenu={(e) => e.preventDefault()} className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"><HelpCircle size={40} className="text-white drop-shadow-md" strokeWidth={2.5} /></div>
-               <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
-               <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
-               
-               {/* 密碼輸入 */}
-               <div className="w-full relative mb-6 mt-auto">
-                 <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
-                 <input type="password" value={inputPwd} onChange={(e) => setInputPwd(e.target.value)} placeholder="Passcode" className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" />
-               </div>
-               <button onClick={handleUnlock} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2" style={{ marginBottom: 'calc(60px + env(safe-area-inset-bottom))' }}>Start Journey <ArrowRight size={18} /></button>
+              {/* Icon, Title */}
+              <div onMouseDown={handlePressStart} onMouseUp={handlePressEnd} onMouseLeave={handlePressEnd} onTouchStart={handlePressStart} onTouchEnd={handlePressEnd} onContextMenu={(e) => e.preventDefault()} className="bg-white/20 p-6 rounded-full mb-6 shadow-2xl border border-white/30 backdrop-blur-md cursor-pointer active:scale-95 transition-transform animate-pulse touch-none"><HelpCircle size={40} className="text-white drop-shadow-md" strokeWidth={2.5} /></div>
+              <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
+              <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
+
+              {/* 密碼輸入 */}
+              <div className="w-full relative mb-6 mt-auto">
+                <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
+                <input type="password" value={inputPwd} onChange={(e) => setInputPwd(e.target.value)} placeholder="Passcode" className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" />
+              </div>
+              <button onClick={handleUnlock} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2" style={{ marginBottom: 'calc(60px + env(safe-area-inset-bottom))' }}>Start Journey <ArrowRight size={18} /></button>
             </div>
-            
+
             {/* Hello Kitty 彩蛋 */}
             {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl text-center"><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4" /><p className="text-pink-400 font-bold">Surprise! 🎉</p></div></div>)}
           </div>
@@ -2841,7 +2945,11 @@ export default function TravelApp() {
 
       {!isLocked && (
         <div className="bg-[#FDFBF7] min-h-screen">
-          <WeatherHero />
+          <WeatherHero
+            isAdmin={isAdmin}          // 告訴它你是管理員
+            versionText={appVersion}   // 告訴它現在的版本文字是什麼
+            updateVersion={handleUpdateVersion} // 給它修改的權限
+          />
           <main className="pb-28">
             {activeTab === 'itinerary' && (
               <div className="pb-4">
@@ -2855,6 +2963,7 @@ export default function TravelApp() {
                       toggle={() => setOpenDay(openDay === idx ? -1 : idx)}
                       isAdmin={isAdmin}
                       updateTime={handleTimeUpdate}
+                      updateContent={handleContentUpdate}
                       // 傳遞新增/刪除/移動功能
                       onAdd={() => handleAddLocation(day.day)}
                       onDelete={(locIdx) => handleDeleteLocation(day.day, locIdx)}
