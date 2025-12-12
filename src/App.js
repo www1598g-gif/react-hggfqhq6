@@ -1251,7 +1251,7 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, onDelete, onMoveU
 
 //
 //
-const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime }) => {
+const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, onAdd, onDelete, onMove }) => {
   const cardRef = useRef(null);
 
   const smoothScrollTo = (element, duration = 10) => {
