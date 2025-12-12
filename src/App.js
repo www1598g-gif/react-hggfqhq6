@@ -40,7 +40,7 @@ import {
   AlertTriangle,
   Zap,
   HelpCircle,
-  Settings, 
+  Settings,
   Upload,
 } from 'lucide-react';
 
@@ -2596,11 +2596,15 @@ export default function TravelApp() {
   const [shakeCount, setShakeCount] = useState(0);
   const [showShakeEgg, setShowShakeEgg] = useState(false);
   const pressTimerRef = useRef(null);
-  const lastShakeTimeRef = useRef(0);
+  //const lastShakeTimeRef = useRef(0);
 
   // 頁面狀態
   const [activeTab, setActiveTab] = useState('itinerary');
   const [openDay, setOpenDay] = useState(0);
+
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const [konamiSequence, setKonamiSequence] = useState([]);
+  const [isKonamiActive, setIsKonamiActive] = useState(false);
 
   const JUNGLE_BG = process.env.PUBLIC_URL + '/images/jungle1.jpeg';
 
@@ -2639,6 +2643,82 @@ export default function TravelApp() {
     });
     return () => unsubscribe();
   }, []);
+
+
+  // 1. 補回：搖晃彩蛋邏輯 (Shake Egg)
+  useEffect(() => {
+    let lastShakeTime = 0;
+    const handleShake = (e) => {
+      const acc = e.accelerationIncludingGravity || e.acceleration;
+      if (!acc) return;
+      const total = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+      // 搖晃靈敏度設定
+      if (total > 20 && Date.now() - lastShakeTime > 300) {
+        lastShakeTime = Date.now();
+        setShakeCount((prev) => {
+          const newCount = prev + 1;
+          if (newCount >= 8) { // 搖 8 次觸發
+            setShowShakeEgg(true);
+            return 0;
+          }
+          return newCount;
+        });
+      }
+    };
+    window.addEventListener('devicemotion', handleShake);
+    return () => window.removeEventListener('devicemotion', handleShake);
+  }, []);
+
+  // 2. 補回：滑動彩蛋邏輯 (Konami Code: 上下左右)
+  useEffect(() => {
+    const handleStart = (clientX, clientY) => {
+      touchStartRef.current = { x: clientX, y: clientY };
+    };
+    const handleEnd = (clientX, clientY) => {
+      const diffX = clientX - touchStartRef.current.x;
+      const diffY = clientY - touchStartRef.current.y;
+      if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return; // 滑動距離太短不算
+      let direction = '';
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        direction = diffX > 0 ? 'right' : 'left';
+      } else {
+        direction = diffY > 0 ? 'down' : 'up';
+      }
+      setKonamiSequence((prev) => [...prev, direction].slice(-4)); // 只保留最後 4 次動作
+    };
+
+    // 支援觸控與滑鼠
+    const onTouchStart = (e) => handleStart(e.touches[0].clientX, e.touches[0].clientY);
+    const onTouchEnd = (e) => handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    const onMouseDown = (e) => handleStart(e.clientX, e.clientY);
+    const onMouseUp = (e) => handleEnd(e.clientX, e.clientY);
+
+    window.addEventListener('touchstart', onTouchStart);
+    window.addEventListener('touchend', onTouchEnd);
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
+
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, []);
+
+  // 3. 補回：偵測滑動序列是否符合 "上 下 左 右"
+  // 3. 補回：偵測滑動序列是否符合 "上 下 左 右"
+useEffect(() => {
+  if (konamiSequence.join(' ') === 'up down left right') {
+    setIsKonamiActive((prev) => {
+      const newState = !prev; // 先算出新狀態
+      // 用新狀態來顯示正確訊息
+      alert(newState ? '🌟 隱藏模式啟動！去看看行李清單吧！' : '關閉隱藏模式 👋');
+      return newState; // 回傳新狀態
+    });
+    setKonamiSequence([]); // 重置序列
+  }
+}, [konamiSequence]);
 
   // 更新函式
   const updateFirebase = (newItinerary) => {
@@ -2715,6 +2795,7 @@ export default function TravelApp() {
     if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
       DeviceMotionEvent.requestPermission().catch(console.error);
     }
+
     const encodedInput = btoa(inputPwd);
     // 86867708
     if (encodedInput === 'ODY4Njc3MDg=') {
@@ -2784,7 +2865,7 @@ export default function TravelApp() {
               </div>
             </div>
 
-            {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl text-center"><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4" /><p className="text-pink-400 font-bold">Surprise! 🎉</p></div></div>)}
+            {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl text-center"><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4" /><p className="text-pink-400 font-bold">丹和你說聲 Surprise! 🎉</p></div></div>)}
           </div>
         </div>
       )}
@@ -2817,7 +2898,12 @@ export default function TravelApp() {
               </div>
             )}
 
-            {activeTab === 'packing' && <PackingPage isKonamiActive={false} isAdmin={isAdmin} />}
+            {activeTab === 'packing' && (
+              <PackingPage
+                isKonamiActive={isKonamiActive} // 🔥 修正：這裡改成傳入 state 變數，而不是 false
+                isAdmin={isAdmin}
+              />
+            )}
             {/* 🔥 5. 把 systemInfo 傳進 UtilsPage 讓你在裡面改 */}
             {activeTab === 'utils' && <UtilsPage isAdmin={isAdmin} isMember={isMember} systemInfo={systemInfo} updateSystemInfo={updateSystemInfo} />}
           </main>
