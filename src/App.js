@@ -40,6 +40,8 @@ import {
   AlertTriangle,
   Zap,
   HelpCircle,
+  Settings, 
+  Upload,
 } from 'lucide-react';
 
 
