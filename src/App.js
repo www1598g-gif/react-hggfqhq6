@@ -642,12 +642,18 @@ const UTILS_DATA = {
 
 // 🔥🔥🔥 修改後的 WeatherHero (含警報、美化2026、鎖定按鈕、深色模式) 🔥🔥🔥
 // 🔥🔥🔥 修正後的 WeatherHero (含警報、美化2026、鎖定按鈕) 🔥🔥🔥
+// ============================================
+// 🔥🔥🔥 修正後的 WeatherHero (修復 UI/UX 問題) 🔥🔥🔥
+// ============================================
+// ============================================
+// 🔥🔥🔥 修正後的 WeatherHero (更換 2026 為極簡風) 🔥🔥🔥
+// ============================================
 const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
   const [daysLeft, setDaysLeft] = useState(0);
   const [lastUpdate, setLastUpdate] = useState('');
-  const [alerts, setAlerts] = useState([]); // 儲存警報訊息
+  const [alerts, setAlerts] = useState([]); 
 
   useEffect(() => {
     // 倒數計時邏輯
@@ -663,82 +669,61 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
     // 天氣與 AQI 抓取
     const fetchWeather = async () => {
       try {
-        // 🔥 更新 API：多抓取 precipitation_probability (降雨機率)
         const res = await fetch(
           'https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&current=temperature_2m,weather_code,relative_humidity_2m&hourly=temperature_2m,weather_code,precipitation_probability&forecast_days=2&timezone=Asia%2FBangkok'
         );
-        
         const json = await res.json();
         
-        // 抓取 AQI (為了簡化程式碼長度，這裡模擬抓取成功，若你有原本的 AQI 邏輯可保留)
-        // 實際使用時請保留你原本 fetch IQAir/WAQI 的部分
-        // 這裡僅示範判斷邏輯
-        //const currentAqi = 155; // 測試用，你可以換回原本的 state
-        // 🔥🔥🔥 在這裡插入新程式碼 🔥🔥🔥
-// 2️⃣ 抓 AQI 資料 (雙重備援系統)
-let currentAqi = 50; // 預設值
-let aqiSource = 'default';
+        // 2️⃣ 抓 AQI 資料 (雙重備援系統)
+        let currentAqi = 50; 
+        let aqiSource = 'default';
 
-// 第一選擇：IQAir
-try {
-  const iqairRes = await fetch(
-    'https://api.airvisual.com/v2/nearest_city?lat=18.7883&lon=98.9853&key=4743d035-1b8f-4a42-9ddf-66dee64f8b8a'
-  );
-  const iqairData = await iqairRes.json();
-  
-  if (iqairData.status === 'success' && iqairData.data?.current?.pollution) {
-    currentAqi = iqairData.data.current.pollution.aqius;
-    aqiSource = 'IQAir';
-    console.log('✅ AQI 來源: IQAir =', currentAqi);
-  } else {
-    throw new Error('IQAir API 回應異常');
-  }
-} catch (iqairError) {
-  console.warn('⚠️ IQAir 失敗，切換到 WAQI 備援...', iqairError.message);
-  
-  // 備援方案：WAQI
-  try {
-    const waqiRes = await fetch(
-      'https://api.waqi.info/feed/geo:18.7883;98.9853/?token=6a1feb1b93b9f182f5ace9c2ffc8fdfc0e6e61c2'
-    );
-    const waqiData = await waqiRes.json();
-    
-    if (waqiData.status === 'ok' && waqiData.data?.aqi) {
-      currentAqi = waqiData.data.aqi;
-      aqiSource = 'WAQI';
-      console.log('✅ AQI 來源: WAQI (備援) =', currentAqi);
-    } else {
-      throw new Error('WAQI API 回應異常');
-    }
-  } catch (waqiError) {
-    console.error('❌ WAQI 也失敗了，使用預設值', waqiError.message);
-    aqiSource = 'fallback';
-  }
-}
+        try {
+          const iqairRes = await fetch(
+            'https://api.airvisual.com/v2/nearest_city?lat=18.7883&lon=98.9853&key=4743d035-1b8f-4a42-9ddf-66dee64f8b8a'
+          );
+          const iqairData = await iqairRes.json();
+          
+          if (iqairData.status === 'success' && iqairData.data?.current?.pollution) {
+            currentAqi = iqairData.data.current.pollution.aqius;
+            aqiSource = 'IQAir';
+          } else {
+            throw new Error('IQAir API 回應異常');
+          }
+        } catch (iqairError) {
+          console.warn('⚠️ IQAir 失敗，切換到 WAQI 備援...');
+          try {
+            const waqiRes = await fetch(
+              'https://api.waqi.info/feed/geo:18.7883;98.9853/?token=6a1feb1b93b9f182f5ace9c2ffc8fdfc0e6e61c2'
+            );
+            const waqiData = await waqiRes.json();
+            if (waqiData.status === 'ok' && waqiData.data?.aqi) {
+              currentAqi = waqiData.data.aqi;
+              aqiSource = 'WAQI';
+            }
+          } catch (waqiError) {
+            console.error('❌ WAQI 也失敗了，使用預設值');
+            aqiSource = 'fallback';
+          }
+        }
 
-setAqi(currentAqi);
-setLastUpdate(`${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })} (${aqiSource})`);
+        setAqi(currentAqi);
+        setLastUpdate(`${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })} (${aqiSource})`);
+
         if (json && json.current) {
           setData(json);
           
-          // 🔥 檢測警報邏輯
           const currentHour = new Date().getHours();
-          // 抓取未來 3 小時的最大降雨機率
           const next3HoursRain = json.hourly.precipitation_probability.slice(currentHour, currentHour + 3);
           const maxRainProb = Math.max(...next3HoursRain);
           
           let newAlerts = [];
-          
-          // 1. 降雨警報
           if (maxRainProb > 40) {
             newAlerts.push({ type: 'rain', msg: `🌧️ 降雨機率 ${maxRainProb}%，記得帶傘！` });
           }
-
-          // 2. AQI 警報 (假設 currentAqi 是你抓到的數值)
-          if (currentAqi > 100) { // 建議大於 100 (橘色警戒) 再跳警告，150 是紅色警戒
-         newAlerts.push({ type: 'aqi', msg: `😷 AQI 數值偏高，戶外請戴口罩。` });
-      }
-
+          if (currentAqi > 100) { 
+             newAlerts.push({ type: 'aqi', msg: `😷 AQI 數值偏高，戶外請戴口罩。` });
+          }
           setAlerts(newAlerts);
         }
       } catch (e) {
@@ -751,7 +736,6 @@ setLastUpdate(`${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minut
     return () => { clearInterval(timer); clearInterval(weatherTimer); };
   }, []); 
 
-  // Icon 輔助函式
   const getWeatherIcon = (code, size = 20) => {
     if (code <= 1) return <Sun size={size} className="text-amber-500" strokeWidth={2.5} />;
     if (code <= 3) return <Cloud size={size} className="text-stone-400 dark:text-stone-300" strokeWidth={2.5} />;
@@ -783,21 +767,18 @@ setLastUpdate(`${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minut
   return (
     <div className="relative bg-[#FDFBF7] dark:bg-stone-900 pt-0 pb-8 px-6 border-b border-stone-200 dark:border-stone-800 rounded-b-[2.5rem] z-10 overflow-hidden transition-colors duration-500">
       
-      {/* 倒數計時條 */}
       {daysLeft > 0 && (
         <div className="absolute top-0 left-0 right-0 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 text-[10px] font-bold text-center py-1.5 z-20 shadow-sm">
           ✈️ 距離出發還有 <span className="text-amber-600 dark:text-amber-400 text-sm mx-1">{daysLeft}</span> 天！
         </div>
       )}
 
-      {/* 裝飾背景字 */}
       <div className="absolute top-[-20px] right-[-20px] text-[8rem] font-serif text-amber-50 dark:text-stone-800 opacity-50 select-none leading-none pointer-events-none">
         Thai
       </div>
 
       <div className="relative z-10 mt-10">
         
-        {/* 🔥 天氣警報 Banner (新增部分) */}
         {alerts.length > 0 && (
           <div className="mb-4 space-y-2">
             {alerts.map((alert, idx) => (
@@ -813,31 +794,33 @@ setLastUpdate(`${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minut
         )}
 
         <div className="flex justify-between items-end mb-6">
-          <div>
+          <div className="flex-1 min-w-0 mr-4">
             <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-1 bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-400 text-[10px] font-bold tracking-wider rounded-full">
+              {/* 名字：加上 whitespace-nowrap 防止換行 */}
+              <span className="px-2.5 py-1 bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-400 text-[10px] font-bold tracking-wider rounded-full whitespace-nowrap">
                 佑任・軒寶・學弟・腳慢
               </span>
 
+              {/* 2026 年份顯示：改為極簡風格 (Option 3) */}
               {isAdmin ? (
-  <input
-    type="text"
-    value={versionText || ''}
-    onChange={(e) => updateVersion(e.target.value)}
-    className="w-16 bg-transparent border-b border-amber-300 text-[10px] font-bold focus:outline-none text-center dark:text-white"
-  />
-) : (
-  <div className="ml-2 w-12 h-12 bg-red-800/90 text-stone-50 rounded-lg border-2 border-red-900/50 flex flex-col items-center justify-center shadow-sm rotate-3 transform hover:rotate-0 transition-transform cursor-default select-none">
-    <span className="text-[8px] tracking-widest opacity-80 uppercase">Year</span>
-    <span className="text-sm font-serif font-bold tracking-widest border-t border-red-400/50 pt-0.5">
-      {versionText || '2026'}
-    </span>
-  </div>
-)}
-              {/* 🔥 新增：鎖定按鈕 */}
+                <input
+                  type="text"
+                  value={versionText || ''}
+                  onChange={(e) => updateVersion(e.target.value)}
+                  className="w-16 bg-transparent border-b border-amber-300 text-[10px] font-bold focus:outline-none text-center dark:text-white"
+                />
+              ) : (
+                <div className="ml-2 flex flex-col items-start justify-center border-l border-stone-300 dark:border-stone-600 pl-3 py-0.5 select-none flex-shrink-0 opacity-60">
+                   <span className="text-[8px] font-bold uppercase tracking-wider leading-none">Year</span>
+                   <span className="text-lg font-serif font-bold leading-none italic text-stone-400 dark:text-stone-500">
+                     {versionText || '26'}
+                   </span>
+                </div>
+              )}
+              
               <button 
                 onClick={onLock}
-                className="ml-2 p-1.5 bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-500 rounded-full hover:bg-stone-200 dark:hover:bg-stone-700 hover:text-red-500 transition-colors"
+                className="ml-auto p-1.5 bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-500 rounded-full hover:bg-stone-200 dark:hover:bg-stone-700 hover:text-red-500 transition-colors flex-shrink-0"
                 title="鎖定畫面"
               >
                 <Lock size={12} />
@@ -851,7 +834,7 @@ setLastUpdate(`${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minut
           </div>
 
           {/* 右側天氣概況 */}
-          <div className="text-right">
+          <div className="text-right flex-shrink-0">
             <div className="text-[10px] font-bold text-stone-400 mb-1 uppercase tracking-widest">
               Chiang Mai Now
             </div>
@@ -863,19 +846,23 @@ setLastUpdate(`${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minut
                     {Math.round(data.current.temperature_2m)}°
                   </span>
                 </div>
-                <div className="flex items-center gap-2 mt-2">
+                
+                {/* AQI 與 濕度 在同一行 */}
+                <div className="flex items-center justify-end gap-2 mt-2">
                   <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${getAqiColor(aqi)}`}>
                     <Wind size={10} /> AQI {aqi}
                   </div>
-                  {lastUpdate && (
-  <div className="text-[9px] text-stone-400 mt-1">
-    {lastUpdate}
-  </div>
-)}
                   <div className="text-xs text-stone-500 dark:text-stone-400 font-medium bg-white/50 dark:bg-stone-800/50 px-2 py-0.5 rounded-full flex items-center gap-1">
                     <Droplets size={10} /> {data.current.relative_humidity_2m}%
                   </div>
                 </div>
+
+                {/* 更新時間移到最下方 */}
+                {lastUpdate && (
+                  <div className="text-[8px] text-stone-300 dark:text-stone-600 mt-1 font-mono tracking-tighter">
+                    Update: {lastUpdate}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="animate-pulse flex gap-2 items-center">
@@ -890,7 +877,7 @@ setLastUpdate(`${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minut
         {data && nextHours.length > 0 && (
           <div className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-100 dark:border-stone-700 shadow-sm">
             <div className="flex items-center">
-              <div className="text-[10px] font-bold text-stone-400 writing-vertical-rl rotate-180 border-l pl-3 mr-3 border-stone-200 dark:border-stone-600 h-10 flex items-center justify-center tracking-widest flex-shrink-0">
+              <div className="text-[10px] font-bold text-stone-400 writing-vertical-rl border-l pl-3 mr-3 border-stone-200 dark:border-stone-600 h-10 flex items-center justify-center tracking-widest flex-shrink-0">
                 FUTURE 24H
               </div>
               <div className="flex overflow-x-auto gap-4 pb-2 w-full no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -899,8 +886,8 @@ setLastUpdate(`${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minut
                     <span className="text-[10px] text-stone-400 font-bold whitespace-nowrap">{h.time}</span>
                     <div className="py-1">{getWeatherIcon(h.code, 20)}</div>
                     <span className="text-sm font-bold text-stone-700 dark:text-stone-300">{h.temp}°</span>
-                    {/* 顯示降雨機率 */}
-                    {h.rain > 0 && (
+                    {/* 只要 >= 0 就顯示藍色小字 */}
+                    {h.rain >= 0 && (
                        <span className="text-[9px] text-blue-400 font-bold">{h.rain}%</span>
                     )}
                   </div>
