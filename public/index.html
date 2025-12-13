@@ -13,9 +13,20 @@
     <meta http-equiv="Expires" content="0" />
     
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        darkMode: 'class', // 告訴 Tailwind 透過 class 來控制深色模式
+        theme: {
+          extend: {
+            // 你可以在這裡擴充自定義樣式，目前保持預設即可
+          }
+        }
+      }
+    </script>
+
   </head>
   <body>
     <div id="root"></div>
   </body>
 </html>
-
