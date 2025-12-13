@@ -674,7 +674,50 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
         // 實際使用時請保留你原本 fetch IQAir/WAQI 的部分
         // 這裡僅示範判斷邏輯
         //const currentAqi = 155; // 測試用，你可以換回原本的 state
+        // 🔥🔥🔥 在這裡插入新程式碼 🔥🔥🔥
+// 2️⃣ 抓 AQI 資料 (雙重備援系統)
+let currentAqi = 50; // 預設值
+let aqiSource = 'default';
 
+// 第一選擇：IQAir
+try {
+  const iqairRes = await fetch(
+    'https://api.airvisual.com/v2/nearest_city?lat=18.7883&lon=98.9853&key=4743d035-1b8f-4a42-9ddf-66dee64f8b8a'
+  );
+  const iqairData = await iqairRes.json();
+  
+  if (iqairData.status === 'success' && iqairData.data?.current?.pollution) {
+    currentAqi = iqairData.data.current.pollution.aqius;
+    aqiSource = 'IQAir';
+    console.log('✅ AQI 來源: IQAir =', currentAqi);
+  } else {
+    throw new Error('IQAir API 回應異常');
+  }
+} catch (iqairError) {
+  console.warn('⚠️ IQAir 失敗，切換到 WAQI 備援...', iqairError.message);
+  
+  // 備援方案：WAQI
+  try {
+    const waqiRes = await fetch(
+      'https://api.waqi.info/feed/geo:18.7883;98.9853/?token=6a1feb1b93b9f182f5ace9c2ffc8fdfc0e6e61c2'
+    );
+    const waqiData = await waqiRes.json();
+    
+    if (waqiData.status === 'ok' && waqiData.data?.aqi) {
+      currentAqi = waqiData.data.aqi;
+      aqiSource = 'WAQI';
+      console.log('✅ AQI 來源: WAQI (備援) =', currentAqi);
+    } else {
+      throw new Error('WAQI API 回應異常');
+    }
+  } catch (waqiError) {
+    console.error('❌ WAQI 也失敗了，使用預設值', waqiError.message);
+    aqiSource = 'fallback';
+  }
+}
+
+setAqi(currentAqi);
+setLastUpdate(`${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })} (${aqiSource})`);
         if (json && json.current) {
           setData(json);
           
@@ -692,7 +735,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
           }
 
           // 2. AQI 警報 (假設 currentAqi 是你抓到的數值)
-          if (aqi > 100) { // 建議大於 100 (橘色警戒) 再跳警告，150 是紅色警戒
+          if (currentAqi > 100) { // 建議大於 100 (橘色警戒) 再跳警告，150 是紅色警戒
          newAlerts.push({ type: 'aqi', msg: `😷 AQI 數值偏高，戶外請戴口罩。` });
       }
 
@@ -706,7 +749,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
     fetchWeather();
     const weatherTimer = setInterval(fetchWeather, 20 * 60 * 1000);
     return () => { clearInterval(timer); clearInterval(weatherTimer); };
-  }, [aqi]); 
+  }, []); 
 
   // Icon 輔助函式
   const getWeatherIcon = (code, size = 20) => {
@@ -824,6 +867,11 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                   <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${getAqiColor(aqi)}`}>
                     <Wind size={10} /> AQI {aqi}
                   </div>
+                  {lastUpdate && (
+  <div className="text-[9px] text-stone-400 mt-1">
+    {lastUpdate}
+  </div>
+)}
                   <div className="text-xs text-stone-500 dark:text-stone-400 font-medium bg-white/50 dark:bg-stone-800/50 px-2 py-0.5 rounded-full flex items-center gap-1">
                     <Droplets size={10} /> {data.current.relative_humidity_2m}%
                   </div>
@@ -994,100 +1042,104 @@ const FloatingStatus = ({ itinerary }) => {
 
 
 // update穿搭指南 + 爛腳圖例
+
+// ============================================
+// update穿搭指南 + 爛腳圖例 (修正夜間模式)
+// ============================================
 const OutfitGuide = () => {
-  const [isOpen, setIsOpen] = useState(false); // 預設關閉
+  const [isOpen, setIsOpen] = useState(false);
 
   if (!isOpen)
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="mx-6 mt-6 bg-white shadow-sm border border-stone-100 py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 text-stone-600 w-[calc(100%-3rem)] active:scale-95 transition-transform"
+        className="mx-6 mt-6 bg-white dark:bg-stone-800 shadow-sm border border-stone-100 dark:border-stone-700 py-3 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 text-stone-600 dark:text-stone-300 w-[calc(100%-3rem)] active:scale-95 transition-transform"
       >
         <Info size={14} className="text-amber-500" /> 查看穿搭 & 爛腳等級說明
       </button>
     );
 
   return (
-    <div className="mx-6 mt-6 bg-[#FFFBF0] p-5 rounded-2xl border border-amber-100/50 shadow-sm relative animate-fadeIn">
+    <div className="mx-6 mt-6 bg-[#FFFBF0] dark:bg-stone-800 p-5 rounded-2xl border border-amber-100/50 dark:border-stone-700 shadow-sm relative animate-fadeIn transition-colors">
       <button
         onClick={() => setIsOpen(false)}
-        className="absolute top-3 right-3 text-amber-300 hover:text-amber-500 transition-colors"
+        className="absolute top-3 right-3 text-amber-300 hover:text-amber-500"
       >
         <ChevronUp size={18} />
       </button>
 
       {/* 第一部分 穿搭 */}
-      <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 text-base mb-3">
+      <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 dark:text-amber-500 text-base mb-3">
         <Shirt size={18} className="text-amber-500" /> 2月穿搭指南
       </h3>
-      <div className="space-y-3 text-xs text-stone-600 leading-relaxed mb-6">
+      <div className="space-y-3 text-xs text-stone-600 dark:text-stone-300 leading-relaxed mb-6">
         <div className="flex items-start gap-3">
-          <div className="bg-amber-100 p-1.5 rounded-full text-amber-600 flex-shrink-0">
+          <div className="bg-amber-100 dark:bg-amber-900/50 p-1.5 rounded-full text-amber-600 dark:text-amber-300 flex-shrink-0">
             <Sun size={12} />
           </div>
           <div>
-            <strong className="text-stone-800">白天 (30-35°C)</strong>
+            <strong className="text-stone-800 dark:text-stone-100">白天 (30-35°C)</strong>
             <br />
             短袖、透氣長裙。太陽很毒，務必戴墨鏡帽。
           </div>
         </div>
         <div className="flex items-start gap-3">
-          <div className="bg-blue-100 p-1.5 rounded-full text-blue-600 flex-shrink-0">
+          <div className="bg-blue-100 dark:bg-blue-900/50 p-1.5 rounded-full text-blue-600 dark:text-blue-300 flex-shrink-0">
             <Wind size={12} />
           </div>
           <div>
-            <strong className="text-stone-800">早晚 (18-20°C)</strong>
+            <strong className="text-stone-800 dark:text-stone-100">早晚 (18-20°C)</strong>
             <br />
             溫差大，隨身帶一件薄襯衫。
           </div>
         </div>
-        <div className="bg-white p-3 rounded-xl border border-amber-100 flex items-start gap-3">
-          <div className="bg-red-100 p-1.5 rounded-full text-red-600 flex-shrink-0">
+        <div className="bg-white dark:bg-stone-700 p-3 rounded-xl border border-amber-100 dark:border-stone-600 flex items-start gap-3">
+          <div className="bg-red-100 dark:bg-red-900/50 p-1.5 rounded-full text-red-600 dark:text-red-300 flex-shrink-0">
             <Mountain size={12} />
           </div>
           <div>
-            <strong className="text-stone-800 block mb-1">
+            <strong className="text-stone-800 dark:text-stone-100 block mb-1">
               茵他儂山特別注意
             </strong>
-            <span className="block text-stone-500 mb-0.5">
+            <span className="block text-stone-500 dark:text-stone-400 mb-0.5">
               • 瀑布區:{' '}
-              <span className="text-amber-600 font-bold">熱 (短袖)</span>
+              <span className="text-amber-600 dark:text-amber-400 font-bold">熱 (短袖)</span>
             </span>
-            <span className="block text-stone-500">
+            <span className="block text-stone-500 dark:text-stone-400">
               • 山頂:{' '}
-              <span className="text-blue-600 font-bold">極冷 (羽絨/防風)</span>
+              <span className="text-blue-600 dark:text-blue-400 font-bold">極冷 (羽絨/防風)</span>
             </span>
           </div>
         </div>
       </div>
 
       {/* 第二部分 爛腳圖例*/}
-      <div className="pt-4 border-t border-amber-200/50">
-        <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 text-base mb-3">
+      <div className="pt-4 border-t border-amber-200/50 dark:border-stone-600">
+        <h3 className="flex items-center gap-2 font-serif font-bold text-amber-900 dark:text-amber-500 text-base mb-3">
           <span className="text-lg">🦵</span> 爛腳指數說明
         </h3>
         <div className="grid grid-cols-1 gap-2 text-xs">
-          <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-emerald-100">
-            <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold whitespace-nowrap">
+          <div className="flex items-center gap-3 bg-white dark:bg-stone-700 p-2 rounded-lg border border-emerald-100 dark:border-emerald-900">
+            <span className="bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded font-bold whitespace-nowrap">
               低 / 零
             </span>
-            <span className="text-stone-600">
+            <span className="text-stone-600 dark:text-stone-300">
               全程坐車、平地，有冷氣或座位。
             </span>
           </div>
-          <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-amber-100">
-            <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold whitespace-nowrap">
+          <div className="flex items-center gap-3 bg-white dark:bg-stone-700 p-2 rounded-lg border border-amber-100 dark:border-amber-900">
+            <span className="bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded font-bold whitespace-nowrap">
               中
             </span>
-            <span className="text-stone-600">
+            <span className="text-stone-600 dark:text-stone-300">
               一般步行、有些微階梯或泥土路。
             </span>
           </div>
-          <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-rose-100">
-            <span className="bg-rose-100 text-rose-700 px-2 py-0.5 rounded font-bold whitespace-nowrap">
+          <div className="flex items-center gap-3 bg-white dark:bg-stone-700 p-2 rounded-lg border border-rose-100 dark:border-rose-900">
+            <span className="bg-rose-100 dark:bg-rose-900 text-rose-700 dark:text-rose-300 px-2 py-0.5 rounded font-bold whitespace-nowrap">
               高 / 極高
             </span>
-            <span className="text-stone-600">
+            <span className="text-stone-600 dark:text-stone-300">
               陡坡、長途步行、人潮擁擠 (如夜市)。
             </span>
           </div>
@@ -1096,8 +1148,6 @@ const OutfitGuide = () => {
     </div>
   );
 };
-
-
 const LocationCard = ({ item, day, index, isAdmin, updateTime, updateContent, onDelete, onMoveUp, onMoveDown, isFirst, isLast }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -2211,48 +2261,51 @@ const ThaiTips = () => {
 // ============================================
 // 更新小費對照表
 // ============================================
+// ============================================
+// 更新小費對照表 (修正夜間模式)
+// ============================================
 const TippingGuide = () => {
-  // 預設 true展開改f
   const [isOpen, setIsOpen] = useState(false);
 
+  // 🔥 這裡補上了 dark: 的配色邏輯
   const tips = [
     {
       title: '泰式按摩 / SPA',
       amount: '฿50 - ฿100 / 人',
       desc: '按人頭給。一般按摩給 50，精油/高檔 SPA 給 100。請務必「親手」拿給幫你按的那位師傅。',
       icon: <Smile size={18} className="text-pink-500" />,
-      color: 'bg-pink-50 text-pink-700 border-pink-100',
+      color: 'bg-pink-50 text-pink-700 border-pink-100 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-800',
     },
     {
       title: '飯店 & 住宿清潔',
       amount: '฿20 - ฿50 / 房',
       desc: '飯店每房每天 20-50 (放枕頭上)。Airbnb 若無每日打掃，則免放，建議最後退房留 100 銖在桌上即可。',
       icon: <Home size={18} className="text-amber-500" />,
-      color: 'bg-amber-50 text-amber-700 border-amber-100',
+      color: 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800',
     },
     {
       title: '包車司機 (全天)',
       amount: '฿200 - ฿300 / 車',
       desc: '茵他儂山包車行程。結束時全車合資給司機，感謝他開整天山路的安全辛勞。',
       icon: <Car size={18} className="text-blue-500" />,
-      color: 'bg-blue-50 text-blue-700 border-blue-100',
+      color: 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
     },
     {
       title: '餐廳吃飯',
       amount: '฿20+ 或 零錢',
       desc: '路邊攤不用給。餐廳若帳單已含 10% 服務費則不用給，否則可留下找零的硬幣或 20 銖紙鈔。',
       icon: <Utensils size={18} className="text-orange-500" />,
-      color: 'bg-orange-50 text-orange-700 border-orange-100',
+      color: 'bg-orange-50 text-orange-700 border-orange-100 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800',
     },
   ];
 
   return (
-    <section className="bg-white rounded-2xl shadow-sm border border-stone-100 mb-6 overflow-hidden transition-all">
+    <section className="bg-white dark:bg-stone-800 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6 overflow-hidden transition-all">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 bg-white hover:bg-stone-50 transition-colors"
+        className="w-full flex items-center justify-between p-4 bg-white dark:bg-stone-800 hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
       >
-        <div className="flex items-center gap-2 font-bold text-stone-800">
+        <div className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100">
           <Coins size={18} className="text-amber-500" />
           <span>小費參考指南 (THB)</span>
         </div>
@@ -2271,7 +2324,7 @@ const TippingGuide = () => {
                 key={idx}
                 className={`p-3 rounded-xl border flex items-start gap-3 ${tip.color}`}
               >
-                <div className="bg-white p-2 rounded-full shadow-sm flex-shrink-0 mt-1">
+                <div className="bg-white dark:bg-stone-700 p-2 rounded-full shadow-sm flex-shrink-0 mt-1">
                   {tip.icon}
                 </div>
                 <div>
@@ -2845,7 +2898,13 @@ export default function TravelApp() {
               isAdmin={isAdmin} 
               versionText={appVersion} 
               updateVersion={handleUpdateVersion} 
-              onLock={() => setIsLocked(true)} 
+              onLock={() => {
+                  setIsLocked(true);      // 鎖定
+                  setIsUnlocking(false);  // 🚪 重置開門動畫 (關鍵!)
+                  setInputPwd('');        // 清空密碼欄
+                  setIsAdmin(false);
+                  setIsMember(false);
+                }} 
             />
             
             <main className="pb-28">
@@ -2878,20 +2937,22 @@ export default function TravelApp() {
               )}
               
               {activeTab === 'utils' && (
-                <div className="p-6">
-                   {/* 🔥 手動切換深色模式的按鈕 */}
-                   <div className="flex items-center justify-between bg-white dark:bg-stone-800 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6">
-                      <div className="flex items-center gap-2 font-bold dark:text-white">
-                        {darkMode ? <div className="p-2 bg-stone-700 rounded-full text-amber-400"><Sun size={18}/></div> : <div className="p-2 bg-stone-100 rounded-full text-stone-400"><CloudRain size={18}/></div>}
-                        <span>{darkMode ? '深色模式 (On)' : '淺色模式 (Off)'}</span>
-                      </div>
-                      <button 
-                        onClick={() => setDarkMode(!darkMode)}
-                        className={`w-12 h-6 rounded-full p-1 transition-colors ${darkMode ? 'bg-amber-500' : 'bg-stone-300'}`}
-                      >
-                        <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${darkMode ? 'translate-x-6' : 'translate-x-0'}`} />
-                      </button>
-                   </div>
+                <div className="">
+                   {/* 🔥 手動切換深色模式的按鈕 - 這裡加上自己的 padding */}
+    <div className="px-6 pt-6"> 
+      <div className="flex items-center justify-between bg-white dark:bg-stone-800 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6">
+        <div className="flex items-center gap-2 font-bold dark:text-white">
+          {darkMode ? <div className="p-2 bg-stone-700 rounded-full text-amber-400"><Sun size={18}/></div> : <div className="p-2 bg-stone-100 rounded-full text-stone-400"><CloudRain size={18}/></div>}
+          <span>{darkMode ? '深色模式 (On)' : '淺色模式 (Off)'}</span>
+        </div>
+        <button 
+          onClick={() => setDarkMode(!darkMode)}
+          className={`w-12 h-6 rounded-full p-1 transition-colors ${darkMode ? 'bg-amber-500' : 'bg-stone-300'}`}
+        >
+          <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${darkMode ? 'translate-x-6' : 'translate-x-0'}`} />
+        </button>
+      </div>
+    </div>
                    
                    <UtilsPage isAdmin={isAdmin} isMember={isMember} systemInfo={systemInfo} updateSystemInfo={updateSystemInfo} />
                 </div>
