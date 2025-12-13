@@ -667,12 +667,13 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
         const res = await fetch(
           'https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&current=temperature_2m,weather_code,relative_humidity_2m&hourly=temperature_2m,weather_code,precipitation_probability&forecast_days=2&timezone=Asia%2FBangkok'
         );
+        
         const json = await res.json();
         
         // 抓取 AQI (為了簡化程式碼長度，這裡模擬抓取成功，若你有原本的 AQI 邏輯可保留)
         // 實際使用時請保留你原本 fetch IQAir/WAQI 的部分
         // 這裡僅示範判斷邏輯
-        const currentAqi = 155; // 測試用，你可以換回原本的 state
+        //const currentAqi = 155; // 測試用，你可以換回原本的 state
 
         if (json && json.current) {
           setData(json);
@@ -691,9 +692,9 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
           }
 
           // 2. AQI 警報 (假設 currentAqi 是你抓到的數值)
-          if (aqi > 150 || currentAqi > 150) { 
-             newAlerts.push({ type: 'aqi', msg: `😷 AQI 數值偏高，戶外請戴口罩。` });
-          }
+          if (aqi > 100) { // 建議大於 100 (橘色警戒) 再跳警告，150 是紅色警戒
+         newAlerts.push({ type: 'aqi', msg: `😷 AQI 數值偏高，戶外請戴口罩。` });
+      }
 
           setAlerts(newAlerts);
         }
@@ -775,20 +776,21 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                 佑任・軒寶・學弟・腳慢
               </span>
 
-              {/* 🔥 美化後的 2026 (漸層字 + 設計感) */}
               {isAdmin ? (
-                <input
-                  type="text"
-                  value={versionText || ''}
-                  onChange={(e) => updateVersion(e.target.value)}
-                  className="w-16 bg-transparent border-b border-amber-300 text-[10px] font-bold focus:outline-none text-center dark:text-white"
-                />
-              ) : (
-                <span className="text-lg font-black italic bg-gradient-to-r from-amber-500 to-rose-500 text-transparent bg-clip-text drop-shadow-sm tracking-tighter transform -skew-x-6">
-                  {versionText || '2026'}
-                </span>
-              )}
-
+  <input
+    type="text"
+    value={versionText || ''}
+    onChange={(e) => updateVersion(e.target.value)}
+    className="w-16 bg-transparent border-b border-amber-300 text-[10px] font-bold focus:outline-none text-center dark:text-white"
+  />
+) : (
+  <div className="ml-2 w-12 h-12 bg-red-800/90 text-stone-50 rounded-lg border-2 border-red-900/50 flex flex-col items-center justify-center shadow-sm rotate-3 transform hover:rotate-0 transition-transform cursor-default select-none">
+    <span className="text-[8px] tracking-widest opacity-80 uppercase">Year</span>
+    <span className="text-sm font-serif font-bold tracking-widest border-t border-red-400/50 pt-0.5">
+      {versionText || '2026'}
+    </span>
+  </div>
+)}
               {/* 🔥 新增：鎖定按鈕 */}
               <button 
                 onClick={onLock}
@@ -1456,7 +1458,9 @@ const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, updateContent, 
   );
 };
 
-// update 航班卡片組件 修正擋住文字20251206
+// ============================================
+// 1. 修正 FlightCard (夜間模式版)
+// ============================================
 const FlightCard = ({
   type,
   date,
@@ -1473,16 +1477,18 @@ const FlightCard = ({
   const searchUrl = `https://www.google.com/search?q=${flightNo}+flight+status`;
 
   return (
-    <div className="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm mb-3 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-24 h-24 bg-stone-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
+    <div className="bg-white dark:bg-stone-800 rounded-2xl p-4 border border-stone-100 dark:border-stone-700 shadow-sm mb-3 relative overflow-hidden transition-colors">
+      {/* 右上角裝飾圓圈 */}
+      <div className="absolute top-0 right-0 w-24 h-24 bg-stone-50 dark:bg-stone-700/50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
 
       <div className="relative z-10">
         <div className="flex justify-between items-center mb-4">
           <span
-            className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${type === '去程'
-              ? 'bg-amber-100 text-amber-800'
-              : 'bg-stone-100 text-stone-600'
-              }`}
+            className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${
+              type === '去程'
+                ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200'
+                : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
+            }`}
           >
             {type}
           </span>
@@ -1492,7 +1498,7 @@ const FlightCard = ({
         <div className="flex justify-between items-center mb-4">
           {/* 出發地 */}
           <div className="text-center min-w-[3rem]">
-            <div className="text-2xl font-bold text-stone-800 leading-none mb-1">
+            <div className="text-2xl font-bold text-stone-800 dark:text-stone-100 leading-none mb-1">
               {from}
             </div>
             <div className="flex flex-col items-center">
@@ -1509,12 +1515,12 @@ const FlightCard = ({
 
           {/* 飛機圖示 */}
           <div className="flex-1 px-3 flex flex-col items-center">
-            <div className="text-xs font-bold text-stone-500 mb-2">
+            <div className="text-xs font-bold text-stone-500 dark:text-stone-400 mb-2">
               {flightNo}
             </div>
-            <div className="w-full h-[2px] bg-stone-200 relative">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-1">
-                <Plane size={14} className="text-stone-300 rotate-90" />
+            <div className="w-full h-[2px] bg-stone-200 dark:bg-stone-600 relative">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-stone-800 p-1">
+                <Plane size={14} className="text-stone-300 dark:text-stone-500 rotate-90" />
               </div>
             </div>
             <div className="text-xs font-bold text-stone-400 mt-2 whitespace-nowrap">
@@ -1524,7 +1530,7 @@ const FlightCard = ({
 
           {/* 目的地 */}
           <div className="text-center min-w-[3rem]">
-            <div className="text-2xl font-bold text-stone-800 leading-none mb-1">
+            <div className="text-2xl font-bold text-stone-800 dark:text-stone-100 leading-none mb-1">
               {to}
             </div>
             <div className="flex flex-col items-center">
@@ -1540,10 +1546,10 @@ const FlightCard = ({
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-3 border-t border-stone-100">
+        <div className="flex items-center justify-between pt-3 border-t border-stone-100 dark:border-stone-700">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-xs text-stone-500 font-medium">
+            <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
               {airline}
             </span>
           </div>
@@ -1552,7 +1558,7 @@ const FlightCard = ({
             href={searchUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1 text-xs font-bold text-blue-500 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-full transition-colors"
+            className="flex items-center gap-1 text-xs font-bold text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full transition-colors"
           >
             即時動態 <ArrowRight size={12} />
           </a>
@@ -1564,23 +1570,22 @@ const FlightCard = ({
 // 新增換匯計算機and推薦換匯所
 // 修正CurrencySection
 // 幹不想上班
+// ============================================
+// 2. 修正 CurrencySection (夜間模式版)
+// ============================================
 const CurrencySection = () => {
   const [rate, setRate] = useState(1.08);
   const [twd, setTwd] = useState('');
   const [thb, setThb] = useState('');
   const [lastUpdate, setLastUpdate] = useState('');
 
-  // 抓取即時匯率
   useEffect(() => {
     const fetchRate = async () => {
       try {
-        // 使用免費匯率 API (以 TWD 為基準)
-        const res = await fetch(
-          'https://api.exchangerate-api.com/v4/latest/TWD'
-        );
+        const res = await fetch('https://api.exchangerate-api.com/v4/latest/TWD');
         const data = await res.json();
         if (data && data.rates && data.rates.THB) {
-          setRate(data.rates.THB); // 1 TWD = ? THB
+          setRate(data.rates.THB);
           setLastUpdate(new Date().toLocaleDateString());
         }
       } catch (e) {
@@ -1604,88 +1609,50 @@ const CurrencySection = () => {
     else setTwd('');
   };
 
-  //  修正後的換匯所清單
   const exchanges = [
-    {
-      id: 1,
-      name: '清邁機場換匯 (Arrival)',
-      map: 'Chiang Mai International Airport Currency Exchange',
-      note: '🚨 抵達應急用，匯率較差，建議只換車資。',
-      tag: '抵達第一站',
-      tagColor: 'bg-red-100 text-red-700',
-    },
-    {
-      id: 2,
-      name: 'Super Rich (清邁店)',
-      map: 'Super Rich Chiang Mai',
-      note: '🔥 匯率通常是全清邁最好，近古城。',
-      tag: '匯率最優',
-      tagColor: 'bg-amber-100 text-amber-700',
-    },
-    {
-      id: 3,
-      name: 'Mr. Pierre (巫宗雄)',
-      map: 'Mr. Pierre Money Exchange',
-      note: '👍 古城內匯率王，老闆會說中文。',
-      tag: '古城推薦',
-      tagColor: 'bg-green-100 text-green-700',
-    },
-    {
-      id: 4,
-      name: 'G Exchange Co.,Ltd.',
-      map: 'G Exchange Co.,Ltd. Chiang Mai',
-      note: 'Loi Kroh 路熱門店，評價極高 (4.7星)。',
-      tag: '夜市區',
-      tagColor: 'bg-blue-100 text-blue-700',
-    },
-    {
-      id: 5,
-      name: 'S.K. Money Exchange',
-      map: 'S.K. Money Exchange',
-      note: '泰國常見連鎖，塔佩門附近方便。',
-    },
+    { id: 1, name: '清邁機場換匯 (Arrival)', map: 'Chiang Mai International Airport Currency Exchange', note: '🚨 抵達應急用，匯率較差，建議只換車資。', tag: '抵達第一站', tagColor: 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300' },
+    { id: 2, name: 'Super Rich (清邁店)', map: 'Super Rich Chiang Mai', note: '🔥 匯率通常是全清邁最好，近古城。', tag: '匯率最優', tagColor: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300' },
+    { id: 3, name: 'Mr. Pierre (巫宗雄)', map: 'Mr. Pierre Money Exchange', note: '👍 古城內匯率王，老闆會說中文。', tag: '古城推薦', tagColor: 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300' },
+    { id: 4, name: 'G Exchange Co.,Ltd.', map: 'G Exchange Co.,Ltd. Chiang Mai', note: 'Loi Kroh 路熱門店，評價極高 (4.7星)。', tag: '夜市區', tagColor: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' },
+    { id: 5, name: 'S.K. Money Exchange', map: 'S.K. Money Exchange', note: '泰國常見連鎖，塔佩門附近方便。' },
   ];
 
   return (
-    <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 mb-6">
-      <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
-        <Wallet size={18} className="text-green-600" /> 匯率計算機
+    <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6 transition-colors">
+      <h3 className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
+        <Wallet size={18} className="text-green-600 dark:text-green-400" /> 匯率計算機
       </h3>
 
-      <div className="bg-green-50 p-4 rounded-xl mb-4 border border-green-100">
-        <div className="text-xs text-green-600 font-bold mb-2 flex justify-between">
+      <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl mb-4 border border-green-100 dark:border-green-800/30">
+        <div className="text-xs text-green-600 dark:text-green-400 font-bold mb-2 flex justify-between">
           <span>即時現金匯率</span>
           <span>1 TWD ≈ {rate} THB</span>
         </div>
 
         <div className="flex items-center gap-2 mb-2">
           <div className="flex-1 relative">
-            <span className="absolute left-3 top-2.5 text-stone-400 text-xs font-bold">
-              TWD
-            </span>
+            <span className="absolute left-3 top-2.5 text-stone-400 text-xs font-bold">TWD</span>
             <input
               type="number"
               value={twd}
               onChange={handleTwdChange}
               placeholder="台幣"
-              className="w-full pl-12 pr-3 py-2 rounded-lg border border-green-200 focus:outline-none focus:border-green-500 font-bold text-stone-700"
+              className="w-full pl-12 pr-3 py-2 rounded-lg border border-green-200 dark:border-green-800 focus:outline-none focus:border-green-500 font-bold text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-700"
             />
           </div>
           <div className="text-stone-400">=</div>
           <div className="flex-1 relative">
-            <span className="absolute left-3 top-2.5 text-stone-400 text-xs font-bold">
-              THB
-            </span>
+            <span className="absolute left-3 top-2.5 text-stone-400 text-xs font-bold">THB</span>
             <input
               type="number"
               value={thb}
               onChange={handleThbChange}
               placeholder="泰銖"
-              className="w-full pl-12 pr-3 py-2 rounded-lg border border-green-200 focus:outline-none focus:border-green-500 font-bold text-stone-700 bg-white"
+              className="w-full pl-12 pr-3 py-2 rounded-lg border border-green-200 dark:border-green-800 focus:outline-none focus:border-green-500 font-bold text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-700"
             />
           </div>
         </div>
-        <div className="text-[10px] text-green-400 text-right">
+        <div className="text-[10px] text-green-400 dark:text-green-500 text-right">
           更新: {lastUpdate || '載入中...'}
         </div>
       </div>
@@ -1697,36 +1664,30 @@ const CurrencySection = () => {
         {exchanges.map((ex, i) => (
           <div
             key={i}
-            className={`flex justify-between items-center p-3 rounded-xl border transition-all ${i < 3
-              ? 'bg-white border-stone-200 shadow-sm'
-              : 'bg-stone-50 border-stone-100 opacity-80'
-              }`}
+            className={`flex justify-between items-center p-3 rounded-xl border transition-all ${
+              i < 3
+                ? 'bg-white dark:bg-stone-700 border-stone-200 dark:border-stone-600 shadow-sm'
+                : 'bg-stone-50 dark:bg-stone-800/50 border-stone-100 dark:border-stone-700 opacity-80'
+            }`}
           >
             <div>
               <div className="flex items-center gap-2 mb-0.5">
-                <div className="font-bold text-stone-700 text-sm">
+                <div className="font-bold text-stone-700 dark:text-stone-200 text-sm">
                   {i + 1}. {ex.name}
                 </div>
                 {ex.tag && (
-                  <span
-                    className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${ex.tagColor}`}
-                  >
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${ex.tagColor}`}>
                     {ex.tag}
                   </span>
                 )}
               </div>
-              <div className="text-[10px] text-stone-500">{ex.note}</div>
+              <div className="text-[10px] text-stone-500 dark:text-stone-400">{ex.note}</div>
             </div>
             <button
               onClick={() =>
-                window.open(
-                  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    ex.map
-                  )}`,
-                  '_blank'
-                )
+                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ex.map)}`, '_blank')
               }
-              className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-stone-500 shadow-sm border border-stone-200 active:scale-95 hover:text-amber-600 hover:border-amber-200"
+              className="w-8 h-8 bg-white dark:bg-stone-600 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-300 shadow-sm border border-stone-200 dark:border-stone-500 active:scale-95 hover:text-amber-600"
             >
               <Navigation size={14} />
             </button>
@@ -1738,10 +1699,13 @@ const CurrencySection = () => {
 };
 
 // 修改 UtilsPage
+// ============================================
+// 3. 修正 UtilsPage (完整夜間模式版)
+// ============================================
 const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
   return (
-    <div className="p-6 space-y-6 pb-24 animate-fade-in bg-[#FDFBF7] min-h-screen">
-      <h2 className="text-2xl font-serif font-bold text-stone-800 mb-6">
+    <div className="p-6 space-y-6 pb-24 animate-fade-in bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
+      <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100 mb-6">
         實用工具
       </h2>
 
@@ -1767,10 +1731,13 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
           </div>
         </section>
       )}
+
+      {/* 小費指南 (內部已支援 dark mode) */}
       <TippingGuide />
+
       {/* 航班資訊區塊 */}
-      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
-        <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
+      <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 transition-colors">
+        <h3 className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
           <Plane size={18} className="text-blue-500" /> 航班資訊
         </h3>
         <div className="space-y-2 mb-4">
@@ -1782,63 +1749,58 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
           href={UTILS_DATA.driveUrl}
           target="_blank"
           rel="noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 active:scale-95 transition-all"
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 active:scale-95 transition-all"
         >
           <Info size={16} /> 開啟電子機票存摺
         </a>
       </section>
 
       {/* 住宿資訊區塊 */}
-      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
-        <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
+      <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 transition-colors">
+        <h3 className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
           <Home size={18} className="text-orange-500" /> 住宿導航
         </h3>
         <div className="space-y-4">
           {UTILS_DATA.accommodations.map((acc, idx) => (
             <div
               key={idx}
-              className="bg-stone-50 rounded-xl p-4 border border-stone-100 relative overflow-hidden"
+              className="bg-stone-50 dark:bg-stone-700/50 rounded-xl p-4 border border-stone-100 dark:border-stone-600 relative overflow-hidden transition-colors"
             >
-              <div className="absolute -right-4 -top-4 w-16 h-16 bg-white rounded-full opacity-50 pointer-events-none"></div>
+              <div className="absolute -right-4 -top-4 w-16 h-16 bg-white dark:bg-stone-600 rounded-full opacity-50 pointer-events-none"></div>
               <div className="flex justify-between items-start mb-2 relative z-10">
                 <div>
                   <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
                     {acc.type}
                   </span>
-                  <h4 className="font-bold text-stone-800 text-lg leading-tight">
+                  <h4 className="font-bold text-stone-800 dark:text-stone-100 text-lg leading-tight">
                     {acc.name}
                   </h4>
                 </div>
-                <span className="text-xs font-bold bg-white px-2 py-1 rounded border border-stone-100 text-stone-500">
+                <span className="text-xs font-bold bg-white dark:bg-stone-600 px-2 py-1 rounded border border-stone-100 dark:border-stone-500 text-stone-500 dark:text-stone-300">
                   {acc.date}
                 </span>
               </div>
-              <p className="text-xs text-stone-500 mb-4 flex items-center gap-1">
+              <p className="text-xs text-stone-500 dark:text-stone-400 mb-4 flex items-center gap-1">
                 <MapPin size={10} /> {acc.address}
               </p>
               <div className="space-y-2">
                 <div className="grid grid-cols-2 gap-2">
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                      acc.mapQuery
-                    )}`}
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(acc.mapQuery)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-1.5 py-2 bg-stone-800 text-amber-50 rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm"
+                    className="flex items-center justify-center gap-1.5 py-2 bg-stone-800 dark:bg-stone-900 text-amber-50 rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm"
                   >
                     <Navigation size={12} /> 導航
                   </a>
                   <a
                     href={`tel:${acc.phone}`}
-                    className="flex items-center justify-center gap-1.5 py-2 bg-white border border-stone-200 text-stone-600 rounded-lg text-xs font-bold active:scale-95 transition-transform"
+                    className="flex items-center justify-center gap-1.5 py-2 bg-white dark:bg-stone-600 border border-stone-200 dark:border-stone-500 text-stone-600 dark:text-stone-200 rounded-lg text-xs font-bold active:scale-95 transition-transform"
                   >
                     <Phone size={12} /> 聯絡
                   </a>
                 </div>
-                {/* 當 isAdmin 為 true 輸入團員密碼時 偶才顯示 Airbnb 按鈕 */}
-
-                {/* 不是 Admin 顯示這行 */}
-                {/* 🟢 修改開始：只有團員 (isMember) 才能看到 Airbnb 按鈕 */}
+                {/* 團員專屬按鈕 */}
                 {isMember && acc.airbnbUrl && (
                   <div className="grid grid-cols-2 gap-2 animate-fadeIn">
                     <a
@@ -1853,32 +1815,29 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
                       href={acc.guideUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center justify-center gap-1.5 py-2 bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold active:scale-95 transition-transform"
+                      className="flex items-center justify-center gap-1.5 py-2 bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50 rounded-lg text-xs font-bold active:scale-95 transition-transform"
                     >
                       <MapPin size={12} /> 房東地圖
                     </a>
                   </div>
                 )}
-
-                {/* 🟢 如果不是團員，顯示鎖頭 */}
+                {/* 非團員鎖頭 */}
                 {!isMember && acc.name === 'Lucky Charm House' && (
-                  <div className="text-center py-2 bg-stone-50 rounded-lg text-[10px] text-stone-400 border border-stone-200">
+                  <div className="text-center py-2 bg-stone-50 dark:bg-stone-700 rounded-lg text-[10px] text-stone-400 border border-stone-200 dark:border-stone-600">
                     🔒 房源連結僅供團員存取
                   </div>
                 )}
-                {/* 🟢 修改結束 */}
               </div>
             </div>
           ))}
         </div>
 
-        {/* 憑證按鈕加入 isAdmin 保護 */}
         {isAdmin && (
           <a
             href={UTILS_DATA.driveUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 mt-4 rounded-xl bg-orange-50 text-orange-600 font-bold hover:bg-orange-100 active:scale-95 transition-all"
+            className="flex items-center justify-center gap-2 w-full py-3 mt-4 rounded-xl bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-bold hover:bg-orange-100 dark:hover:bg-orange-900/50 active:scale-95 transition-all"
           >
             <Info size={16} /> 查看住宿憑證
           </a>
@@ -1886,8 +1845,8 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
       </section>
 
       {/* 租車資訊區塊 */}
-      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 mb-6">
-        <h3 className="flex items-center gap-2 font-bold text-stone-800 mb-4 border-b border-stone-100 pb-3">
+      <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6 transition-colors">
+        <h3 className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
           <Car size={18} className="text-amber-600" /> 租車資訊
         </h3>
         <div className="flex gap-4 mb-4">
@@ -1895,43 +1854,43 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
             DRIVE
           </div>
           <div className="flex-1">
-            <div className="text-lg font-bold text-stone-800">
+            <div className="text-lg font-bold text-stone-800 dark:text-stone-100">
               Nissan Serena (7座)
             </div>
-            <div className="text-sm text-stone-500 mb-2 flex items-center gap-1">
+            <div className="text-sm text-stone-500 dark:text-stone-400 mb-2 flex items-center gap-1">
               <CheckCircle size={12} className="text-green-500" />{' '}
               預訂確認單已存檔
             </div>
             <div className="flex flex-wrap gap-2">
-              <span className="text-[10px] bg-amber-50 text-amber-700 px-2 py-1 rounded border border-amber-100">
+              <span className="text-[10px] bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-1 rounded border border-amber-100 dark:border-amber-800">
                 國際線 8-9號門
               </span>
-              <span className="text-[10px] bg-stone-100 text-stone-600 px-2 py-1 rounded">
+              <span className="text-[10px] bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 px-2 py-1 rounded">
                 現場押金 ฿20,000
               </span>
             </div>
           </div>
         </div>
-        <div className="relative pl-4 border-l-2 border-stone-200 space-y-6 my-4 ml-2">
+        <div className="relative pl-4 border-l-2 border-stone-200 dark:border-stone-600 space-y-6 my-4 ml-2">
           <div className="relative">
-            <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-green-500 ring-4 ring-white"></div>
+            <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-green-500 ring-4 ring-white dark:ring-stone-800"></div>
             <div className="text-xs text-stone-400 font-bold">取車</div>
-            <div className="font-bold text-stone-800">2/19 (四) 17:30</div>
-            <div className="text-xs text-stone-500 mt-1">
+            <div className="font-bold text-stone-800 dark:text-stone-100">2/19 (四) 17:30</div>
+            <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">
               國際線入境大廳 1樓 (Gate 8-9)
             </div>
           </div>
           <div className="relative">
-            <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-red-400 ring-4 ring-white"></div>
+            <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-red-400 ring-4 ring-white dark:ring-stone-800"></div>
             <div className="text-xs text-stone-400 font-bold">還車</div>
-            <div className="font-bold text-stone-800">2/20 (五) 17:30</div>
-            <div className="text-xs text-stone-500 mt-1">國際線入境大廳</div>
+            <div className="font-bold text-stone-800 dark:text-stone-100">2/20 (五) 17:30</div>
+            <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">國際線入境大廳</div>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3 mt-4">
           <a
             href="tel:+66847004384"
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-600 hover:bg-stone-50 transition-colors"
+            className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-sm font-bold text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
           >
             <Phone size={16} /> 車行電話
           </a>
@@ -1939,17 +1898,14 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
             href={UTILS_DATA.driveUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-stone-800 text-amber-50 text-sm font-bold hover:bg-stone-700 active:scale-95 transition-all"
+            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-stone-800 dark:bg-stone-700 text-amber-50 text-sm font-bold hover:bg-stone-700 dark:hover:bg-stone-600 active:scale-95 transition-all"
           >
             <Info size={16} /> 原始憑證
           </a>
         </div>
       </section>
 
-      {/* LINE 分帳 (綠色區塊) Admin 可見 */}
-      {/* 🟢 修改重點：只有團員 (isMember) 才顯示這個綠色分帳區塊 */}
-      {/* LINE 分帳 (綠色區塊) Admin 可見 */}
-      {/* 🟢 修改重點：只有團員 (isMember) 才顯示這個綠色分帳區塊 */}
+      {/* LINE 分帳 (綠色區塊) */}
       {isMember && (
         <section className="bg-[#06C755] p-6 rounded-2xl shadow-lg shadow-green-900/10 text-white relative overflow-hidden mb-6 animate-fadeIn">
           <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
@@ -1960,10 +1916,7 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
             所有公費支出請統一記錄在此，系統會自動結算每個人該付多少錢。
           </p>
           <a
-            // Lightsplit URL Base64 Encoded (Updated 2026/02)
-            href={atob(
-              'aHR0cHM6Ly9hcHAubGlnaHRzcGxpdC5jb20vP2xpZmYuc3RhdGU9JTJGZyUyRm9tSkhaaVpDNWNya1hoNm1RdmFYZ1Q='
-            )}
+            href={atob('aHR0cHM6Ly9hcHAubGlnaHRzcGxpdC5jb20vP2xpZmYuc3RhdGU9JTJGZyUyRm9tSkhaaVpDNWNya1hoNm1RdmFYZ1Q=')}
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-center gap-2 w-full bg-white text-[#06C755] py-3.5 rounded-xl font-bold hover:bg-green-50 active:scale-95 transition-all shadow-sm relative z-10"
@@ -1973,31 +1926,31 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
         </section>
       )}
 
-      {/*  匯率計算機 */}
+      {/* 匯率計算機 (內部已支援 dark mode) */}
       <CurrencySection />
 
       {/* 緊急救援 (紅色區塊) */}
-      <section className="bg-white p-6 rounded-2xl shadow-sm border border-stone-100 mb-6">
-        <h3 className="flex items-center gap-2 font-bold text-red-700 mb-4 border-b border-stone-100 pb-3">
-          <AlertCircle size={18} className="text-red-600" /> 緊急救援中心
+      <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6 transition-colors">
+        <h3 className="flex items-center gap-2 font-bold text-red-700 dark:text-red-400 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
+          <AlertCircle size={18} className="text-red-600 dark:text-red-400" /> 緊急救援中心
         </h3>
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-3">
             <a
               href="tel:1155"
-              className="bg-red-50 hover:bg-red-100 p-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-100"
+              className="bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 p-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-100 dark:border-red-900/50"
             >
-              <span className="text-2xl font-black text-red-600">1155</span>
-              <span className="text-xs font-bold text-red-800">
+              <span className="text-2xl font-black text-red-600 dark:text-red-400">1155</span>
+              <span className="text-xs font-bold text-red-800 dark:text-red-300">
                 觀光警察 (中文可)
               </span>
             </a>
             <a
               href="tel:1669"
-              className="bg-red-50 hover:bg-red-100 p-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-100"
+              className="bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 p-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-100 dark:border-red-900/50"
             >
-              <span className="text-2xl font-black text-red-600">1669</span>
-              <span className="text-xs font-bold text-red-800">
+              <span className="text-2xl font-black text-red-600 dark:text-red-400">1669</span>
+              <span className="text-xs font-bold text-red-800 dark:text-red-300">
                 救護車 (24hr)
               </span>
             </a>
@@ -2008,63 +1961,54 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
               推薦醫院 (24hr 急診)
             </h4>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100">
+              <div className="flex items-center justify-between p-3 bg-stone-50 dark:bg-stone-700/50 rounded-xl border border-stone-100 dark:border-stone-600">
                 <div>
-                  <div className="font-bold text-stone-800">Chiang Mai Ram</div>
-                  <div className="text-xs text-stone-500">
+                  <div className="font-bold text-stone-800 dark:text-stone-100">Chiang Mai Ram</div>
+                  <div className="text-xs text-stone-500 dark:text-stone-400">
                     清邁蘭醫院 (設備最好)
                   </div>
                 </div>
                 <a
                   href="tel:053920300"
-                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-green-600 shadow-sm border border-stone-100"
+                  className="w-8 h-8 bg-white dark:bg-stone-600 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 shadow-sm border border-stone-100 dark:border-stone-500"
                 >
                   <Phone size={14} />
                 </a>
               </div>
-              <div className="flex items-center justify-between p-3 bg-stone-50 rounded-xl border border-stone-100">
+              <div className="flex items-center justify-between p-3 bg-stone-50 dark:bg-stone-700/50 rounded-xl border border-stone-100 dark:border-stone-600">
                 <div>
-                  <div className="font-bold text-stone-800">
+                  <div className="font-bold text-stone-800 dark:text-stone-100">
                     Bangkok Hospital
                   </div>
-                  <div className="text-xs text-stone-500">
+                  <div className="text-xs text-stone-500 dark:text-stone-400">
                     曼谷醫院 (服務最優)
                   </div>
                 </div>
                 <a
                   href="tel:1719"
-                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-green-600 shadow-sm border border-stone-100"
+                  className="w-8 h-8 bg-white dark:bg-stone-600 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 shadow-sm border border-stone-100 dark:border-stone-500"
                 >
                   <Phone size={14} />
                 </a>
               </div>
             </div>
           </div>
-          <div className="bg-stone-800 rounded-xl p-4 text-stone-300 text-sm space-y-3">
+          <div className="bg-stone-800 dark:bg-stone-950 rounded-xl p-4 text-stone-300 text-sm space-y-3">
             <div className="flex justify-between items-center border-b border-stone-700 pb-2">
               <span>🇹🇼 駐泰辦事處 (急難)</span>
-              <a
-                href="tel:0816664006"
-                className="text-amber-400 font-bold hover:underline"
-              >
+              <a href="tel:0816664006" className="text-amber-400 font-bold hover:underline">
                 081-666-4006
               </a>
             </div>
             <div className="flex justify-between items-center border-b border-stone-700 pb-2">
               <span>👮 當地報案 (Police)</span>
-              <a
-                href="tel:191"
-                className="text-white font-bold hover:underline"
-              >
+              <a href="tel:191" className="text-white font-bold hover:underline">
                 191
               </a>
             </div>
             <div className="flex justify-between items-center pt-1">
               <span>💳 Visa 全球掛失</span>
-              <a
-                href="tel:001800115350660"
-                className="text-stone-400 text-xs hover:text-white"
-              >
+              <a href="tel:001800115350660" className="text-stone-400 text-xs hover:text-white">
                 001-800-11-535-0660
               </a>
             </div>
@@ -2126,39 +2070,42 @@ const USERS = ['佑任', '軒寶', '學弟', '腳慢'];
 // 修正泰國需知 合併生活須知2026新規定
 // ============================================
 
+// ============================================
+// 修正泰國需知 (完整夜間模式版)
+// ============================================
 const ThaiTips = () => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div className="mx-6 mt-6 mb-6">
-      <div className="bg-amber-50 rounded-2xl border border-amber-100 overflow-hidden shadow-sm">
+      <div className="bg-amber-50 dark:bg-stone-800 rounded-2xl border border-amber-100 dark:border-stone-700 overflow-hidden shadow-sm transition-colors duration-300">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center justify-between p-4 bg-amber-100/50 text-amber-900 font-bold"
+          className="w-full flex items-center justify-between p-4 bg-amber-100/50 dark:bg-stone-800 text-amber-900 dark:text-amber-100 font-bold hover:bg-amber-100 dark:hover:bg-stone-700 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <AlertCircle size={18} className="text-amber-600" />
+            <AlertCircle size={18} className="text-amber-600 dark:text-amber-500" />
             <span>泰國旅遊禁忌與 2026 新制</span>
           </div>
           {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>
 
         {isOpen && (
-          <div className="p-4 space-y-4 text-sm text-stone-700 leading-relaxed">
+          <div className="p-4 space-y-4 text-sm text-stone-700 dark:text-stone-300 leading-relaxed bg-amber-50 dark:bg-stone-800 transition-colors">
             {/* --- 2026 新增/重點規定 --- */}
 
-            {/* 1. 行動電源 (最重要) */}
-            <div className="flex gap-3 bg-white p-3 rounded-xl border border-amber-100 shadow-sm">
-              <div className="min-w-[24px] text-amber-600 font-bold mt-1">
+            {/* 1. 行動電源 (最重要) - 特別框起來 */}
+            <div className="flex gap-3 bg-white dark:bg-stone-700 p-3 rounded-xl border border-amber-100 dark:border-stone-600 shadow-sm transition-colors">
+              <div className="min-w-[24px] text-amber-600 dark:text-amber-400 font-bold mt-1">
                 <Zap size={18} />
               </div>
               <div>
-                <strong className="text-stone-900 block mb-1">
+                <strong className="text-stone-900 dark:text-stone-100 block mb-1">
                   行動電源 (AirAsia 鐵律)
                 </strong>
-                <ul className="list-disc pl-4 space-y-1 text-xs text-stone-600">
+                <ul className="list-disc pl-4 space-y-1 text-xs text-stone-600 dark:text-stone-400">
                   <li>
-                    <span className="text-red-600 font-bold">嚴禁託運</span>
+                    <span className="text-red-600 dark:text-red-400 font-bold">嚴禁託運</span>
                     ，必須隨身。
                   </li>
                   <li>
@@ -2173,11 +2120,11 @@ const ThaiTips = () => {
 
             {/* 2. 電子入境卡 */}
             <div className="flex gap-3">
-              <div className="min-w-[24px] text-blue-600 font-bold">
+              <div className="min-w-[24px] text-blue-600 dark:text-blue-400 font-bold">
                 <FileText size={18} />
               </div>
               <div>
-                <strong className="text-stone-900 block">
+                <strong className="text-stone-900 dark:text-stone-100 block">
                   電子入境卡 (TDAC)
                 </strong>
                 入境前 72 小時內需上網填寫取得 QR Code (取代紙本)。
@@ -2186,13 +2133,13 @@ const ThaiTips = () => {
 
             {/* 3. 大麻 (新制) */}
             <div className="flex gap-3">
-              <div className="min-w-[24px] text-green-600 font-bold">
+              <div className="min-w-[24px] text-green-600 dark:text-green-400 font-bold">
                 <AlertTriangle size={18} />
               </div>
               <div>
-                <strong className="text-stone-900 block">大麻法規</strong>
+                <strong className="text-stone-900 dark:text-stone-100 block">大麻法規</strong>
                 帶回台灣屬
-                <span className="text-red-600 font-bold">二級毒品重罪</span>
+                <span className="text-red-600 dark:text-red-400 font-bold">二級毒品重罪</span>
               </div>
             </div>
 
@@ -2200,37 +2147,37 @@ const ThaiTips = () => {
 
             {/* 4. 電子菸 (保留) */}
             <div className="flex gap-3">
-              <div className="min-w-[24px] text-red-500 font-bold">
+              <div className="min-w-[24px] text-red-500 dark:text-red-400 font-bold">
                 <Gavel size={18} />
               </div>
               <div>
-                <strong className="text-red-700 block">電子菸絕對違法</strong>
+                <strong className="text-red-700 dark:text-red-400 block">電子菸絕對違法</strong>
                 攜帶或使用電子菸在泰國是違法的，最高可判10年監禁或高額罰款。
               </div>
             </div>
 
             {/* 5. 電壓 (保留) */}
             <div className="flex gap-3">
-              <div className="min-w-[24px] text-orange-500 font-bold">
+              <div className="min-w-[24px] text-orange-500 dark:text-orange-400 font-bold">
                 <Zap size={18} />
               </div>
               <div>
-                <strong className="text-stone-900 block">
+                <strong className="text-stone-900 dark:text-stone-100 block">
                   電壓 220V (重要!)
                 </strong>
                 台灣電器 (110V) 如吹風機、離子夾
-                <span className="text-red-600 font-bold">不可直接插</span>
+                <span className="text-red-600 dark:text-red-400 font-bold">不可直接插</span>
                 ，會燒壞！手機充電器通常支援國際電壓則沒問題。
               </div>
             </div>
 
             {/* 6. 文化 (保留) */}
             <div className="flex gap-3">
-              <div className="min-w-[24px] text-stone-600 font-bold">
+              <div className="min-w-[24px] text-stone-600 dark:text-stone-400 font-bold">
                 <User size={18} />
               </div>
               <div>
-                <strong className="text-stone-900 block">文化與規矩</strong>
+                <strong className="text-stone-900 dark:text-stone-100 block">文化與規矩</strong>
                 1. 絕對不可批評皇室 (重罪)。
                 <br />
                 2. 不要摸泰國人的頭。
@@ -2241,11 +2188,11 @@ const ThaiTips = () => {
 
             {/* 7. 飲食 (保留) */}
             <div className="flex gap-3">
-              <div className="min-w-[24px] text-emerald-600 font-bold">
+              <div className="min-w-[24px] text-emerald-600 dark:text-emerald-400 font-bold">
                 <Droplets size={18} />
               </div>
               <div>
-                <strong className="text-stone-900 block">飲食衛生</strong>
+                <strong className="text-stone-900 dark:text-stone-100 block">飲食衛生</strong>
                 生水不可飲用。路邊攤少吃生食 (如生蝦、生蟹)，避免腸胃不適。
               </div>
             </div>
@@ -2351,6 +2298,9 @@ const TippingGuide = () => {
 // 修改 PackingPage 接收 isKonamiActive 來切換顯示模式
 // 修改 PackingPage 加入 isAdmin 控制 訪客只能看
 // 修改 PackingPage 加入 Toast 通知 以及LocalStorage 保護
+// ============================================
+// 修正 PackingPage (完整夜間模式版)
+// ============================================
 const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [packingData, setPackingData] = useState({});
@@ -2383,11 +2333,9 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
     }
   }, []);
 
-  // 優化 加入 try-catch 與容量檢查
   const saveToStorage = (newData) => {
     try {
       const dataStr = JSON.stringify(newData);
-      // 檢查是否超過 4MB
       if (dataStr.length > 4000000) {
         alert('⚠️ 行李清單太長了！請刪除一些不必要的項目');
         return;
@@ -2402,9 +2350,8 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
 
   const toggleItem = (user, index) => {
     // 訪客模式改用 Toast 提示
-     if (!isAdmin && !isMember) { 
+    if (!isAdmin && !isMember) {
       setShowToast(true);
-      // 3秒後自動消失
       setTimeout(() => setShowToast(false), 3000);
       return;
     }
@@ -2447,7 +2394,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
   };
 
   return (
-    <div className="pb-24 min-h-screen bg-[#FDFBF7] relative">
+    <div className="pb-24 min-h-screen bg-[#FDFBF7] dark:bg-stone-900 relative transition-colors duration-500">
       <ThaiTips />
 
       {/* toast 通知元件 */}
@@ -2470,7 +2417,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
       )}
 
       <div className="px-6 mt-2 mb-4">
-        <h2 className="text-2xl font-serif font-bold text-stone-800 flex items-center gap-2">
+        <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100 flex items-center gap-2">
           <span className="w-1.5 h-6 bg-amber-500 rounded-full"></span>
           行李準備清單
         </h2>
@@ -2480,7 +2427,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
       </div>
 
       <div className="px-6 mb-6">
-        <h3 className="text-center font-serif text-stone-500 mb-4 text-sm italic">
+        <h3 className="text-center font-serif text-stone-500 dark:text-stone-400 mb-4 text-sm italic">
           — Who are you? —
         </h3>
         <div className="grid grid-cols-4 gap-2">
@@ -2488,18 +2435,20 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
             <button
               key={user}
               onClick={() => setCurrentUser(user)}
-              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
-                ? 'bg-amber-500 text-white ring-2 ring-amber-200 ring-offset-2 transform scale-105'
-                : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
-                }`}
+              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${
+                currentUser === user
+                  ? 'bg-amber-500 text-white ring-2 ring-amber-200 dark:ring-amber-900 ring-offset-2 dark:ring-offset-stone-900 transform scale-105'
+                  : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700'
+              }`}
             >
               {isKonamiActive ? (
                 <div className="flex flex-col items-center animate-bounce">
                   <img
                     src={CHARACTER_MAP[user]}
                     alt={user}
-                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${user === '學弟' ? 'scale-125' : ''
-                      }`}
+                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${
+                      user === '學弟' ? 'scale-125' : ''
+                    }`}
                   />
                   <span className="text-[10px] opacity-80">{user}</span>
                 </div>
@@ -2521,12 +2470,13 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
       {currentUser ? (
         <div className="px-6 animate-fadeIn">
           <div className="flex justify-between items-end mb-4">
-            <h2 className="text-2xl font-serif font-bold text-stone-800 flex items-center gap-2">
-              <span className="text-amber-600">{currentUser}</span> 的清單
+            <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100 flex items-center gap-2">
+              <span className="text-amber-600 dark:text-amber-500">{currentUser}</span> 的清單
               {isKonamiActive && (
                 <img
                   src={CHARACTER_MAP[currentUser]}
                   className="w-8 h-8 -mb-1"
+                  alt="icon"
                 />
               )}
             </h2>
@@ -2536,14 +2486,14 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
             </span>
           </div>
 
-          <div className="h-1.5 w-full bg-stone-200 rounded-full mb-6 overflow-hidden">
+          <div className="h-1.5 w-full bg-stone-200 dark:bg-stone-700 rounded-full mb-6 overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-500"
               style={{ width: `${getProgress(currentUser)}%` }}
             />
           </div>
 
-          {/* 只有 Admin 才能看到新增欄位 */}
+          {/* 只有 Admin/Member 才能看到新增欄位 */}
           {(isAdmin || isMember) && (
             <div className="mb-6 flex gap-2">
               <input
@@ -2551,12 +2501,12 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
                 value={newItem}
                 onChange={(e) => setNewItem(e.target.value)}
                 placeholder="新增個人項目..."
-                className="flex-1 p-3 rounded-xl border border-stone-200 focus:outline-none focus:border-amber-500 bg-white shadow-sm"
+                className="flex-1 p-3 rounded-xl border border-stone-200 dark:border-stone-700 focus:outline-none focus:border-amber-500 bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-100 shadow-sm placeholder:text-stone-400"
                 onKeyPress={(e) => e.key === 'Enter' && addItem()}
               />
               <button
                 onClick={addItem}
-                className="bg-stone-800 text-amber-50 px-5 rounded-xl font-bold active:scale-95 transition-transform shadow-md"
+                className="bg-stone-800 dark:bg-stone-700 text-amber-50 px-5 rounded-xl font-bold active:scale-95 transition-transform shadow-md"
               >
                 +
               </button>
@@ -2566,7 +2516,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
           {/* 如果是訪客 顯示靜態提示 */}
           {!isAdmin && !isMember && (
             <div className="mb-4 text-center">
-              <span className="text-[10px] bg-stone-100 text-stone-400 px-3 py-1 rounded-full border border-stone-200">
+              <span className="text-[10px] bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-500 px-3 py-1 rounded-full border border-stone-200 dark:border-stone-700">
                 🔒 訪客模式：點擊項目可查看權限提示
               </span>
             </div>
@@ -2577,24 +2527,27 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
               <div
                 key={index}
                 onClick={() => toggleItem(currentUser, index)}
-                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${item.checked
-                  ? 'bg-stone-100 border-transparent opacity-60'
-                  : 'bg-white border-stone-100 shadow-sm hover:shadow-md'
-                  }`}
+                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${
+                  item.checked
+                    ? 'bg-stone-100 dark:bg-stone-800/50 border-transparent opacity-60'
+                    : 'bg-white dark:bg-stone-800 border-stone-100 dark:border-stone-700 shadow-sm hover:shadow-md'
+                }`}
               >
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${item.checked
-                    ? 'bg-green-500 border-green-500 text-white'
-                    : 'border-stone-300 bg-stone-50'
-                    }`}
+                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${
+                    item.checked
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : 'border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-700'
+                  }`}
                 >
                   {item.checked && <CheckCircle size={14} strokeWidth={3} />}
                 </div>
                 <span
-                  className={`flex-1 font-medium ${item.checked
-                    ? 'text-stone-400 line-through decoration-stone-400'
-                    : 'text-stone-700'
-                    }`}
+                  className={`flex-1 font-medium ${
+                    item.checked
+                      ? 'text-stone-400 dark:text-stone-600 line-through decoration-stone-400'
+                      : 'text-stone-700 dark:text-stone-200'
+                  }`}
                 >
                   {item.name}
                 </span>
@@ -2617,7 +2570,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
           <div className="h-12" />
         </div>
       ) : (
-        <div className="px-10 py-20 text-center text-stone-400">
+        <div className="px-10 py-20 text-center text-stone-400 dark:text-stone-600">
           <p className="text-sm">
             👆 請先點選上方按鈕
             <br />
