@@ -639,38 +639,115 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion }) => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
   const [daysLeft, setDaysLeft] = useState(0);
+  const [lastUpdate, setLastUpdate] = useState('');
 
   useEffect(() => {
+    // 🔥 修正 1：倒數計時使用泰國時區
     const calcTime = () => {
+      // 取得泰國當地時間
+      const nowInThailand = new Date(new Date().toLocaleString("en-US", { 
+        timeZone: "Asia/Bangkok" 
+      }));
+      
       const targetDate = new Date('2026-02-19T00:00:00+07:00');
-      const now = new Date();
-      const diff = targetDate - now;
+      const diff = targetDate - nowInThailand;
       const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
       setDaysLeft(days);
     };
+    
     calcTime();
     const timer = setInterval(calcTime, 60000);
 
+    // 🔥 修正 2：天氣 + AQI 抓取
     const fetchWeather = async () => {
       try {
+        // === 天氣資料 ===
         const res = await fetch(
           'https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&current=temperature_2m,weather_code,relative_humidity_2m&hourly=temperature_2m,weather_code&forecast_days=2&timezone=Asia%2FBangkok'
         );
         const json = await res.json();
         if (json && json.current) setData(json);
 
-        const aqiRes = await fetch(
-          'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=18.7883&longitude=98.9853&current=us_aqi'
-        );
-        const aqiJson = await aqiRes.json();
-        if (aqiJson.current) setAqi(aqiJson.current.us_aqi);
+        // === AQI 資料（IQAir 優先） ===
+        try {
+          const aqiRes = await fetch(
+            'https://api.airvisual.com/v2/city?city=Chiang Mai&state=Chiang Mai&country=Thailand&key=4743d035-1b8f-4a42-9ddf-66dee64f8b8a'
+          );
+          const aqiJson = await aqiRes.json();
+          
+          if (aqiJson.status === 'success' && aqiJson.data) {
+            // IQAir 的 AQI 在 data.current.pollution.aqius
+            const currentAqi = aqiJson.data.current.pollution.aqius;
+            setAqi(currentAqi);
+            
+            // 記錄更新時間（泰國時區）
+            const updateTime = new Date().toLocaleString('zh-TW', { 
+              timeZone: 'Asia/Bangkok',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+            setLastUpdate(updateTime);
+
+            // 🔥 AQI 超標警報
+            if (currentAqi > 150) {
+              const lastWarning = localStorage.getItem('aqi_warning_time');
+              const now = Date.now();
+              
+              // 每 2 小時最多提醒一次
+              if (!lastWarning || now - parseInt(lastWarning) > 2 * 60 * 60 * 1000) {
+                setTimeout(() => {
+                  alert(`⚠️ 空氣品質不佳！\n\nAQI: ${currentAqi} (不健康)\n\n建議：\n• 戴 N95 或醫療口罩\n• 減少戶外活動\n• 室內使用空氣清淨機`);
+                  localStorage.setItem('aqi_warning_time', now.toString());
+                }, 1000);
+              }
+            }
+          }
+        } catch (aqiError) {
+          console.log('IQAir 失敗，使用備援...', aqiError);
+          
+          // 🔥 備援方案 1：WAQI（免費且準）
+          try {
+            const waqiRes = await fetch(
+              'https://api.waqi.info/feed/chiangmai/?token=demo'
+            );
+            const waqiData = await waqiRes.json();
+            
+            if (waqiData.status === 'ok') {
+              setAqi(waqiData.data.aqi);
+              const updateTime = new Date().toLocaleString('zh-TW', { 
+                timeZone: 'Asia/Bangkok',
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+              setLastUpdate(updateTime);
+            }
+          } catch (waqiError) {
+            // 🔥 備援方案 2：Open-Meteo（最後手段）
+            console.log('WAQI 也失敗，使用 Open-Meteo...', waqiError);
+            const openMeteoRes = await fetch(
+              'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=18.7883&longitude=98.9853&current=us_aqi'
+            );
+            const openMeteoData = await openMeteoRes.json();
+            if (openMeteoData.current) {
+              setAqi(openMeteoData.current.us_aqi);
+            }
+          }
+        }
       } catch (e) {
-        console.error(e);
+        console.error('天氣/AQI 抓取失敗:', e);
       }
     };
+    
+    // 首次載入
     fetchWeather();
+    
+    // 🔥 修正 3：每 10 分鐘更新一次（節省 API 額度）
+    const weatherTimer = setInterval(fetchWeather, 10 * 60 * 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      clearInterval(weatherTimer);
+    };
   }, []);
 
   const getWeatherIcon = (code, size = 20) => {
@@ -732,9 +809,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion }) => {
                 佑任・軒寶・學弟・腳慢
               </span>
 
-              {/* 🔥🔥🔥 修改這裡：版本號邏輯 🔥🔥🔥 */}
               {isAdmin ? (
-                // 如果是管理員，顯示輸入框
                 <input
                   type="text"
                   value={versionText || ''}
@@ -742,13 +817,10 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion }) => {
                   className="w-16 bg-transparent border-b border-amber-300 text-[10px] text-stone-600 font-bold tracking-widest focus:outline-none text-center"
                 />
               ) : (
-                // 如果是普通人，顯示文字
                 <span className="text-[10px] text-stone-400 font-bold tracking-widest">
                   {versionText || '2026'}
                 </span>
               )}
-              {/* 🔥🔥🔥 修改結束 🔥🔥🔥 */}
-
             </div>
             <h1 className="text-4xl font-serif text-stone-800 tracking-tight leading-[0.9]">
               清邁
@@ -782,6 +854,12 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion }) => {
                     {data.current.relative_humidity_2m}%
                   </div>
                 </div>
+                {/* 🔥 新增：顯示更新時間 */}
+                {lastUpdate && (
+                  <div className="text-[9px] text-stone-400 mt-1">
+                    更新: {lastUpdate}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="animate-pulse flex gap-2 items-center">
@@ -824,15 +902,20 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion }) => {
   );
 };
 
+
 // ============================================
-// 智慧版 Coming Up (自動抓下一個行程)
+// 🔥 完整修正版：FloatingStatus（時區修正）
 // ============================================
+
 const FloatingStatus = ({ itinerary }) => {
   const [nextStop, setNextStop] = useState(null);
 
   useEffect(() => {
     const findNextStop = () => {
-      const now = new Date();
+      // 🔥 修正：強制使用泰國時區
+      const now = new Date(new Date().toLocaleString("en-US", { 
+        timeZone: "Asia/Bangkok" 
+      }));
 
       // 1. 攤平所有行程，並計算具體時間
       const allStops = [];
@@ -844,14 +927,15 @@ const FloatingStatus = ({ itinerary }) => {
           // 嘗試從字串中抓出 HH:MM (例如 "17:30" 或 "17:30-19:00")
           const timeMatch = loc.time.match(/(\d{1,2}):(\d{2})/);
 
-          let stopTime = new Date(dateStr); // 先以此日 00:00 為基準
+          // 🔥 修正：明確使用泰國時區建立日期
+          let stopTime = new Date(dateStr + 'T00:00:00+07:00');
 
           if (timeMatch) {
             // 如果抓得到時間，就設定進去
             stopTime.setHours(parseInt(timeMatch[1]), parseInt(timeMatch[2]));
           } else {
             // ⚠️ 防呆：如果你打錯字 (例如 "晚上")，抓不到時間
-            // 預設設為當天最後一刻 (23:59)，確保它當天都會顯示，不會因為判定是 00:00 而提早消失
+            // 預設設為當天最後一刻 (23:59)
             stopTime.setHours(23, 59);
           }
 
@@ -895,8 +979,130 @@ const FloatingStatus = ({ itinerary }) => {
       <div className="bg-stone-900/95 backdrop-blur-md text-stone-50 p-4 rounded-2xl shadow-2xl border border-stone-700/50 flex items-center justify-between">
         <div className="flex items-center gap-3 overflow-hidden">
           <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center text-stone-900 flex-shrink-0 ${nextStop.finished ? 'bg-green-500' : 'bg-amber-500 animate-pulse'
-              }`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-stone-900 flex-shrink-0 ${
+              nextStop.finished ? 'bg-green-500' : 'bg-amber-500 animate-pulse'
+            }`}
+          >
+            {nextStop.finished ? (
+              <CheckCircle size={20} />
+            ) : (
+              <Navigation size={20} strokeWidth={2.5} />
+            )}
+          </div>
+          <div className="min-w-0">
+            <div className="text-[10px] text-stone-400 uppercase tracking-wider font-bold mb-0.5 flex items-center gap-1">
+              {nextStop.finished ? 'COMPLETED' : 'COMING UP'}{' '}
+              <Clock size={10} />
+            </div>
+            <div className="font-bold text-sm truncate text-white">
+              {nextStop.name}
+            </div>
+            <div className="text-xs text-stone-400 truncate">
+              {nextStop.time}
+            </div>
+          </div>
+        </div>
+
+        {/* 如果有導航連結且旅程未結束，才顯示箭頭按鈕 */}
+        {nextStop.nav && (
+          <button
+            onClick={() =>
+              window.open(
+                `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  nextStop.nav
+                )}`,
+                '_blank'
+              )
+            }
+            className="bg-stone-800 p-2 rounded-full text-stone-400 hover:text-white hover:bg-stone-700 transition-colors ml-2 flex-shrink-0"
+          >
+            <ArrowRight size={20} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// 智慧版 Coming Up (自動抓下一個行程)
+// ============================================
+
+const FloatingStatus = ({ itinerary }) => {
+  const [nextStop, setNextStop] = useState(null);
+
+  useEffect(() => {
+    const findNextStop = () => {
+      // 🔥 修正：強制使用泰國時區
+      const now = new Date(new Date().toLocaleString("en-US", { 
+        timeZone: "Asia/Bangkok" 
+      }));
+
+      // 1. 攤平所有行程，並計算具體時間
+      const allStops = [];
+
+      itinerary.forEach((day) => {
+        const dateStr = day.date; // 例如 "2026-02-19"
+
+        day.locations.forEach((loc) => {
+          // 嘗試從字串中抓出 HH:MM (例如 "17:30" 或 "17:30-19:00")
+          const timeMatch = loc.time.match(/(\d{1,2}):(\d{2})/);
+
+          // 🔥 修正：明確使用泰國時區建立日期
+          let stopTime = new Date(dateStr + 'T00:00:00+07:00');
+
+          if (timeMatch) {
+            // 如果抓得到時間，就設定進去
+            stopTime.setHours(parseInt(timeMatch[1]), parseInt(timeMatch[2]));
+          } else {
+            // ⚠️ 防呆：如果你打錯字 (例如 "晚上")，抓不到時間
+            // 預設設為當天最後一刻 (23:59)
+            stopTime.setHours(23, 59);
+          }
+
+          allStops.push({
+            ...loc,
+            fullDate: stopTime,
+            dayTitle: day.title,
+          });
+        });
+      });
+
+      // 2. 找出所有「還沒發生」的行程
+      const futureStops = allStops.filter((stop) => stop.fullDate > now);
+
+      // 3. 取第一個，就是 Coming Up
+      if (futureStops.length > 0) {
+        setNextStop(futureStops[0]);
+      } else {
+        // 如果都沒有 (行程全結束了)，顯示最後一個或特定訊息
+        setNextStop({
+          name: '旅程圓滿結束 🎉',
+          time: 'See you next time!',
+          nav: '',
+          finished: true,
+        });
+      }
+    };
+
+    // 初始執行一次
+    findNextStop();
+
+    // 每分鐘檢查一次更新
+    const timer = setInterval(findNextStop, 60000);
+    return () => clearInterval(timer);
+  }, [itinerary]); // 當 itinerary (你編輯後) 改變時，這裡也會重算
+
+  if (!nextStop) return null;
+
+  return (
+    <div className="fixed bottom-20 left-4 right-4 z-30">
+      <div className="bg-stone-900/95 backdrop-blur-md text-stone-50 p-4 rounded-2xl shadow-2xl border border-stone-700/50 flex items-center justify-between">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-stone-900 flex-shrink-0 ${
+              nextStop.finished ? 'bg-green-500' : 'bg-amber-500 animate-pulse'
+            }`}
           >
             {nextStop.finished ? (
               <CheckCircle size={20} />
