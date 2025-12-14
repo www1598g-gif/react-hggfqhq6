@@ -1251,11 +1251,28 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, updateContent, on
             ) : (
               <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">{item.time}</span>
             )}
-            {item.difficulty && (
-              <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
-                {item.difficulty}
-              </span>
+            
+            {isAdmin ? (
+               <select
+                 value={item.difficulty || '低'}
+                 onChange={(e) => updateContent('difficulty', e.target.value)}
+                 onClick={(e) => e.stopPropagation()}
+                 className="text-[10px] bg-stone-100 dark:bg-stone-700 dark:text-stone-200 border-none rounded px-1 py-0.5 focus:ring-1 focus:ring-amber-500"
+               >
+                 <option value="低 (無障礙設施)">🟢 低</option>
+                 <option value="中 (斜坡/階梯)">🟡 中</option>
+                 <option value="高 (需步行陡坡)">🟠 高</option>
+                 <option value="極高 (多陡坡階梯)">🔴 極高</option>
+               </select>
+            ) : (
+              item.difficulty && (
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
+                  {item.difficulty}
+                </span>
+              )
             )}
+
+
             {item.highlight && (
               <span className="text-[9px] px-1.5 py-0.5 rounded-md border border-amber-100 bg-amber-50 text-amber-700 font-bold">★ {item.highlight}</span>
             )}
@@ -1263,13 +1280,16 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, updateContent, on
 
           {isAdmin ? (
             <div onClick={(e) => e.stopPropagation()} className="mb-1">
+              
               <input
                 type="text"
                 value={item.name}
                 onChange={(e) => updateContent('name', e.target.value)}
-                className="w-full font-bold text-lg text-stone-800 bg-transparent border-b border-stone-300 focus:border-amber-500 focus:outline-none p-0"
+                className="w-full font-bold text-lg text-stone-800 dark:text-stone-100 bg-transparent border-b border-stone-300 dark:border-stone-600 focus:border-amber-500 focus:outline-none p-0"
                 placeholder="輸入地點名稱..."
               />
+
+
             </div>
           ) : (
             <h3 className="font-bold text-stone-800 dark:text-stone-200 text-lg leading-tight mb-1 pr-2">{item.name}</h3>
@@ -2932,11 +2952,43 @@ export default function TravelApp() {
                 <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
                 <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
 
-                <div className="w-full relative mb-6 mt-auto">
-                  <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
-                  <input type="password" value={inputPwd} onChange={(e) => setInputPwd(e.target.value)} placeholder="Passcode" className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" />
-                </div>
-                <button onClick={handleUnlock} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2" style={{ marginBottom: 'calc(60px + env(safe-area-inset-bottom))' }}>Start Journey <ArrowRight size={18} /></button>
+
+
+
+               {/* 修改：右上角重整按鈕 */}
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="absolute top-12 right-6 p-2 rounded-full bg-white/10 text-white/50 hover:bg-white/20 hover:text-white transition-all z-50 backdrop-blur-sm"
+                >
+                  <RefreshCw size={20} />
+                </button>
+
+                {/* 修改：包 Form 支援 Enter 送出 */}
+                <form 
+                  className="w-full relative mb-6 mt-auto"
+                  onSubmit={(e) => { e.preventDefault(); handleUnlock(); }}
+                >
+                  <div className="relative">
+                    <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
+                    <input 
+                      type="password" 
+                      value={inputPwd} 
+                      onChange={(e) => setInputPwd(e.target.value)} 
+                      placeholder="Passcode" 
+                      className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" 
+                    />
+                  </div>
+                  {/* 修改：Button type="submit" 加上 margin top */}
+                  <button 
+                    type="submit" 
+                    className="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2" 
+                    style={{ marginBottom: 'calc(60px + env(safe-area-inset-bottom))' }}
+                  >
+                    Start Journey <ArrowRight size={18} />
+                  </button>
+                </form>
+                
+                
                 <div className="absolute bottom-6 text-emerald-200/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm text-center px-4" style={{ marginBottom: 'env(safe-area-inset-bottom)' }}>{systemInfo}</div>
               </div>
 
