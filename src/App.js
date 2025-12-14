@@ -862,14 +862,14 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                 <div className="flex items-center gap-1 ml-1 relative group">
                   {/* 蓮花 Icon */}
                   {/* 進階版：發光 + 呼吸動畫 */}
-                  <LotusIcon className="w-6 h-6 text-amber-400 dark:text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.5)] animate-pulse" />
+                  <LotusIcon className="w-5 h-5 text-amber-400 dark:text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.5)] animate-pulse" />
 
-                  <span
-                    className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#F3E5AB] via-[#FDB931] to-[#996515] drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] tracking-widest ml-2"
-                    style={{ fontFamily: '"Cinzel Decorative", serif' }} // 指定特殊字體
-                  >
-                    {versionText || '2026'}
-                  </span>
+                  <span 
+  className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-[#F3E5AB] via-[#FDB931] to-[#996515] drop-shadow-sm tracking-wide ml-1.5 mt-0.5"
+  style={{ fontFamily: '"Cinzel Decorative", serif' }}
+>
+  {versionText || '2026'}
+</span>
                 </div>
               )}
             </div>
