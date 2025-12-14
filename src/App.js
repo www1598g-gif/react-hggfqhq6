@@ -50,9 +50,27 @@ import {
 import { ref, onValue, set } from "firebase/database";
 import { db } from "./firebase"; // ⚠️ 前提：你要先建立 firebase.js 檔案
 
+// 🪷 泰式蓮花 Icon (線條版 - 仿照您提供的圖片)
 const LotusIcon = ({ className }) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M12,2C12,2 14,8 14,10C14,13 12,15 12,15C12,15 10,13 10,10C10,8 12,2 12,2M12,22C12,22 10,18 10,16C10,14 12,12 12,12C12,12 14,14 14,16C14,18 12,22 12,22M19,13C19,13 15,13 13,11C13,11 15,9 16,8C18,6 19,13 19,13M5,13C5,13 9,13 11,11C11,11 9,9 8,8C6,6 5,13 5,13M17,17C17,17 14,15 13,15C13,15 16,13 18,12C20,11 17,17 17,17M7,17C7,17 10,15 11,15C11,15 8,13 6,12C4,11 7,17 7,17Z" />
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none"               // 內部不填色
+    stroke="currentColor"     // 線條顏色跟隨文字
+    strokeWidth="1.5"         // 線條粗細 (想要更細可改 1, 更粗改 2)
+    strokeLinecap="round"     // 線條端點圓潤
+    strokeLinejoin="round"    // 線條轉角圓潤
+    className={className}
+  >
+    {/* 中央花瓣 */}
+    <path d="M12 3C12 3 14.5 7 14.5 10C14.5 12.5 12 14 12 14C12 14 9.5 12.5 9.5 10C9.5 7 12 3 12 3Z" />
+    {/* 左側花瓣 */}
+    <path d="M9.5 10C9.5 10 7 9.5 5.5 11C4 12.5 5 15 8 15.5" />
+    {/* 右側花瓣 */}
+    <path d="M14.5 10C14.5 10 17 9.5 18.5 11C20 12.5 19 15 16 15.5" />
+    {/* 底部左葉 */}
+    <path d="M12 14C12 14 9 14.5 7 16.5C5 18.5 6 20.5 12 20.5" />
+    {/* 底部右葉 */}
+    <path d="M12 14C12 14 15 14.5 17 16.5C19 18.5 18 20.5 12 20.5" />
   </svg>
 );
 // ============================================
@@ -843,7 +861,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
               ) : (
                 <div className="flex items-center gap-1 ml-1 relative group">
                   {/* 蓮花 Icon */}
-                  <LotusIcon className="w-5 h-5 text-amber-500 dark:text-amber-400 animate-pulse-slow drop-shadow-sm" />
+                  <LotusIcon className="w-6 h-6 text-amber-400 dark:text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.5)]" />
                   
                   {/* 2026 文字 - 泰式金箔漸層 */}
                   <span className="text-2xl font-serif font-black italic text-transparent bg-clip-text bg-gradient-to-br from-[#FFD700] via-[#FDB931] to-[#D4AF37] drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)] tracking-widest">
