@@ -2668,7 +2668,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
 // 🔥 修正後的 TravelApp 主程式
 // ============================================
 
-// 🔥🔥🔥 修正後的 TravelApp 主程式 (含深色模式自動切換) 🔥🔥🔥
+// 🔥🔥🔥 修正後的 TravelApp 主程式 (含深色模式自動切換) 
 export default function TravelApp() {
   const [isLocked, setIsLocked] = useState(true);
   const [isUnlocking, setIsUnlocking] = useState(false);
