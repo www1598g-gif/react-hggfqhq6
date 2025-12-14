@@ -674,36 +674,42 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
         );
         const json = await res.json();
         
-        // 2️⃣ 抓 AQI 資料 (雙重備援系統)
+        // 2️⃣ 抓 AQI 資料 (WAQI 優先策略 - 修正版)
         let currentAqi = 50; 
         let aqiSource = 'default';
 
+        // 🟢 第一選擇：WAQI (因為你說比較準)
         try {
-          const iqairRes = await fetch(
-            'https://api.airvisual.com/v2/nearest_city?lat=18.7883&lon=98.9853&key=4743d035-1b8f-4a42-9ddf-66dee64f8b8a'
+          const waqiRes = await fetch(
+            'https://api.waqi.info/feed/geo:18.7883;98.9853/?token=6a1feb1b93b9f182f5ace9c2ffc8fdfc0e6e61c2'
           );
-          const iqairData = await iqairRes.json();
+          const waqiData = await waqiRes.json();
           
-          if (iqairData.status === 'success' && iqairData.data?.current?.pollution) {
-            currentAqi = iqairData.data.current.pollution.aqius;
-            aqiSource = 'IQAir';
+          if (waqiData.status === 'ok' && waqiData.data?.aqi) {
+            currentAqi = waqiData.data.aqi;
+            aqiSource = 'WAQI'; 
+            console.log('✅ AQI 來源: WAQI =', currentAqi);
           } else {
-            throw new Error('IQAir API 回應異常');
+            throw new Error('WAQI API 回應異常');
           }
-        } catch (iqairError) {
-          console.warn('⚠️ IQAir 失敗，切換到 WAQI 備援...');
+        } catch (waqiError) {
+          console.warn('⚠️ WAQI 失敗，切換到 IQAir 備援...');
+          
+          // 🟡 備援方案：IQAir (WAQI 掛掉才用這個)
           try {
-            const waqiRes = await fetch(
-              'https://api.waqi.info/feed/geo:18.7883;98.9853/?token=6a1feb1b93b9f182f5ace9c2ffc8fdfc0e6e61c2'
+            const iqairRes = await fetch(
+              'https://api.airvisual.com/v2/nearest_city?lat=18.7883&lon=98.9853&key=4743d035-1b8f-4a42-9ddf-66dee64f8b8a'
             );
-            const waqiData = await waqiRes.json();
-            if (waqiData.status === 'ok' && waqiData.data?.aqi) {
-              currentAqi = waqiData.data.aqi;
-              aqiSource = 'WAQI';
+            const iqairData = await iqairRes.json();
+            
+            if (iqairData.status === 'success' && iqairData.data?.current?.pollution) {
+              currentAqi = iqairData.data.current.pollution.aqius;
+              aqiSource = 'IQAir';
+              console.log('✅ AQI 來源: IQAir (備援) =', currentAqi);
             }
-          } catch (waqiError) {
-            console.error('❌ WAQI 也失敗了，使用預設值');
-            aqiSource = 'fallback';
+          } catch (iqairError) {
+            console.error('❌ 全部失敗，使用預設值');
+            aqiSource = 'N/A';
           }
         }
 
@@ -810,11 +816,12 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                   className="w-16 bg-transparent border-b border-amber-300 text-[10px] font-bold focus:outline-none text-center dark:text-white"
                 />
               ) : (
-                <div className="ml-2 flex flex-col items-start justify-center border-l border-stone-300 dark:border-stone-600 pl-3 py-0.5 select-none flex-shrink-0 opacity-60">
-                   <span className="text-[8px] font-bold uppercase tracking-wider leading-none">Year</span>
-                   <span className="text-lg font-serif font-bold leading-none italic text-stone-400 dark:text-stone-500">
-                     {versionText || '26'}
-                   </span>
+
+              //else
+                <div className="ml-2 w-12 h-12 rounded-full border-2 border-amber-600/30 dark:border-amber-500/30 flex items-center justify-center -rotate-12 select-none flex-shrink-0">
+                <div className="text-[10px] font-serif font-bold text-amber-700/50 dark:text-amber-500/50 tracking-widest">
+                {versionText || '2026'}
+                </div>
                 </div>
               )}
               
