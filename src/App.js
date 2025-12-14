@@ -786,10 +786,11 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
       {/* 2. 右上角鎖定按鈕 (已修正位置與透明感) */}
       <button
         onClick={onLock}
-        className="absolute top-5 right-5 z-30 p-2 bg-white/40 dark:bg-black/20 backdrop-blur-md rounded-full text-stone-400 hover:text-red-500 dark:hover:text-red-400 transition-all shadow-sm active:scale-95"
+        // 🔥 修改這裡：top-0 right-0 讓它貼齊右上角，顏色調整為配合黃色背景
+        className="absolute top-0 right-0 z-30 h-[28px] w-[30px] flex items-center justify-center text-amber-800/40 hover:text-amber-800 dark:text-amber-200/40 dark:hover:text-amber-200 transition-colors"
         title="鎖定畫面"
       >
-        <Lock size={14} />
+        <Lock size={12} strokeWidth={2.5} />
       </button>
 
       {/* 背景裝飾字 */}
@@ -2740,21 +2741,49 @@ export default function TravelApp() {
   }, []);
 
   // 搖晃與滑動邏輯 (保持原樣)
+  // 搖晃與滑動邏輯 (修正版：強制連續搖晃)
   useEffect(() => {
-    let lastShakeTime = 0;
+    let lastShakeTime = 0; // 上次有效搖晃的時間點
+
     const handleShake = (e) => {
       const acc = e.accelerationIncludingGravity || e.acceleration;
       if (!acc) return;
+
       const total = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
-      if (total > 20 && Date.now() - lastShakeTime > 300) {
-        lastShakeTime = Date.now();
+
+      // 1. 強度門檻 (維持 20，您可以視需求調高到 25 更難誤觸)
+      if (total > 20) {
+        const now = Date.now();
+
+        // 🔥 新增邏輯：超時重置
+        // 如果距離上次搖晃超過 1.5 秒，視為「中斷」，把這次當作第 1 次
+        if (now - lastShakeTime > 1500) {
+          setShakeCount(1);
+          lastShakeTime = now;
+          return;
+        }
+
+        // 2. 防抖 (維持原樣)
+        // 如果距離上次太近 (300ms 內)，視為同一次搖晃的餘震，忽略
+        if (now - lastShakeTime < 300) {
+          return;
+        }
+
+        // 3. 有效的連續搖晃
+        // (時間差在 300ms ~ 1500ms 之間)
+        lastShakeTime = now;
         setShakeCount((prev) => {
           const newCount = prev + 1;
-          if (newCount >= 8) { setShowShakeEgg(true); return 0; }
+          // 搖滿 8 次觸發
+          if (newCount >= 8) {
+            setShowShakeEgg(true);
+            return 0; // 觸發後歸零
+          }
           return newCount;
         });
       }
     };
+
     window.addEventListener('devicemotion', handleShake);
     return () => window.removeEventListener('devicemotion', handleShake);
   }, []);
