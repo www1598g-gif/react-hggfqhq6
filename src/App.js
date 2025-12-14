@@ -630,27 +630,9 @@ const UTILS_DATA = {
 // 3. UIUX part thai
 // ============================================
 
-// note:天氣 Widget (防當機 Crash Guard)
-// note:天氣 Widget (修ㄌ跨夜問題 + 24小時預報 + 橫向捲動)
-// 天氣 Widget (移除點擊彩蛋20251206)
-// 修正: 移除最外層的 shadow-xl 讓頂部變平滑
-// UIUX part 加入倒數計時
-// 🔥🔥🔥 修改後的 WeatherHero (支援點擊修改版本號) 🔥🔥🔥
 
 // ============================================
-// 3. UIUX part thai
-// ============================================
-
-// 🔥🔥🔥 修改後的 WeatherHero (含警報、美化2026、鎖定按鈕、深色模式) 🔥🔥🔥
-// 🔥🔥🔥 修正後的 WeatherHero (含警報、美化2026、鎖定按鈕) 🔥🔥🔥
-// ============================================
-// 🔥🔥🔥 修正後的 WeatherHero (修復 UI/UX 問題) 🔥🔥🔥
-// ============================================
-// ============================================
-// 🔥🔥🔥 修正後的 WeatherHero (更換 2026 為極簡風) 🔥🔥🔥
-// ============================================
-// ============================================
-// 🔥🔥🔥 修正後的 WeatherHero (含手動刷新 + 全市平均 AQI) 🔥🔥🔥
+//  修正後的 WeatherHero (含手動刷新 + 全市平均 AQI) 
 // ============================================
 const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
   const [data, setData] = useState(null);
@@ -675,7 +657,6 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
       let aqiSource = 'default';
 
       try {
-        // 🔥 修改：改用 feed/chiangmai/ 取得官方平均值
         const waqiRes = await fetch(
           'https://api.waqi.info/feed/chiangmai/?token=6a1feb1b93b9f182f5ace9c2ffc8fdfc0e6e61c2'
         );
@@ -683,8 +664,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
 
         if (waqiData.status === 'ok' && waqiData.data?.aqi) {
           currentAqi = waqiData.data.aqi;
-          aqiSource = 'WAQI (全市)'; // 標記來源
-          console.log('✅ AQI 來源: WAQI (City) =', currentAqi);
+          aqiSource = 'WAQI'; // 標記來源
         } else {
           throw new Error('WAQI API 回應異常');
         }
@@ -707,8 +687,9 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
       }
 
       setAqi(currentAqi);
+      // 僅顯示時間，來源顯示在 Console 或 Tooltip 即可，保持介面乾淨
       setLastUpdate(
-        `${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })} (${aqiSource})`
+        `${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}`
       );
 
       if (json && json.current) {
@@ -794,6 +775,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
 
   return (
     <div className="relative bg-[#FDFBF7] dark:bg-stone-900 pt-0 pb-8 px-6 border-b border-stone-200 dark:border-stone-800 rounded-b-[2.5rem] z-10 overflow-hidden transition-colors duration-500">
+      {/* 1. 倒數計時條 */}
       {daysLeft > 0 && (
         <div className="absolute top-0 left-0 right-0 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 text-[10px] font-bold text-center py-1.5 z-20 shadow-sm">
           ✈️ 距離出發還有{' '}
@@ -801,11 +783,22 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
         </div>
       )}
 
+      {/* 2. 右上角鎖定按鈕 (已修正位置與透明感) */}
+      <button
+        onClick={onLock}
+        className="absolute top-5 right-5 z-30 p-2 bg-white/40 dark:bg-black/20 backdrop-blur-md rounded-full text-stone-400 hover:text-red-500 dark:hover:text-red-400 transition-all shadow-sm active:scale-95"
+        title="鎖定畫面"
+      >
+        <Lock size={14} />
+      </button>
+
+      {/* 背景裝飾字 */}
       <div className="absolute top-[-20px] right-[-20px] text-[8rem] font-serif text-amber-50 dark:text-stone-800 opacity-50 select-none leading-none pointer-events-none">
         Thai
       </div>
 
       <div className="relative z-10 mt-10">
+        {/* 天氣警報 */}
         {alerts.length > 0 && (
           <div className="mb-4 space-y-2">
             {alerts.map((alert, idx) => (
@@ -827,6 +820,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
 
         <div className="flex justify-between items-end mb-6">
           <div className="flex-1 min-w-0 mr-4">
+            {/* 3. 簡化的年份顯示 & 成員名單 */}
             <div className="flex items-center gap-2 mb-2">
               <span className="px-2.5 py-1 bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-400 text-[10px] font-bold tracking-wider rounded-full whitespace-nowrap">
                 佑任・軒寶・學弟・腳慢
@@ -837,37 +831,13 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                   type="text"
                   value={versionText || ''}
                   onChange={(e) => updateVersion(e.target.value)}
-                  className="w-16 bg-transparent border-b border-amber-300 text-[10px] font-bold focus:outline-none text-center dark:text-white"
+                  className="w-16 bg-transparent border-b border-amber-300 text-sm font-serif font-bold italic focus:outline-none text-center dark:text-stone-300"
                 />
               ) : (
-                <div className="ml-2 flex flex-col items-start justify-center border-l border-stone-300 dark:border-stone-600 pl-3 py-0.5 select-none flex-shrink-0 opacity-60">
-                  <span className="text-[8px] font-bold uppercase tracking-wider leading-none text-stone-500 dark:text-stone-400">
-                    Year
-                  </span>
-                  <span className="text-lg font-serif font-bold leading-none italic text-stone-400 dark:text-stone-500">
-                    {versionText || '26'}
-                  </span>
-                </div>
+                <span className="text-lg font-serif font-bold italic text-stone-300 dark:text-stone-600 ml-1">
+                  {versionText || '2026'}
+                </span>
               )}
-
-              {/* 鎖定按鈕 */}
-              <button
-                onClick={onLock}
-                className="ml-auto p-1.5 bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-500 rounded-full hover:bg-stone-200 dark:hover:bg-stone-700 hover:text-red-500 transition-colors flex-shrink-0"
-                title="鎖定畫面"
-              >
-                <Lock size={12} />
-              </button>
-
-              {/* 🔥 新增：手動刷新按鈕 */}
-              <button
-                onClick={fetchWeather}
-                disabled={isLoading}
-                className="p-1.5 bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-500 rounded-full hover:bg-stone-200 dark:hover:bg-stone-700 hover:text-blue-500 transition-colors flex-shrink-0"
-                title="刷新天氣"
-              >
-                <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
-              </button>
             </div>
 
             <h1 className="text-4xl font-serif text-stone-800 dark:text-stone-100 tracking-tight leading-[0.9]">
@@ -903,11 +873,26 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                   </div>
                 </div>
 
-                {lastUpdate && (
-                  <div className="text-[8px] text-stone-300 dark:text-stone-600 mt-1 font-mono tracking-tighter">
-                    Update: {lastUpdate}
-                  </div>
-                )}
+                {/* 4. 更新時間 & 隱藏式刷新按鈕 (群組 hover 顯示) */}
+                <div className="group flex items-center justify-end gap-1.5 mt-1 cursor-pointer" onClick={fetchWeather}>
+                  {lastUpdate && (
+                    <span className="text-[10px] text-stone-300 dark:text-stone-600 font-mono tracking-tighter transition-colors group-hover:text-stone-400 dark:group-hover:text-stone-500">
+                      {lastUpdate}
+                    </span>
+                  )}
+                  
+                  {/* 刷新按鈕：預設淺灰(text-stone-300)，Hover變藍+縮小(scale-90) */}
+                  <button
+                    disabled={isLoading}
+                    className="text-stone-300 dark:text-stone-700 transition-all duration-300 group-hover:text-blue-500 group-hover:scale-90"
+                    title="刷新天氣"
+                  >
+                    <RefreshCw 
+                      size={10} 
+                      className={isLoading ? 'animate-spin text-blue-500 opacity-100' : ''} 
+                    />
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="animate-pulse flex gap-2 items-center">
@@ -918,6 +903,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
           </div>
         </div>
 
+        {/* 未來24小時預報 (保持原樣) */}
         {data && nextHours.length > 0 && (
           <div className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-100 dark:border-stone-700 shadow-sm">
             <div className="flex items-center">
