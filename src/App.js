@@ -50,7 +50,11 @@ import {
 import { ref, onValue, set } from "firebase/database";
 import { db } from "./firebase"; // ⚠️ 前提：你要先建立 firebase.js 檔案
 
-
+const LotusIcon = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M12,2C12,2 14,8 14,10C14,13 12,15 12,15C12,15 10,13 10,10C10,8 12,2 12,2M12,22C12,22 10,18 10,16C10,14 12,12 12,12C12,12 14,14 14,16C14,18 12,22 12,22M19,13C19,13 15,13 13,11C13,11 15,9 16,8C18,6 19,13 19,13M5,13C5,13 9,13 11,11C11,11 9,9 8,8C6,6 5,13 5,13M17,17C17,17 14,15 13,15C13,15 16,13 18,12C20,11 17,17 17,17M7,17C7,17 10,15 11,15C11,15 8,13 6,12C4,11 7,17 7,17Z" />
+  </svg>
+);
 // ============================================
 // 圖片XD
 // ===========================================
@@ -806,11 +810,10 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
               <div
                 key={idx}
                 className={`p-3 rounded-xl flex items-center gap-2 text-xs font-bold shadow-sm animate-pulse border
-                ${
-                  alert.type === 'rain'
+                ${alert.type === 'rain'
                     ? 'bg-blue-50 text-blue-800 border-blue-100 dark:bg-blue-900/30 dark:text-blue-200 dark:border-blue-800'
                     : 'bg-red-50 text-red-800 border-red-100 dark:bg-red-900/30 dark:text-red-200 dark:border-red-800'
-                }`}
+                  }`}
               >
                 {alert.type === 'rain' ? <CloudRain size={16} /> : <AlertCircle size={16} />}
                 {alert.msg}
@@ -821,7 +824,10 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
 
         <div className="flex justify-between items-end mb-6">
           <div className="flex-1 min-w-0 mr-4">
+
+
             {/* 3. 簡化的年份顯示 & 成員名單 */}
+            {/* 3. 簡化的年份顯示 & 成員名單 (含蓮花設計) */}
             <div className="flex items-center gap-2 mb-2">
               <span className="px-2.5 py-1 bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-400 text-[10px] font-bold tracking-wider rounded-full whitespace-nowrap">
                 佑任・軒寶・學弟・腳慢
@@ -835,9 +841,15 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                   className="w-16 bg-transparent border-b border-amber-300 text-sm font-serif font-bold italic focus:outline-none text-center dark:text-stone-300"
                 />
               ) : (
-                <span className="text-lg font-serif font-bold italic text-stone-300 dark:text-stone-600 ml-1">
-                  {versionText || '2026'}
-                </span>
+                <div className="flex items-center gap-1 ml-1 relative group">
+                  {/* 蓮花 Icon */}
+                  <LotusIcon className="w-5 h-5 text-amber-500 dark:text-amber-400 animate-pulse-slow drop-shadow-sm" />
+                  
+                  {/* 2026 文字 - 泰式金箔漸層 */}
+                  <span className="text-2xl font-serif font-black italic text-transparent bg-clip-text bg-gradient-to-br from-[#FFD700] via-[#FDB931] to-[#D4AF37] drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)] tracking-widest">
+                    {versionText || '2026'}
+                  </span>
+                </div>
               )}
             </div>
 
@@ -881,16 +893,16 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                       {lastUpdate}
                     </span>
                   )}
-                  
+
                   {/* 刷新按鈕：預設淺灰(text-stone-300)，Hover變藍+縮小(scale-90) */}
                   <button
                     disabled={isLoading}
                     className="text-stone-300 dark:text-stone-700 transition-all duration-300 group-hover:text-blue-500 group-hover:scale-90"
                     title="刷新天氣"
                   >
-                    <RefreshCw 
-                      size={10} 
-                      className={isLoading ? 'animate-spin text-blue-500 opacity-100' : ''} 
+                    <RefreshCw
+                      size={10}
+                      className={isLoading ? 'animate-spin text-blue-500 opacity-100' : ''}
                     />
                   </button>
                 </div>
@@ -952,8 +964,8 @@ const FloatingStatus = ({ itinerary }) => {
   useEffect(() => {
     const findNextStop = () => {
       // 🔥 修正：強制使用泰國時區
-      const now = new Date(new Date().toLocaleString("en-US", { 
-        timeZone: "Asia/Bangkok" 
+      const now = new Date(new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Bangkok"
       }));
 
       // 1. 攤平所有行程，並計算具體時間
@@ -1018,9 +1030,8 @@ const FloatingStatus = ({ itinerary }) => {
       <div className="bg-stone-900/95 backdrop-blur-md text-stone-50 p-4 rounded-2xl shadow-2xl border border-stone-700/50 flex items-center justify-between">
         <div className="flex items-center gap-3 overflow-hidden">
           <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center text-stone-900 flex-shrink-0 ${
-              nextStop.finished ? 'bg-green-500' : 'bg-amber-500 animate-pulse'
-            }`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-stone-900 flex-shrink-0 ${nextStop.finished ? 'bg-green-500' : 'bg-amber-500 animate-pulse'
+              }`}
           >
             {nextStop.finished ? (
               <CheckCircle size={20} />
@@ -1251,19 +1262,32 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, updateContent, on
             ) : (
               <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wide">{item.time}</span>
             )}
-            
+
             {isAdmin ? (
-               <select
-                 value={item.difficulty || '低'}
-                 onChange={(e) => updateContent('difficulty', e.target.value)}
-                 onClick={(e) => e.stopPropagation()}
-                 className="text-[10px] bg-stone-100 dark:bg-stone-700 dark:text-stone-200 border-none rounded px-1 py-0.5 focus:ring-1 focus:ring-amber-500"
-               >
-                 <option value="低 (無障礙設施)">🟢 低</option>
-                 <option value="中 (斜坡/階梯)">🟡 中</option>
-                 <option value="高 (需步行陡坡)">🟠 高</option>
-                 <option value="極高 (多陡坡階梯)">🔴 極高</option>
-               </select>
+              <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                {/* 1. 自由輸入框 */}
+                <input
+                  type="text"
+                  value={item.difficulty || ''}
+                  onChange={(e) => updateContent('difficulty', e.target.value)}
+                  className="text-[10px] bg-stone-100 dark:bg-stone-700 dark:text-stone-200 border-none rounded px-2 py-0.5 w-24 focus:ring-1 focus:ring-amber-500"
+                  placeholder="自訂難度"
+                />
+                {/* 2. 快速樣板選單 (選了會自動帶入) */}
+                <select
+                  onChange={(e) => {
+                    if (e.target.value) updateContent('difficulty', e.target.value);
+                  }}
+                  className="w-4 h-6 bg-transparent text-stone-400 dark:text-stone-500 outline-none cursor-pointer"
+                  title="快速選擇"
+                >
+                  <option value="">☰</option>
+                  <option value="低 (無障礙設施)">🟢 低</option>
+                  <option value="中 (斜坡/階梯)">🟡 中</option>
+                  <option value="高 (需步行陡坡)">🟠 高</option>
+                  <option value="極高 (多陡坡階梯)">🔴 極高</option>
+                </select>
+              </div>
             ) : (
               item.difficulty && (
                 <span className={`text-[9px] px-1.5 py-0.5 rounded-md border font-bold flex items-center gap-1 ${getDifficultyColor(item.difficulty)}`}>
@@ -1280,7 +1304,7 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, updateContent, on
 
           {isAdmin ? (
             <div onClick={(e) => e.stopPropagation()} className="mb-1">
-              
+
               <input
                 type="text"
                 value={item.name}
@@ -1581,11 +1605,10 @@ const FlightCard = ({
       <div className="relative z-10">
         <div className="flex justify-between items-center mb-4">
           <span
-            className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${
-              type === '去程'
+            className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${type === '去程'
                 ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200'
                 : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
-            }`}
+              }`}
           >
             {type}
           </span>
@@ -1761,11 +1784,10 @@ const CurrencySection = () => {
         {exchanges.map((ex, i) => (
           <div
             key={i}
-            className={`flex justify-between items-center p-3 rounded-xl border transition-all ${
-              i < 3
+            className={`flex justify-between items-center p-3 rounded-xl border transition-all ${i < 3
                 ? 'bg-white dark:bg-stone-700 border-stone-200 dark:border-stone-600 shadow-sm'
                 : 'bg-stone-50 dark:bg-stone-800/50 border-stone-100 dark:border-stone-700 opacity-80'
-            }`}
+              }`}
           >
             <div>
               <div className="flex items-center gap-2 mb-0.5">
@@ -2535,20 +2557,18 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
             <button
               key={user}
               onClick={() => setCurrentUser(user)}
-              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${
-                currentUser === user
+              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
                   ? 'bg-amber-500 text-white ring-2 ring-amber-200 dark:ring-amber-900 ring-offset-2 dark:ring-offset-stone-900 transform scale-105'
                   : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700'
-              }`}
+                }`}
             >
               {isKonamiActive ? (
                 <div className="flex flex-col items-center animate-bounce">
                   <img
                     src={CHARACTER_MAP[user]}
                     alt={user}
-                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${
-                      user === '學弟' ? 'scale-125' : ''
-                    }`}
+                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${user === '學弟' ? 'scale-125' : ''
+                      }`}
                   />
                   <span className="text-[10px] opacity-80">{user}</span>
                 </div>
@@ -2627,27 +2647,24 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
               <div
                 key={index}
                 onClick={() => toggleItem(currentUser, index)}
-                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${
-                  item.checked
+                className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${item.checked
                     ? 'bg-stone-100 dark:bg-stone-800/50 border-transparent opacity-60'
                     : 'bg-white dark:bg-stone-800 border-stone-100 dark:border-stone-700 shadow-sm hover:shadow-md'
-                }`}
+                  }`}
               >
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${
-                    item.checked
+                  className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${item.checked
                       ? 'bg-green-500 border-green-500 text-white'
                       : 'border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-700'
-                  }`}
+                    }`}
                 >
                   {item.checked && <CheckCircle size={14} strokeWidth={3} />}
                 </div>
                 <span
-                  className={`flex-1 font-medium ${
-                    item.checked
+                  className={`flex-1 font-medium ${item.checked
                       ? 'text-stone-400 dark:text-stone-600 line-through decoration-stone-400'
                       : 'text-stone-700 dark:text-stone-200'
-                  }`}
+                    }`}
                 >
                   {item.name}
                 </span>
@@ -2706,7 +2723,7 @@ export default function TravelApp() {
   const [shakeCount, setShakeCount] = useState(0);
   const [showShakeEgg, setShowShakeEgg] = useState(false);
   const pressTimerRef = useRef(null);
-  
+
   const [activeTab, setActiveTab] = useState('itinerary');
   const [openDay, setOpenDay] = useState(0);
 
@@ -2816,7 +2833,7 @@ export default function TravelApp() {
       const diffY = clientY - touchStartRef.current.y;
       if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
       let direction = '';
-      if (Math.abs(diffX) > Math.abs(diffY)) { direction = diffX > 0 ? 'right' : 'left'; } 
+      if (Math.abs(diffX) > Math.abs(diffY)) { direction = diffX > 0 ? 'right' : 'left'; }
       else { direction = diffY > 0 ? 'down' : 'up'; }
       setKonamiSequence((prev) => [...prev, direction].slice(-4));
     };
@@ -2854,7 +2871,7 @@ export default function TravelApp() {
 
   const updateSystemInfo = (newText) => { setSystemInfo(newText); set(ref(db, 'systemInfo'), newText); };
   const handleUpdateVersion = (newVal) => { setAppVersion(newVal); set(ref(db, 'appVersion'), newVal); };
-  
+
   const handleContentUpdate = (dayNum, locIndex, field, value) => {
     const newItinerary = [...itinerary];
     const dayData = newItinerary.find((d) => d.day === dayNum);
@@ -2911,7 +2928,7 @@ export default function TravelApp() {
     const encodedInput = btoa(inputPwd);
     if (encodedInput === 'ODY4Njc3MDg=') { setIsAdmin(true); setIsMember(true); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
     else if (encodedInput === 'MTMxNDUyMA==') { setIsAdmin(false); setIsMember(true); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
-    else if (encodedInput === 'ODg4OA==') { setIsAdmin(false); setIsMember(false); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); } 
+    else if (encodedInput === 'ODg4OA==') { setIsAdmin(false); setIsMember(false); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
     else { alert('密碼錯誤！再試一次吧 🔒'); setInputPwd(''); }
   };
 
@@ -2952,11 +2969,13 @@ export default function TravelApp() {
                 <h2 className="text-3xl font-serif font-bold mb-1 tracking-wide text-white drop-shadow-md">Chiang Mai</h2>
                 <p className="text-emerald-100 text-sm mb-2 text-center tracking-widest font-sans drop-shadow font-bold">佑任・軒寶・學弟・腳慢</p>
 
+                <p className="text-emerald-200/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm text-center mb-6 scale-90">
+                  {systemInfo}
+                </p>
 
 
-
-               {/* 修改：右上角重整按鈕 */}
-                <button 
+                {/* 修改：右上角重整按鈕 */}
+                <button
                   onClick={() => window.location.reload()}
                   className="absolute top-12 right-6 p-2 rounded-full bg-white/10 text-white/50 hover:bg-white/20 hover:text-white transition-all z-50 backdrop-blur-sm"
                 >
@@ -2964,32 +2983,32 @@ export default function TravelApp() {
                 </button>
 
                 {/* 修改：包 Form 支援 Enter 送出 */}
-                <form 
+                <form
                   className="w-full relative mb-6 mt-auto"
                   onSubmit={(e) => { e.preventDefault(); handleUnlock(); }}
                 >
                   <div className="relative">
                     <KeyRound size={18} className="absolute left-4 top-4 text-emerald-100" />
-                    <input 
-                      type="password" 
-                      value={inputPwd} 
-                      onChange={(e) => setInputPwd(e.target.value)} 
-                      placeholder="Passcode" 
-                      className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg" 
+                    <input
+                      type="password"
+                      value={inputPwd}
+                      onChange={(e) => setInputPwd(e.target.value)}
+                      placeholder="Passcode"
+                      className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-12 py-3.5 text-lg tracking-[0.2em] outline-none focus:bg-white/40 focus:ring-2 focus:ring-emerald-400 transition-all text-emerald-100 placeholder:text-emerald-200 text-center font-bold shadow-lg"
                     />
                   </div>
                   {/* 修改：Button type="submit" 加上 margin top */}
-                  <button 
-                    type="submit" 
-                    className="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2" 
+                  <button
+                    type="submit"
+                    className="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-emerald-900/40 active:scale-95 flex items-center justify-center gap-2"
                     style={{ marginBottom: 'calc(60px + env(safe-area-inset-bottom))' }}
                   >
                     Start Journey <ArrowRight size={18} />
                   </button>
                 </form>
-                
-                
-                <div className="absolute bottom-6 text-emerald-200/60 text-[10px] tracking-widest uppercase font-bold drop-shadow-sm text-center px-4" style={{ marginBottom: 'env(safe-area-inset-bottom)' }}>{systemInfo}</div>
+
+
+
               </div>
 
               {showHelloKitty && (<div onClick={() => setShowHelloKitty(false)} className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 animate-fadeIn p-8 backdrop-blur-sm"><div className="bg-[#FFF0F5] p-6 rounded-3xl shadow-2xl text-center"><img src="https://shoplineimg.com/62b43a417c1950002317c6d8/689a89118af843000fdfa15a/750x.jpg" alt="Kitty" className="w-48 h-48 object-cover mx-auto rounded-2xl mb-4" /><p className="text-pink-400 font-bold">丹和你說聲 Surprise! 🎉</p></div></div>)}
@@ -3001,19 +3020,19 @@ export default function TravelApp() {
         {!isLocked && (
           <div className="bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
             {/* 🔥 傳入 onLock 讓子元件可以呼叫鎖定 */}
-            <WeatherHero 
-              isAdmin={isAdmin} 
-              versionText={appVersion} 
-              updateVersion={handleUpdateVersion} 
+            <WeatherHero
+              isAdmin={isAdmin}
+              versionText={appVersion}
+              updateVersion={handleUpdateVersion}
               onLock={() => {
-                  setIsLocked(true);      // 鎖定
-                  setIsUnlocking(false);  // 🚪 重置開門動畫 (關鍵!)
-                  setInputPwd('');        // 清空密碼欄
-                  setIsAdmin(false);
-                  setIsMember(false);
-                }} 
+                setIsLocked(true);      // 鎖定
+                setIsUnlocking(false);  // 🚪 重置開門動畫 (關鍵!)
+                setInputPwd('');        // 清空密碼欄
+                setIsAdmin(false);
+                setIsMember(false);
+              }}
             />
-            
+
             <main className="pb-28">
               {activeTab === 'itinerary' && (
                 <div className="pb-4">
@@ -3042,26 +3061,26 @@ export default function TravelApp() {
               {activeTab === 'packing' && (
                 <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} isMember={isMember} />
               )}
-              
+
               {activeTab === 'utils' && (
                 <div className="">
-                   {/* 🔥 手動切換深色模式的按鈕 - 這裡加上自己的 padding */}
-    <div className="px-6 pt-6"> 
-      <div className="flex items-center justify-between bg-white dark:bg-stone-800 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6">
-        <div className="flex items-center gap-2 font-bold dark:text-white">
-          {darkMode ? <div className="p-2 bg-stone-700 rounded-full text-amber-400"><Sun size={18}/></div> : <div className="p-2 bg-stone-100 rounded-full text-stone-400"><CloudRain size={18}/></div>}
-          <span>{darkMode ? '深色模式 (On)' : '淺色模式 (Off)'}</span>
-        </div>
-        <button 
-          onClick={() => setDarkMode(!darkMode)}
-          className={`w-12 h-6 rounded-full p-1 transition-colors ${darkMode ? 'bg-amber-500' : 'bg-stone-300'}`}
-        >
-          <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${darkMode ? 'translate-x-6' : 'translate-x-0'}`} />
-        </button>
-      </div>
-    </div>
-                   
-                   <UtilsPage isAdmin={isAdmin} isMember={isMember} systemInfo={systemInfo} updateSystemInfo={updateSystemInfo} />
+                  {/* 🔥 手動切換深色模式的按鈕 - 這裡加上自己的 padding */}
+                  <div className="px-6 pt-6">
+                    <div className="flex items-center justify-between bg-white dark:bg-stone-800 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6">
+                      <div className="flex items-center gap-2 font-bold dark:text-white">
+                        {darkMode ? <div className="p-2 bg-stone-700 rounded-full text-amber-400"><Sun size={18} /></div> : <div className="p-2 bg-stone-100 rounded-full text-stone-400"><CloudRain size={18} /></div>}
+                        <span>{darkMode ? '深色模式 (On)' : '淺色模式 (Off)'}</span>
+                      </div>
+                      <button
+                        onClick={() => setDarkMode(!darkMode)}
+                        className={`w-12 h-6 rounded-full p-1 transition-colors ${darkMode ? 'bg-amber-500' : 'bg-stone-300'}`}
+                      >
+                        <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${darkMode ? 'translate-x-6' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <UtilsPage isAdmin={isAdmin} isMember={isMember} systemInfo={systemInfo} updateSystemInfo={updateSystemInfo} />
                 </div>
               )}
             </main>
