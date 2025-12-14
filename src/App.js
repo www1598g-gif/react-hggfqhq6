@@ -52,8 +52,8 @@ import { db } from "./firebase"; // ⚠️ 前提：你要先建立 firebase.js 
 
 // 🪷 泰式蓮花 Icon (線條版 - 仿照您提供的圖片)
 const LotusIcon = ({ className }) => (
-  <svg 
-    viewBox="0 0 24 24" 
+  <svg
+    viewBox="0 0 24 24"
     fill="none"               // 內部不填色
     stroke="currentColor"     // 線條顏色跟隨文字
     strokeWidth="1.5"         // 線條粗細 (想要更細可改 1, 更粗改 2)
@@ -861,10 +861,13 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
               ) : (
                 <div className="flex items-center gap-1 ml-1 relative group">
                   {/* 蓮花 Icon */}
-                  <LotusIcon className="w-6 h-6 text-amber-400 dark:text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.5)]" />
-                  
-                  {/* 2026 文字 - 泰式金箔漸層 */}
-                  <span className="text-2xl font-serif font-black italic text-transparent bg-clip-text bg-gradient-to-br from-[#FFD700] via-[#FDB931] to-[#D4AF37] drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)] tracking-widest">
+                  {/* 進階版：發光 + 呼吸動畫 */}
+                  <LotusIcon className="w-6 h-6 text-amber-400 dark:text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.5)] animate-pulse" />
+
+                  <span
+                    className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#F3E5AB] via-[#FDB931] to-[#996515] drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] tracking-widest ml-2"
+                    style={{ fontFamily: '"Cinzel Decorative", serif' }} // 指定特殊字體
+                  >
                     {versionText || '2026'}
                   </span>
                 </div>
@@ -1624,8 +1627,8 @@ const FlightCard = ({
         <div className="flex justify-between items-center mb-4">
           <span
             className={`px-2 py-1 rounded text-[10px] font-bold tracking-wider ${type === '去程'
-                ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200'
-                : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
+              ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200'
+              : 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300'
               }`}
           >
             {type}
@@ -1803,8 +1806,8 @@ const CurrencySection = () => {
           <div
             key={i}
             className={`flex justify-between items-center p-3 rounded-xl border transition-all ${i < 3
-                ? 'bg-white dark:bg-stone-700 border-stone-200 dark:border-stone-600 shadow-sm'
-                : 'bg-stone-50 dark:bg-stone-800/50 border-stone-100 dark:border-stone-700 opacity-80'
+              ? 'bg-white dark:bg-stone-700 border-stone-200 dark:border-stone-600 shadow-sm'
+              : 'bg-stone-50 dark:bg-stone-800/50 border-stone-100 dark:border-stone-700 opacity-80'
               }`}
           >
             <div>
@@ -2576,8 +2579,8 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
               key={user}
               onClick={() => setCurrentUser(user)}
               className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
-                  ? 'bg-amber-500 text-white ring-2 ring-amber-200 dark:ring-amber-900 ring-offset-2 dark:ring-offset-stone-900 transform scale-105'
-                  : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700'
+                ? 'bg-amber-500 text-white ring-2 ring-amber-200 dark:ring-amber-900 ring-offset-2 dark:ring-offset-stone-900 transform scale-105'
+                : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700'
                 }`}
             >
               {isKonamiActive ? (
@@ -2666,22 +2669,22 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
                 key={index}
                 onClick={() => toggleItem(currentUser, index)}
                 className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer ${item.checked
-                    ? 'bg-stone-100 dark:bg-stone-800/50 border-transparent opacity-60'
-                    : 'bg-white dark:bg-stone-800 border-stone-100 dark:border-stone-700 shadow-sm hover:shadow-md'
+                  ? 'bg-stone-100 dark:bg-stone-800/50 border-transparent opacity-60'
+                  : 'bg-white dark:bg-stone-800 border-stone-100 dark:border-stone-700 shadow-sm hover:shadow-md'
                   }`}
               >
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors flex-shrink-0 ${item.checked
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : 'border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-700'
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-700'
                     }`}
                 >
                   {item.checked && <CheckCircle size={14} strokeWidth={3} />}
                 </div>
                 <span
                   className={`flex-1 font-medium ${item.checked
-                      ? 'text-stone-400 dark:text-stone-600 line-through decoration-stone-400'
-                      : 'text-stone-700 dark:text-stone-200'
+                    ? 'text-stone-400 dark:text-stone-600 line-through decoration-stone-400'
+                    : 'text-stone-700 dark:text-stone-200'
                     }`}
                 >
                   {item.name}
@@ -2965,6 +2968,12 @@ export default function TravelApp() {
   // 🔥 2. 回傳 JSX (最外層加入 darkMode class)
   return (
     <div className={`${darkMode ? 'dark' : ''}`}>
+      {/* 🔥 引入泰式/奢華感字體 Cinzel Decorative */}
+      <style>
+        {`@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@1,700&display=swap');`}
+      </style>
+
+
       <div className={`min-h-screen font-sans text-stone-800 dark:text-stone-100 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7] dark:bg-stone-900'}`}>
 
         {/* 橫式警告 */}
