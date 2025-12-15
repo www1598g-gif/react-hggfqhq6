@@ -2631,8 +2631,8 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
 const SIZE_MAP = {
     佑任: 'w-16 h-16',           // 預設大小 (約 48px)
     軒寶: 'w-12 h-12',           // 稍微大一點 (約 56px)
-    學弟: 'w-20 h-20 mt-2',     // 最大 (約 64px)，可以加 -mt-2 往上調一點避免太擠
-    腳慢: 'w-28 h-28 mt-2',           // 小一點 (約 40px)
+    學弟: 'w-20 h-20',     // 最大 (約 64px)，可以加 -mt-2 往上調一點避免太擠
+    腳慢: 'w-28 h-28',           // 小一點 (約 40px)
   };
   useEffect(() => {
     const saved = localStorage.getItem('cm_packing_list_v2');
@@ -2758,16 +2758,29 @@ const SIZE_MAP = {
                 : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700'
                 }`}
             >
+
+
               {isKonamiActive ? (
                 <div className="flex flex-col items-center animate-bounce">
-                  <img
-                    src={CHARACTER_MAP[user]}
-                    alt={user}
-                    className={`${SIZE_MAP[user] || 'w-12 h-12'} object-contain mb-1 drop-shadow-sm transition-all`}
-                  />
+                  
+                  {/* 🔥🔥🔥 修改重點開始：加入一個固定高度的展示櫃 🔥🔥🔥 */}
+                  {/* h-28 (112px) 確保空間夠大，items-end 讓角色看起來像站在地板上對齊 */}
+                  <div className="h-28 w-full flex items-end justify-center mb-1">
+                    <img
+                      src={CHARACTER_MAP[user]}
+                      alt={user}
+                      // 這裡只負責讀取大小，位置由外面的 div 控制
+                      className={`${SIZE_MAP[user] || 'w-12 h-12'} object-contain drop-shadow-sm transition-all`}
+                    />
+                  </div>
+                  {/* 🔥🔥🔥 修改重點結束 🔥🔥🔥 */}
+
+
                   <span className="text-[10px] opacity-80">{user}</span>
                 </div>
               ) : (
+
+
                 <>
                   <span>{user}</span>
                   {packingData[user] && (
@@ -2777,6 +2790,9 @@ const SIZE_MAP = {
                   )}
                 </>
               )}
+
+
+
             </button>
           ))}
         </div>
