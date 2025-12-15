@@ -2617,9 +2617,9 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
 
   const CHARACTER_MAP = {
     佑任: process.env.PUBLIC_URL + '/sanrio/img_rank1.png', // 布丁狗
-    軒寶: 'https://www.sanrio.co.jp/special/characterranking/2025/assets/img/characters/hellokitty.png', // Kitty
-    學弟: 'https://www.sanrio.co.jp/special/characterranking/2025/assets/img/results/img_rank2.png', // 大耳狗
-    腳慢: 'https://www.sanrio.co.jp/special/characterranking/2025/assets/img/characters/mymelody.png', // 美樂蒂
+    軒寶: process.env.PUBLIC_URL + '/sanrio/hellokitty.png', // Kitty
+    學弟: process.env.PUBLIC_URL + '/sanrio/img_rank2.png', // 大耳狗
+    腳慢: process.env.PUBLIC_URL + '/sanrio/mymelody2.png', // 美樂蒂
   };
 
   useEffect(() => {
