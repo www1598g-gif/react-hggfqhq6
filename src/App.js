@@ -2632,16 +2632,16 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
   // translate-y-2 = 下移 8px, translate-y-4 = 下移 16px, -translate-y-2 = 上移
   const STYLE_MAP = {
     // 佑任 (布丁狗)：稍微往下移一點點
-    佑任: 'w-16 h-16 translate-y-2', 
+    佑任: 'w-20 h-20 translate-y-4', 
     
     // 軒寶 (Kitty)：通常比較標準，不用動，或是微調
     軒寶: 'w-14 h-14 translate-y-1', 
     
     // 學弟 (大耳狗)：因為比較扁，看起來容易浮，要大力往下壓 (translate-y-6)
-    學弟: 'w-24 h-24 translate-y-6', 
+    學弟: 'w-24 h-24 translate-y-8', 
     
     // 腳慢 (美樂蒂)：很大隻，但也需要稍微往下沉一點才穩
-    腳慢: 'w-30 h-30 translate-y-8', 
+    腳慢: 'w-32 h-32 translate-y-6', 
   };
 
 
