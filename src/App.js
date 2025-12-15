@@ -43,6 +43,7 @@ import {
   Settings,
   Upload,
   RefreshCw,
+  Trash2,
 } from 'lucide-react';
 
 
@@ -670,7 +671,39 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret }
   const [lastUpdate, setLastUpdate] = useState('');
   const [alerts, setAlerts] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // 新增 Loading 狀態
+const [secretLinks, setSecretLinks] = useState([]);
+  const [newLinkName, setNewLinkName] = useState('');
+  const [newLinkUrl, setNewLinkUrl] = useState('');
 
+  // 1. 讀取連結
+  useEffect(() => {
+    const savedLinks = localStorage.getItem('cm_secret_links');
+    if (savedLinks) {
+      setSecretLinks(JSON.parse(savedLinks));
+    } else {
+      setSecretLinks([
+        { name: '🚀 尋找飛行指南 (Weed.th)', url: 'https://weed.th/cannabis/chiang-mai' }
+      ]);
+    }
+  }, []);
+
+  // 2. 新增連結
+  const handleAddLink = () => {
+    if (!newLinkName || !newLinkUrl) return alert("請輸入名稱和網址喔！");
+    const newLinks = [...secretLinks, { name: newLinkName, url: newLinkUrl }];
+    setSecretLinks(newLinks);
+    localStorage.setItem('cm_secret_links', JSON.stringify(newLinks));
+    setNewLinkName('');
+    setNewLinkUrl('');
+  };
+
+  // 3. 刪除連結
+  const handleDeleteLink = (index) => {
+    if (!window.confirm("確定要刪除這個傳送門嗎？")) return;
+    const newLinks = secretLinks.filter((_, i) => i !== index);
+    setSecretLinks(newLinks);
+    localStorage.setItem('cm_secret_links', JSON.stringify(newLinks));
+  };
   // 抽離 fetch 邏輯，讓按鈕也可以呼叫
   const fetchWeather = async () => {
     setIsLoading(true); // 開始轉圈圈
@@ -993,36 +1026,83 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret }
           Ask AI (Perplexity)
         </button>
 {/* 😈 隱藏彩蛋：庫洛米大麻卡片 (只要 showSecret 是 true 就會出現) */}
+        {/* 😈 隱藏彩蛋：庫洛米大麻卡片 (可編輯版) */}
         {showSecret && (
           <div className="mt-4 relative overflow-hidden rounded-2xl border-2 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.6)] animate-in fade-in zoom-in duration-500">
             {/* 背景：迷幻紫綠漸層 */}
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900 to-green-900 opacity-90"></div>
             
-            <div className="relative p-4 flex items-center justify-between">
-              <div className="flex flex-col">
-                <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-green-400 drop-shadow-sm" style={{ fontFamily: '"Cinzel Decorative", serif' }}>
-                  SECRET STASH
-                </h3>
-                <p className="text-xs text-green-300 font-bold tracking-wider mt-1">
-                  CHILL & RELAX IN CHIANG MAI
-                </p>
-                <button 
-                  onClick={() => window.open('https://dispensary.in.th/map/chiang-mai', '_blank')}
-                  className="mt-3 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold py-1.5 px-4 rounded-full shadow-lg border border-purple-400 transition-all active:scale-95 w-fit"
-                >
-                  🚀 尋找飛行指南 (Map)
-                </button>
+            <div className="relative p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex flex-col">
+                  <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-green-400 drop-shadow-sm" style={{ fontFamily: '"Cinzel Decorative", serif' }}>
+                    SECRET STASH
+                  </h3>
+                  <p className="text-xs text-green-300 font-bold tracking-wider mt-1">
+                    CHILL & RELAX IN CHIANG MAI
+                  </p>
+                </div>
+                {/* 庫洛米圖片 */}
+                <div className="w-16 h-16">
+                  <img 
+                    src="https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Kuromi_Sanrio.png/220px-Kuromi_Sanrio.png" 
+                    alt="Kuromi" 
+                    className="w-full h-full object-contain drop-shadow-[0_0_10px_rgba(0,255,0,0.5)] animate-bounce"
+                  />
+                </div>
               </div>
 
-              {/* 庫洛米圖片 */}
-              <div className="relative w-20 h-20">
-                <div className="absolute inset-0 bg-green-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
-                <img 
-                  src="https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Kuromi_Sanrio.png/220px-Kuromi_Sanrio.png" 
-                  alt="Kuromi" 
-                  className="relative w-full h-full object-contain drop-shadow-[0_0_10px_rgba(0,255,0,0.5)] transform hover:rotate-12 transition-transform duration-300"
-                />
+              {/* A. 連結列表區 */}
+              <div className="space-y-3 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                {secretLinks.map((link, idx) => (
+                  <div key={idx} className="flex items-center gap-2 group">
+                    <button 
+                      onClick={() => window.open(link.url, '_blank')}
+                      className="flex-1 bg-purple-600/80 hover:bg-purple-500 text-white text-xs font-bold py-2 px-4 rounded-xl shadow-lg border border-purple-400/50 transition-all active:scale-95 flex justify-between items-center backdrop-blur-sm"
+                    >
+                      <span className="truncate mr-2">{link.name}</span>
+                      <Navigation size={12} className="opacity-70" />
+                    </button>
+                    {/* 刪除按鈕 */}
+                    <button 
+                      onClick={() => handleDeleteLink(idx)}
+                      className="p-2 bg-red-500/20 text-red-300 rounded-lg border border-red-500/30 hover:bg-red-500 hover:text-white transition-colors"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
               </div>
+
+              {/* B. 新增連結表單區 */}
+              <div className="mt-4 pt-3 border-t border-purple-500/30">
+                <div className="text-[10px] text-purple-300 mb-2 font-bold flex items-center gap-1">
+                  <Sparkles size={10} /> 新增私房景點
+                </div>
+                <div className="flex flex-col gap-2">
+                  <input
+                    value={newLinkName}
+                    onChange={(e) => setNewLinkName(e.target.value)}
+                    placeholder="名稱 (例: 巷口好店)"
+                    className="bg-black/40 border border-purple-500/30 rounded-lg px-3 py-1.5 text-xs text-purple-100 placeholder:text-purple-400/30 focus:outline-none focus:border-green-400 transition-colors"
+                  />
+                  <div className="flex gap-2">
+                    <input
+                      value={newLinkUrl}
+                      onChange={(e) => setNewLinkUrl(e.target.value)}
+                      placeholder="網址 (https://...)"
+                      className="flex-1 bg-black/40 border border-purple-500/30 rounded-lg px-3 py-1.5 text-xs text-purple-100 placeholder:text-purple-400/30 focus:outline-none focus:border-green-400 transition-colors"
+                    />
+                    <button
+                      onClick={handleAddLink}
+                      className="bg-green-600 hover:bg-green-500 text-white rounded-lg px-4 py-1.5 font-bold text-xs shadow-lg transition-all active:scale-95"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         )}
