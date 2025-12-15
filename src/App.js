@@ -979,7 +979,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
         )}
         {/* 🔥🔥🔥 2. 在這裡按下 Enter，貼上這段新程式碼 🔥🔥🔥 */}
         <button
-          onClick={() => window.open('https://www.perplexity.ai/search?q=Chiang+Mai+travel+guide', '_blank')}
+          onClick={() => window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent('清邁 2026 2月下旬 必吃美食與私房景點 歷史文化深度介紹')}`, '_blank')}
           className="w-full mt-3 py-3 bg-white/90 dark:bg-stone-800/90 backdrop-blur-md border border-stone-200 dark:border-stone-700 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold text-stone-600 dark:text-stone-200 active:scale-95 transition-all shadow-sm hover:bg-stone-50 dark:hover:bg-stone-700 group"
         >
           <Sparkles size={16} className="text-teal-500 group-hover:rotate-12 transition-transform" />
