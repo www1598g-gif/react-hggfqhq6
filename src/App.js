@@ -2267,7 +2267,7 @@ const USERS = ['佑任', '軒寶', '學弟', '腳慢'];
 // ============================================
 // 修正泰國需知 (完整夜間模式版)
 // ============================================
-const ThaiTips = () => {
+const ThaiTips = ({ onTrigger }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
