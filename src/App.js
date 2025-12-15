@@ -2621,7 +2621,12 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
     學弟: process.env.PUBLIC_URL + '/sanrio/img_rank2.png', // 大耳狗
     腳慢: process.env.PUBLIC_URL + '/sanrio/mymelody2.png', // 美樂蒂
   };
-
+const SIZE_MAP = {
+    佑任: 'w-14 h-14',           // 預設大小 (約 48px)
+    軒寶: 'w-14 h-14',           // 稍微大一點 (約 56px)
+    學弟: 'w-16 h-16',     // 最大 (約 64px)，可以加 -mt-2 往上調一點避免太擠
+    腳慢: 'w-16 h-16',           // 小一點 (約 40px)
+  };
   useEffect(() => {
     const saved = localStorage.getItem('cm_packing_list_v2');
     if (saved) {
@@ -2751,8 +2756,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
                   <img
                     src={CHARACTER_MAP[user]}
                     alt={user}
-                    className={`w-12 h-12 object-contain mb-1 drop-shadow-sm ${user === '學弟' ? 'scale-125' : ''
-                      }`}
+                    className={`${SIZE_MAP[user] || 'w-12 h-12'} object-contain mb-1 drop-shadow-sm transition-all`}
                   />
                   <span className="text-[10px] opacity-80">{user}</span>
                 </div>
