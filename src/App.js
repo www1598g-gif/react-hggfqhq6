@@ -2137,7 +2137,7 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
           ))}
         </div>
 
-        {isAdmin && (
+        {(isAdmin || isMember) && (
           <a
             href={UTILS_DATA.driveUrl}
             target="_blank"
@@ -2641,7 +2641,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
     學弟: 'w-24 h-24 translate-y-6', 
     
     // 腳慢 (美樂蒂)：很大隻，但也需要稍微往下沉一點才穩
-    腳慢: 'w-28 h-28 translate-y-4', 
+    腳慢: 'w-30 h-30 translate-y-8', 
   };
 
 
@@ -2765,9 +2765,9 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
             <button
               key={user}
               onClick={() => setCurrentUser(user)}
-              // 🔥 1. 重點：把原本寫死的 h-xx 拿掉，改成 'h-auto py-3' (自動長高 + 上下留白)
+              // 🔥 1. 重點：把原本寫死的 h-xx 拿掉，改成 'h-auto py-2' (自動長高 + 上下留白)
               className={`
-                relative flex flex-col items-center justify-end rounded-2xl border transition-all duration-300 h-auto py-3
+                relative flex flex-col items-center justify-end rounded-2xl border transition-all duration-300 h-auto py-2
                 ${currentUser === user
                   ? 'bg-stone-800 border-amber-400/50 shadow-[0_0_15px_rgba(251,191,36,0.3)]' 
                   : 'bg-stone-900/50 border-stone-800 opacity-60 hover:opacity-100 hover:bg-stone-800'
