@@ -840,12 +840,10 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
           </div>
         )}
 
-        <div className="flex justify-between items-end mb-6">
+        {/* 修改：items-end 改為 items-start (頂部對齊)，解決右邊太高的問題 */}
+        <div className="flex justify-between items-start mb-6">
           <div className="flex-1 min-w-0 mr-4">
-
-
-            {/* 3. 簡化的年份顯示 & 成員名單 */}
-            {/* 3. 簡化的年份顯示 & 成員名單 (含蓮花設計) */}
+            {/* 3. 左側：年份 & 成員名單 */}
             <div className="flex items-center gap-2 mb-2">
               <span className="px-2.5 py-1 bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-400 text-[10px] font-bold tracking-wider rounded-full whitespace-nowrap">
                 佑任・軒寶・學弟・腳慢
@@ -861,15 +859,15 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
               ) : (
                 <div className="flex items-center gap-1 ml-1 relative group">
                   {/* 蓮花 Icon */}
-                  {/* 進階版：發光 + 呼吸動畫 */}
-                  <LotusIcon className="w-5 h-5 text-amber-400 dark:text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.5)] animate-pulse" />
-
+                  <LotusIcon className="w-5 h-5 text-amber-400 dark:text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.5)]" />
+                  
+                  {/* 2026 文字 */}
                   <span 
-  className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-[#F3E5AB] via-[#FDB931] to-[#996515] drop-shadow-sm tracking-wide ml-1.5 mt-0.5"
-  style={{ fontFamily: '"Cinzel Decorative", serif' }}
->
-  {versionText || '2026'}
-</span>
+                    className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-[#F3E5AB] via-[#FDB931] to-[#996515] drop-shadow-sm tracking-wide ml-1.5 mt-0.5"
+                    style={{ fontFamily: '"Cinzel Decorative", serif' }}
+                  >
+                    {versionText || '2026'}
+                  </span>
                 </div>
               )}
             </div>
@@ -881,10 +879,16 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
             </h1>
           </div>
 
-          <div className="text-right flex-shrink-0">
-            <div className="text-[10px] font-bold text-stone-400 mb-1 uppercase tracking-widest">
+          {/* 修改：右側區塊加入 mt-2 (往下推一點)，讓它跟左邊的成員名單對齊 */}
+          <div className="text-right flex-shrink-0 mt-2">
+            <div 
+              onClick={fetchWeather}
+              className="text-[10px] font-bold text-stone-400 mb-1 uppercase tracking-widest cursor-pointer"
+            >
               Chiang Mai Now
             </div>
+            
+            {/* ... 下面原本的天氣顯示邏輯保持不變 ... */}
             {data ? (
               <div className="flex flex-col items-end">
                 <div className="flex items-center gap-2">
@@ -895,11 +899,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                 </div>
 
                 <div className="flex items-center justify-end gap-2 mt-2">
-                  <div
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${getAqiColor(
-                      aqi
-                    )}`}
-                  >
+                  <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${getAqiColor(aqi)}`}>
                     <Wind size={10} /> AQI {aqi}
                   </div>
                   <div className="text-xs text-stone-500 dark:text-stone-400 font-medium bg-white/50 dark:bg-stone-800/50 px-2 py-0.5 rounded-full flex items-center gap-1">
@@ -907,25 +907,26 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                   </div>
                 </div>
 
-                {/* 4. 更新時間 & 隱藏式刷新按鈕 (群組 hover 顯示) */}
-                <div className="group flex items-center justify-end gap-1.5 mt-1 cursor-pointer" onClick={fetchWeather}>
-                  {lastUpdate && (
-                    <span className="text-[10px] text-stone-300 dark:text-stone-600 font-mono tracking-tighter transition-colors group-hover:text-stone-400 dark:group-hover:text-stone-500">
-                      {lastUpdate}
-                    </span>
-                  )}
-
-                  {/* 刷新按鈕：預設淺灰(text-stone-300)，Hover變藍+縮小(scale-90) */}
-                  <button
-                    disabled={isLoading}
-                    className="text-stone-300 dark:text-stone-700 transition-all duration-300 group-hover:text-blue-500 group-hover:scale-90"
-                    title="刷新天氣"
-                  >
-                    <RefreshCw
-                      size={10}
-                      className={isLoading ? 'animate-spin text-blue-500 opacity-100' : ''}
-                    />
-                  </button>
+                {/* 更新時間 & AI 按鈕 */}
+                <div className="flex flex-col items-end gap-1 mt-2">
+                    <div className="group flex items-center justify-end gap-1.5 cursor-pointer" onClick={fetchWeather}>
+                      {lastUpdate && (
+                        <span className="text-[10px] text-stone-300 dark:text-stone-600 font-mono tracking-tighter transition-colors group-hover:text-stone-400 dark:group-hover:text-stone-500">
+                          {lastUpdate}
+                        </span>
+                      )}
+                      <button disabled={isLoading} className="text-stone-300 dark:text-stone-700 transition-all duration-300 group-hover:text-blue-500 group-hover:scale-90" title="刷新天氣">
+                        <RefreshCw size={10} className={isLoading ? 'animate-spin text-blue-500 opacity-100' : ''} />
+                      </button>
+                    </div>
+                    
+                    {/* Ask AI 按鈕 (放在這裡) */}
+                    <button
+                      onClick={() => window.open('https://www.perplexity.ai/search?q=Chiang+Mai+travel+guide', '_blank')}
+                      className="flex items-center gap-1 bg-stone-100 dark:bg-stone-700 px-3 py-1 rounded-full text-[10px] font-bold text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-600 active:scale-95 transition-all hover:bg-white dark:hover:bg-stone-600"
+                    >
+                      <Sparkles size={10} className="text-teal-500" /> Ask AI
+                    </button>
                 </div>
               </div>
             ) : (
@@ -936,8 +937,8 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
             )}
           </div>
         </div>
-
-        {/* 未來24小時預報 (保持原樣) */}
+         
+                {/* 未來24小時預報 (保持原樣) */}
         {data && nextHours.length > 0 && (
           <div className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-100 dark:border-stone-700 shadow-sm">
             <div className="flex items-center">
