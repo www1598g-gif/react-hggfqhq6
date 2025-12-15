@@ -2629,10 +2629,10 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
 
   // 1. 選單按鈕的大圖設定 (保持不變)
   const STYLE_MAP = {
-    佑任: 'w-16 h-16 translate-y-2', 
+    佑任: 'w-16 h-16 translate-y-4', 
     軒寶: 'w-14 h-14 translate-y-1', 
     學弟: 'w-24 h-24 translate-y-8', 
-    腳慢: 'w-30 h-30 translate-y-8', 
+    腳慢: 'w-30 h-30 translate-y-7', 
   };
 
   // 🔥 2. 新增：標題旁的小圖設定 (在這裡把學弟跟腳慢放大！)
@@ -2765,7 +2765,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
             >
               {isKonamiActive ? (
                 <div className="flex flex-col items-center w-full animate-bounce">
-                  <div className="h-[100px] w-full flex items-end justify-center">
+                  <div className="h-[60px] w-full flex items-end justify-center">
                     <img
                       src={CHARACTER_MAP[user]}
                       alt={user}
@@ -2775,7 +2775,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
                   <span className="text-[10px] opacity-80 mt-1">{user}</span>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-end h-[100px] pb-2">
+                <div className="flex flex-col items-center justify-end h-[60px] pb-2">
                    <span>{user}</span>
                    {packingData[user] && (
                      <span className="text-[10px] opacity-80 font-normal">
