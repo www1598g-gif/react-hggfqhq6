@@ -80,12 +80,19 @@ const LotusIcon = ({ className }) => (
 // 圖片處理自動對應 dayX_Y.jpg
 // ============================================
 const getLocationImage = (imageId) => {
-  // 如果這個行程沒有指定圖片 (例如新增加的)，就給一張預設圖
-  if (!imageId) return 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
+    // 1. 防呆：如果沒有 ID，回傳預設圖 (Unsplash)
+    if (!imageId) return 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
 
-  // 否則回傳對應的檔案 (假設你的圖檔名就是 imageId.jpg)
-  return process.env.PUBLIC_URL + `/images/${imageId}.jpg`;
-};
+    // 2. 升級邏輯：判斷是否為「網址 (http)」或「Base64 (data:)」
+    // 這樣之後您在管理員模式貼網址或上傳照片，系統會直接吃，不會笨笨地去加 .jpg
+    if (imageId.startsWith('http') || imageId.startsWith('data:')) {
+      return imageId;
+    }
+
+    // 3. 本地圖檔邏輯：
+    // 🔥 確認使用 .jpg (直接讀取 public/images 裡面的原檔)
+    return process.env.PUBLIC_URL + `/images/${imageId}.jpg`;
+  };
 
 // ============================================
 // 初始行程資料 日期改回 2026ㄌ
