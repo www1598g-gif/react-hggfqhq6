@@ -2631,7 +2631,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
   const STYLE_MAP = {
     佑任: 'w-16 h-16 translate-y-2', 
     軒寶: 'w-14 h-14 translate-y-1', 
-    學弟: 'w-24 h-24 translate-y-6', 
+    學弟: 'w-24 h-24 translate-y-8', 
     腳慢: 'w-30 h-30 translate-y-8', 
   };
 
