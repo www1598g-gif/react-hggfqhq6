@@ -1535,6 +1535,7 @@ const LocationCard = ({ item, day, index, isAdmin, updateTime, updateContent, on
               src={hasError ? BACKUP_IMAGE : getLocationImage(item.imageId)}
               alt={item.name}
               loading="lazy"
+              decoding="async"  // 🔥 新增這行：非同步解碼，讓滑動不卡頓
               onLoad={() => setIsImageLoaded(true)}
               onError={() => { if (!hasError) { setHasError(true); setIsImageLoaded(true); } }}
               className={`w-full h-full object-cover transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
@@ -1633,9 +1634,9 @@ const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, updateContent, 
       element.getBoundingClientRect().top + window.pageYOffset;
 
     // 計算偏移量：讓卡片的頂部停在「螢幕高度的一半再往上一點點」
-    // window.innerHeight / 2 = 螢幕正中間
-    // - 60 = 標題高度的一半 標題置中
-    const offsetPosition = elementPosition - window.innerHeight / 2 + 60;
+    // 修改計算公式：直接定位到元素上方，並預留 100px 的緩衝 (避開頂部狀態列)
+// 這樣不管內容多長，標題都會乖乖停在視覺上方
+const offsetPosition = elementPosition - 120;
 
     const startPosition = window.pageYOffset;
     const distance = offsetPosition - startPosition;
@@ -2895,7 +2896,45 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
     </div>
   );
 };
+// ============================================
+// 新增：回到頂部按鈕 (右下角浮動)
+// ============================================
+const BackToTop = () => {
+  const [isVisible, setIsVisible] = useState(false);
 
+  useEffect(() => {
+    const toggleVisibility = () => {
+      // 滑動超過 300px 才出現
+      if (window.scrollY > 300) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('scroll', toggleVisibility);
+    return () => window.removeEventListener('scroll', toggleVisibility);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  if (!isVisible) return null;
+
+  return (
+    <button
+      onClick={scrollToTop}
+      className="fixed bottom-24 right-4 z-40 p-3 bg-stone-800/80 dark:bg-stone-700/80 backdrop-blur-md text-amber-400 rounded-full shadow-lg border border-stone-600 active:scale-90 transition-all duration-300 animate-fadeIn hover:bg-stone-700"
+      aria-label="Back to top"
+    >
+      <ArrowRight size={20} className="-rotate-90" strokeWidth={3} />
+    </button>
+  );
+};
 
 
 // ============================================
@@ -3305,6 +3344,10 @@ export default function TravelApp() {
                 </div>
               )}
             </main>
+
+<BackToTop />
+
+
 
             {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div className="bg-[#FFF0F5] p-6 rounded-3xl text-center"><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" alt="Egg" className="w-full rounded-xl mb-4" /><p className="text-pink-500 font-bold">搖出驚喜! 旅途順利~</p></div></div>)}
 
