@@ -667,7 +667,7 @@ const UTILS_DATA = {
 const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret }) => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
-  const [daysLeft, setDaysLeft] = useState(0);
+  const [bannerText, setBannerText] = useState('');
   const [lastUpdate, setLastUpdate] = useState('');
   const [alerts, setAlerts] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // 新增 Loading 狀態
@@ -777,21 +777,40 @@ const [secretLinks, setSecretLinks] = useState([]);
   };
 
   useEffect(() => {
-    // 倒數計時
+    // 2. 修改時間計算邏輯
     const calcTime = () => {
-      // 1. 取得現在的「泰國時間」物件
+      // 取得現在的「泰國時間」
       const now = new Date();
       const thaiTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
       const nowInThai = new Date(thaiTimeStr);
 
-      // 2. 設定目標日期 (泰國出發日 2026/02/19 午夜)
-      const targetDate = new Date('2026-02-19T00:00:00');
+      // 設定關鍵日期
+      const startDate = new Date('2026-02-19T00:00:00'); // 出發日 00:00
+      const endDate = new Date('2026-02-27T23:59:59');   // 最後一天 23:59
 
-      // 3. 計算差距 (無條件進位)
-      const diff = targetDate - nowInThai;
-      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      // A. 還沒出發 (現在時間 < 出發時間)
+      if (nowInThai < startDate) {
+        const diff = startDate - nowInThai;
+        const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+        setBannerText(`✈️ 距離出發還有 ${days} 天！`);
+      } 
+      // B. 旅程已結束 (現在時間 > 結束時間)
+      else if (nowInThai > endDate) {
+        setBannerText('👋 旅程結束了 QQ');
+      } 
+      // C. 旅程進行中 (介於中間)
+      else {
+        // 計算今天是第幾天
+        const diff = nowInThai - startDate;
+        const dayNum = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
 
-      setDaysLeft(days);
+        // 如果是第 9 天 (最後一天)
+        if (dayNum >= 9) {
+          setBannerText('😭 旅程最後一天哭哭');
+        } else {
+          setBannerText(`🇹🇭 旅程第 ${dayNum} 天 (${dayNum}/9)`);
+        }
+      }
     };
     calcTime();
     const timer = setInterval(calcTime, 60000);
@@ -851,10 +870,15 @@ const [secretLinks, setSecretLinks] = useState([]);
   return (
     <div className="relative bg-[#FDFBF7] dark:bg-stone-900 pt-0 pb-8 px-6 border-b border-stone-200 dark:border-stone-800 rounded-b-[2.5rem] z-10 overflow-hidden transition-colors duration-500">
       {/* 1. 倒數計時條 */}
-      {daysLeft > 0 && (
-        <div className="absolute top-0 left-0 right-0 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 text-[10px] font-bold text-center py-1.5 z-20 shadow-sm">
-          ✈️ 距離出發還有{' '}
-          <span className="text-amber-600 dark:text-amber-400 text-sm mx-1">{daysLeft}</span> 天！
+      {/* 1. 頂部狀態條 (改用 bannerText 控制) */}
+      {bannerText && (
+        <div className={`absolute top-0 left-0 right-0 py-1.5 z-20 shadow-sm text-[10px] font-bold text-center transition-colors duration-500
+          ${bannerText.includes('結束') 
+            ? 'bg-stone-200 text-stone-500 dark:bg-stone-800 dark:text-stone-400' // 結束變灰
+            : 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200' // 其他維持黃
+          }`}
+        >
+          {bannerText}
         </div>
       )}
 
@@ -1045,7 +1069,7 @@ const [secretLinks, setSecretLinks] = useState([]);
                 {/* 庫洛米酷洛米 圖片尺寸： 200 x 200 px 到 500 x 500 px 之間最剛好正方形 (1:1) 最好 */}
                 <div className="w-24 h-24">
                   <img 
-                    src="https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Kuromi_Sanrio.png/220px-Kuromi_Sanrio.png" 
+                    src={process.env.PUBLIC_URL + '/sanrio/kuromi.png'}
                     alt="Kuromi" 
                     className="w-full h-full object-contain drop-shadow-[0_0_10px_rgba(0,255,0,0.5)] animate-bounce"
                   />
