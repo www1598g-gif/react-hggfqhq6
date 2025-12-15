@@ -2612,39 +2612,36 @@ const TippingGuide = () => {
 // 修改 PackingPage 加入 isAdmin 控制 訪客只能看
 // 修改 PackingPage 加入 Toast 通知 以及LocalStorage 保護
 // ============================================
-// 修正 PackingPage (完整夜間模式版)
+// 修正 PackingPage (修復淺色模式文字消失 + 標題圖案放大)
 // ============================================
 const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [packingData, setPackingData] = useState({});
   const [newItem, setNewItem] = useState('');
-
-  // 控制 Toast 顯示的狀態
   const [showToast, setShowToast] = useState(false);
 
   const CHARACTER_MAP = {
-    佑任: process.env.PUBLIC_URL + '/sanrio/img_rank1.png', // 布丁狗
-    軒寶: process.env.PUBLIC_URL + '/sanrio/hellokitty.png', // Kitty
-    學弟: process.env.PUBLIC_URL + '/sanrio/img_rank2.png', // 大耳狗
-    腳慢: process.env.PUBLIC_URL + '/sanrio/mymelody2.png', // 美樂蒂
+    佑任: process.env.PUBLIC_URL + '/sanrio/img_rank1.png', 
+    軒寶: process.env.PUBLIC_URL + '/sanrio/hellokitty.png', 
+    學弟: process.env.PUBLIC_URL + '/sanrio/img_rank2.png', 
+    腳慢: process.env.PUBLIC_URL + '/sanrio/mymelody2.png', 
   };
-// 🔥 升級版：包含大小 (w, h) 與 位置微調 (translate-y)
-  // translate-y-2 = 下移 8px, translate-y-4 = 下移 16px, -translate-y-2 = 上移
+
+  // 1. 選單按鈕的大圖設定 (保持不變)
   const STYLE_MAP = {
-    // 佑任 (布丁狗)：稍微往下移一點點
-    佑任: 'w-20 h-20 translate-y-4', 
-    
-    // 軒寶 (Kitty)：通常比較標準，不用動，或是微調
+    佑任: 'w-16 h-16 translate-y-2', 
     軒寶: 'w-14 h-14 translate-y-1', 
-    
-    // 學弟 (大耳狗)：因為比較扁，看起來容易浮，要大力往下壓 (translate-y-6)
-    學弟: 'w-24 h-24 translate-y-8', 
-    
-    // 腳慢 (美樂蒂)：很大隻，但也需要稍微往下沉一點才穩
-    腳慢: 'w-36 h-36 translate-y-8', 
+    學弟: 'w-24 h-24 translate-y-6', 
+    腳慢: 'w-30 h-30 translate-y-8', 
   };
 
-
+  // 🔥 2. 新增：標題旁的小圖設定 (在這裡把學弟跟腳慢放大！)
+  const HEADER_ICON_STYLE = {
+    佑任: 'w-9 h-9',               // 正常大小
+    軒寶: 'w-9 h-9',               // 正常大小
+    學弟: 'w-16 h-16 -my-4 ml-1',  // 🔥 放大！並用負邊距調整位置
+    腳慢: 'w-14 h-14 -my-3 ml-1',  // 🔥 放大！
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem('cm_packing_list_v2');
@@ -2679,13 +2676,11 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
   };
 
   const toggleItem = (user, index) => {
-    // 訪客模式改用 Toast 提示
     if (!isAdmin && !isMember) {
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
       return;
     }
-
     const newData = { ...packingData };
     newData[user][index].checked = !newData[user][index].checked;
     saveToStorage(newData);
@@ -2727,7 +2722,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
     <div className="pb-24 min-h-screen bg-[#FDFBF7] dark:bg-stone-900 relative transition-colors duration-500">
       <ThaiTips onTrigger={onSecretTrigger} />
 
-      {/* toast 通知元件 */}
+      {/* toast 通知 */}
       {showToast && (
         <div className="fixed bottom-24 left-6 right-6 z-50 animate-bounce">
           <div className="bg-stone-800/95 backdrop-blur text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-stone-700">
@@ -2735,12 +2730,8 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
               <Lock size={20} className="text-amber-400" />
             </div>
             <div>
-              <div className="font-bold text-sm text-amber-50">
-                訪客模式 Read Only
-              </div>
-              <div className="text-[10px] text-stone-300 mt-0.5">
-                請輸入團員密碼才能編輯
-              </div>
+              <div className="font-bold text-sm text-amber-50">訪客模式 Read Only</div>
+              <div className="text-[10px] text-stone-300 mt-0.5">請輸入團員密碼才能編輯</div>
             </div>
           </div>
         </div>
@@ -2751,9 +2742,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
           <span className="w-1.5 h-6 bg-amber-500 rounded-full"></span>
           行李準備清單
         </h2>
-        <p className="text-xs text-stone-400 mt-1 ml-3.5">
-          請點選下方名字開始檢查
-        </p>
+        <p className="text-xs text-stone-400 mt-1 ml-3.5">請點選下方名字開始檢查</p>
       </div>
 
       <div className="px-6 mb-6">
@@ -2765,38 +2754,27 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
             <button
               key={user}
               onClick={() => setCurrentUser(user)}
-              // 🔥 1. 重點：把原本寫死的 h-xx 拿掉，改成 'h-auto py-2' (自動長高 + 上下留白)
+              // 🔥 3. 修正這裡：強制文字顏色 (text-stone-100)，解決淺色模式看不到字的問題
               className={`
-                relative flex flex-col items-center justify-end rounded-2xl border transition-all duration-300 h-auto py-1
+                relative flex flex-col items-center justify-end rounded-2xl border transition-all duration-300 h-auto py-2
                 ${currentUser === user
-                  ? 'bg-stone-800 border-amber-400/50 shadow-[0_0_15px_rgba(251,191,36,0.3)]' 
-                  : 'bg-stone-900/50 border-stone-800 opacity-60 hover:opacity-100 hover:bg-stone-800'
+                  ? 'bg-stone-800 border-amber-400/50 shadow-[0_0_15px_rgba(251,191,36,0.3)] text-stone-50' 
+                  : 'bg-stone-900/50 border-stone-800 opacity-60 hover:opacity-100 hover:bg-stone-800 text-stone-300'
                 }
               `}
             >
-
-
               {isKonamiActive ? (
-                // 1. 這裡加了 w-full 確保寬度撐滿
                 <div className="flex flex-col items-center w-full animate-bounce">
-                  
-                  {/* 🔥🔥🔥 修改重點：固定高度展示櫃 (100px) 🔥🔥🔥 */}
-                  {/* 名字絕對會對齊，因為這個 div 高度永遠是 100px */}
                   <div className="h-[100px] w-full flex items-end justify-center">
                     <img
                       src={CHARACTER_MAP[user]}
                       alt={user}
-                      // 🔥 讀取 STYLE_MAP (同時控制大小 w-xx 和位置 translate-y)
                       className={`${STYLE_MAP[user] || 'w-12 h-12'} object-contain drop-shadow-sm transition-transform duration-300`}
                     />
                   </div>
-                  {/* 🔥🔥🔥 修改結束 🔥🔥🔥 */}
-
-                  {/* 名字區：加上 mt-1 稍微留點白 */}
                   <span className="text-[10px] opacity-80 mt-1">{user}</span>
                 </div>
               ) : (
-                // (未解鎖狀態：保持原樣，我也幫您加上了對齊用的 class)
                 <div className="flex flex-col items-center justify-end h-[100px] pb-2">
                    <span>{user}</span>
                    {packingData[user] && (
@@ -2806,9 +2784,6 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
                    )}
                 </div>
               )}
-
-
-
             </button>
           ))}
         </div>
@@ -2817,12 +2792,13 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
       {currentUser ? (
         <div className="px-6 animate-fadeIn">
           <div className="flex justify-between items-end mb-4">
-            <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100 flex items-center gap-2">
+            <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100 flex items-center gap-2 overflow-visible">
               <span className="text-amber-600 dark:text-amber-500">{currentUser}</span> 的清單
               {isKonamiActive && (
+                // 🔥 4. 修正這裡：使用 HEADER_ICON_STYLE 來控制標題旁的小圖大小
                 <img
                   src={CHARACTER_MAP[currentUser]}
-                  className="w-8 h-8 -mb-1"
+                  className={`${HEADER_ICON_STYLE[currentUser] || 'w-9 h-9'} object-contain transition-all`}
                   alt="icon"
                 />
               )}
@@ -2840,7 +2816,6 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
             />
           </div>
 
-          {/* 只有 Admin/Member 才能看到新增欄位 */}
           {(isAdmin || isMember) && (
             <div className="mb-6 flex gap-2">
               <input
@@ -2860,7 +2835,6 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
             </div>
           )}
 
-          {/* 如果是訪客 顯示靜態提示 */}
           {!isAdmin && !isMember && (
             <div className="mb-4 text-center">
               <span className="text-[10px] bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-500 px-3 py-1 rounded-full border border-stone-200 dark:border-stone-700">
@@ -2895,7 +2869,6 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
                 >
                   {item.name}
                 </span>
-                {/* 只有 Admin 才能看到刪除按鈕 */}
                 {(isAdmin || isMember) && (
                   <button
                     onClick={(e) => {
@@ -2910,23 +2883,20 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
               </div>
             ))}
           </div>
-
           <div className="h-12" />
         </div>
       ) : (
         <div className="px-10 py-20 text-center text-stone-400 dark:text-stone-600">
           <p className="text-sm">
-            👆 請先點選上方按鈕
-            <br />
-            開啟專屬清單
-            <br />
-            (此處有彩蛋喔~提示:上下左右)
+            👆 請先點選上方按鈕<br />開啟專屬清單<br />(此處有彩蛋喔~提示:上下左右)
           </p>
         </div>
       )}
     </div>
   );
 };
+
+
 
 // ============================================
 // 🔥 修正後的 TravelApp 主程式
