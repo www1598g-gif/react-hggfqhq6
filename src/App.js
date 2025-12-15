@@ -2332,7 +2332,7 @@ const ThaiTips = () => {
               </div>
               <div
                 // 🔥 這裡就是機關！綁定觸發函式
-                onClick={handleSecretTrigger}
+                onClick={onTrigger}
                 // 加上一點點互動效果 (滑鼠變手手、點擊縮放)
                 className="cursor-pointer select-none active:scale-95 transition-transform"
               >
@@ -2503,7 +2503,7 @@ const TippingGuide = () => {
 // ============================================
 // 修正 PackingPage (完整夜間模式版)
 // ============================================
-const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
+const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [packingData, setPackingData] = useState({});
   const [newItem, setNewItem] = useState('');
@@ -2597,7 +2597,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember }) => {
 
   return (
     <div className="pb-24 min-h-screen bg-[#FDFBF7] dark:bg-stone-900 relative transition-colors duration-500">
-      <ThaiTips />
+      <ThaiTips onTrigger={onSecretTrigger} />
 
       {/* toast 通知元件 */}
       {showToast && (
@@ -3163,7 +3163,7 @@ export default function TravelApp() {
               )}
 
               {activeTab === 'packing' && (
-                <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} isMember={isMember} />
+                <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} isMember={isMember} onSecretTrigger={handleSecretTrigger} />
               )}
 
               {activeTab === 'utils' && (
