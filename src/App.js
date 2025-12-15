@@ -2628,12 +2628,24 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
     學弟: process.env.PUBLIC_URL + '/sanrio/img_rank2.png', // 大耳狗
     腳慢: process.env.PUBLIC_URL + '/sanrio/mymelody2.png', // 美樂蒂
   };
-const SIZE_MAP = {
-    佑任: 'w-16 h-16',           // 預設大小 (約 48px)
-    軒寶: 'w-12 h-12',           // 稍微大一點 (約 56px)
-    學弟: 'w-20 h-20',     // 最大 (約 64px)，可以加 -mt-2 往上調一點避免太擠
-    腳慢: 'w-28 h-28',           // 小一點 (約 40px)
+// 🔥 升級版：包含大小 (w, h) 與 位置微調 (translate-y)
+  // translate-y-2 = 下移 8px, translate-y-4 = 下移 16px, -translate-y-2 = 上移
+  const STYLE_MAP = {
+    // 佑任 (布丁狗)：稍微往下移一點點
+    佑任: 'w-16 h-16 translate-y-2', 
+    
+    // 軒寶 (Kitty)：通常比較標準，不用動，或是微調
+    軒寶: 'w-14 h-14 translate-y-1', 
+    
+    // 學弟 (大耳狗)：因為比較扁，看起來容易浮，要大力往下壓 (translate-y-6)
+    學弟: 'w-24 h-24 translate-y-6', 
+    
+    // 腳慢 (美樂蒂)：很大隻，但也需要稍微往下沉一點才穩
+    腳慢: 'w-28 h-28 translate-y-4', 
   };
+
+
+
   useEffect(() => {
     const saved = localStorage.getItem('cm_packing_list_v2');
     if (saved) {
@@ -2753,42 +2765,46 @@ const SIZE_MAP = {
             <button
               key={user}
               onClick={() => setCurrentUser(user)}
-              className={`py-3 rounded-xl text-sm font-bold transition-all shadow-sm flex flex-col items-center justify-center gap-1 h-20 ${currentUser === user
-                ? 'bg-amber-500 text-white ring-2 ring-amber-200 dark:ring-amber-900 ring-offset-2 dark:ring-offset-stone-900 transform scale-105'
-                : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700'
-                }`}
+              // 🔥 1. 重點：把原本寫死的 h-xx 拿掉，改成 'h-auto py-3' (自動長高 + 上下留白)
+              className={`
+                relative flex flex-col items-center justify-end rounded-2xl border transition-all duration-300 h-auto py-3
+                ${currentUser === user
+                  ? 'bg-stone-800 border-amber-400/50 shadow-[0_0_15px_rgba(251,191,36,0.3)]' 
+                  : 'bg-stone-900/50 border-stone-800 opacity-60 hover:opacity-100 hover:bg-stone-800'
+                }
+              `}
             >
 
 
               {isKonamiActive ? (
-                <div className="flex flex-col items-center animate-bounce">
+                // 1. 這裡加了 w-full 確保寬度撐滿
+                <div className="flex flex-col items-center w-full animate-bounce">
                   
-                  {/* 🔥🔥🔥 修改重點開始：加入一個固定高度的展示櫃 🔥🔥🔥 */}
-                  {/* h-28 (112px) 確保空間夠大，items-end 讓角色看起來像站在地板上對齊 */}
-                  <div className="h-28 w-full flex items-end justify-center mb-1">
+                  {/* 🔥🔥🔥 修改重點：固定高度展示櫃 (100px) 🔥🔥🔥 */}
+                  {/* 名字絕對會對齊，因為這個 div 高度永遠是 100px */}
+                  <div className="h-[100px] w-full flex items-end justify-center">
                     <img
                       src={CHARACTER_MAP[user]}
                       alt={user}
-                      // 這裡只負責讀取大小，位置由外面的 div 控制
-                      className={`${SIZE_MAP[user] || 'w-12 h-12'} object-contain drop-shadow-sm transition-all`}
+                      // 🔥 讀取 STYLE_MAP (同時控制大小 w-xx 和位置 translate-y)
+                      className={`${STYLE_MAP[user] || 'w-12 h-12'} object-contain drop-shadow-sm transition-transform duration-300`}
                     />
                   </div>
-                  {/* 🔥🔥🔥 修改重點結束 🔥🔥🔥 */}
+                  {/* 🔥🔥🔥 修改結束 🔥🔥🔥 */}
 
-
-                  <span className="text-[10px] opacity-80">{user}</span>
+                  {/* 名字區：加上 mt-1 稍微留點白 */}
+                  <span className="text-[10px] opacity-80 mt-1">{user}</span>
                 </div>
               ) : (
-
-
-                <>
-                  <span>{user}</span>
-                  {packingData[user] && (
-                    <span className="text-[10px] opacity-80 font-normal">
-                      {getProgress(user)}%
-                    </span>
-                  )}
-                </>
+                // (未解鎖狀態：保持原樣，我也幫您加上了對齊用的 class)
+                <div className="flex flex-col items-center justify-end h-[100px] pb-2">
+                   <span>{user}</span>
+                   {packingData[user] && (
+                     <span className="text-[10px] opacity-80 font-normal">
+                       {getProgress(user)}%
+                     </span>
+                   )}
+                </div>
               )}
 
 
