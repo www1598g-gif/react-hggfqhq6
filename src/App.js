@@ -1103,9 +1103,8 @@ const [secretLinks, setSecretLinks] = useState([]);
                 ))}
               </div>
 
-
-          {isAdmin && (
               {/* B. 新增連結表單區 */}
+          {isAdmin && (
               <div className="mt-4 pt-3 border-t border-purple-500/30">
                 <div className="text-[10px] text-purple-300 mb-2 font-bold flex items-center gap-1">
                   <Sparkles size={10} /> 新增私房景點
