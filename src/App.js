@@ -1067,7 +1067,7 @@ const [secretLinks, setSecretLinks] = useState([]);
                   </p>
                 </div>
                 {/* 庫洛米酷洛米 圖片尺寸： 200 x 200 px 到 500 x 500 px 之間最剛好正方形 (1:1) 最好 */}
-                <div className="w-24 h-24">
+                <div className="w-24 h-24 mr-6">
                   <img 
                     src={process.env.PUBLIC_URL + '/sanrio/kuromi.png'}
                     alt="Kuromi" 
@@ -2624,8 +2624,8 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
 const SIZE_MAP = {
     佑任: 'w-14 h-14',           // 預設大小 (約 48px)
     軒寶: 'w-14 h-14',           // 稍微大一點 (約 56px)
-    學弟: 'w-16 h-16',     // 最大 (約 64px)，可以加 -mt-2 往上調一點避免太擠
-    腳慢: 'w-16 h-16',           // 小一點 (約 40px)
+    學弟: 'w-20 h-20',     // 最大 (約 64px)，可以加 -mt-2 往上調一點避免太擠
+    腳慢: 'w-24 h-24',           // 小一點 (約 40px)
   };
   useEffect(() => {
     const saved = localStorage.getItem('cm_packing_list_v2');
