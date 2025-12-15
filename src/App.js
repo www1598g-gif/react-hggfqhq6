@@ -2631,8 +2631,8 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
 const SIZE_MAP = {
     佑任: 'w-16 h-16',           // 預設大小 (約 48px)
     軒寶: 'w-12 h-12',           // 稍微大一點 (約 56px)
-    學弟: 'w-20 h-20 -mt-2',     // 最大 (約 64px)，可以加 -mt-2 往上調一點避免太擠
-    腳慢: 'w-28 h-28 -mt-2',           // 小一點 (約 40px)
+    學弟: 'w-20 h-20 mt-2',     // 最大 (約 64px)，可以加 -mt-2 往上調一點避免太擠
+    腳慢: 'w-28 h-28 mt-2',           // 小一點 (約 40px)
   };
   useEffect(() => {
     const saved = localStorage.getItem('cm_packing_list_v2');
