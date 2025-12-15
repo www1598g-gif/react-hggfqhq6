@@ -2330,6 +2330,7 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
 // =====================
 
 const DEFAULT_ITEMS = [
+  '泰服搭配的鞋子',
   '乳液、凡士林',
   '防曬乳',
   '化妝品',
@@ -2361,8 +2362,7 @@ const DEFAULT_ITEMS = [
   '泳衣',
   '塑膠袋 (髒衣物用)',
   '沐浴乳/洗髮精',
-  '西裝',
-  '數位相機/充電器/記憶卡',
+  '數位相機/傳統相機/充電器/底片',
   '隱形眼鏡/藥水/器具',
   '眼鏡/眼鏡盒',
   '墨鏡',
