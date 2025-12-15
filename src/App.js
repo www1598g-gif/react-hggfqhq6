@@ -739,12 +739,19 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
   useEffect(() => {
     // 倒數計時
     const calcTime = () => {
-      const nowInThailand = new Date(
-        new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' })
-      );
-      const targetDate = new Date('2026-02-19T00:00:00+07:00');
-      const diff = targetDate - nowInThailand;
-      setDaysLeft(Math.ceil(diff / (1000 * 60 * 60 * 24)));
+      // 1. 取得現在的「泰國時間」物件
+      const now = new Date();
+      const thaiTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+      const nowInThai = new Date(thaiTimeStr);
+
+      // 2. 設定目標日期 (泰國出發日 2026/02/19 午夜)
+      const targetDate = new Date('2026-02-19T00:00:00');
+
+      // 3. 計算差距 (無條件進位)
+      const diff = targetDate - nowInThai;
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+      setDaysLeft(days);
     };
     calcTime();
     const timer = setInterval(calcTime, 60000);
@@ -781,9 +788,15 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
 
   const getNext24Hours = () => {
     if (!data || !data.hourly || !data.hourly.time) return [];
-    const currentHourIndex = new Date().getHours();
-    const startIndex = currentHourIndex + 1;
-    const endIndex = startIndex + 24;
+    
+    // 🔥 時區修正：取得目前泰國是「幾點」 (0-23)
+    const now = new Date();
+    const thaiTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+    const currentHourIndex = new Date(thaiTimeStr).getHours();
+    
+    const startIndex = currentHourIndex + 1; // 從下一個小時開始預報
+    const endIndex = startIndex + 24;        // 抓未來 24 小時
+    
     return data.hourly.time.slice(startIndex, endIndex).map((t, i) => ({
       time: t.split('T')[1].slice(0, 5),
       temp: Math.round(data.hourly.temperature_2m[startIndex + i]),
@@ -860,9 +873,9 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
                 <div className="flex items-center gap-1 ml-1 relative group">
                   {/* 蓮花 Icon */}
                   <LotusIcon className="w-5 h-5 text-amber-400 dark:text-amber-300 drop-shadow-[0_0_3px_rgba(251,191,36,0.5)]" />
-                  
+
                   {/* 2026 文字 */}
-                  <span 
+                  <span
                     className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-[#F3E5AB] via-[#FDB931] to-[#996515] drop-shadow-sm tracking-wide ml-1.5 mt-0.5"
                     style={{ fontFamily: '"Cinzel Decorative", serif' }}
                   >
@@ -881,13 +894,13 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
 
           {/* 修改：右側區塊加入 mt-2 (往下推一點)，讓它跟左邊的成員名單對齊 */}
           <div className="text-right flex-shrink-0 mt-2">
-            <div 
+            <div
               onClick={fetchWeather}
               className="text-[10px] font-bold text-stone-400 mb-1 uppercase tracking-widest cursor-pointer"
             >
               Chiang Mai Now
             </div>
-            
+
             {/* ... 下面原本的天氣顯示邏輯保持不變 ... */}
             {data ? (
               <div className="flex flex-col items-end">
@@ -909,24 +922,18 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
 
                 {/* 更新時間 & AI 按鈕 */}
                 <div className="flex flex-col items-end gap-1 mt-2">
-                    <div className="group flex items-center justify-end gap-1.5 cursor-pointer" onClick={fetchWeather}>
-                      {lastUpdate && (
-                        <span className="text-[10px] text-stone-300 dark:text-stone-600 font-mono tracking-tighter transition-colors group-hover:text-stone-400 dark:group-hover:text-stone-500">
-                          {lastUpdate}
-                        </span>
-                      )}
-                      <button disabled={isLoading} className="text-stone-300 dark:text-stone-700 transition-all duration-300 group-hover:text-blue-500 group-hover:scale-90" title="刷新天氣">
-                        <RefreshCw size={10} className={isLoading ? 'animate-spin text-blue-500 opacity-100' : ''} />
-                      </button>
-                    </div>
-                    
-                    {/* Ask AI 按鈕 (放在這裡) */}
-                    <button
-                      onClick={() => window.open('https://www.perplexity.ai/search?q=Chiang+Mai+travel+guide', '_blank')}
-                      className="flex items-center gap-1 bg-stone-100 dark:bg-stone-700 px-3 py-1 rounded-full text-[10px] font-bold text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-600 active:scale-95 transition-all hover:bg-white dark:hover:bg-stone-600"
-                    >
-                      <Sparkles size={10} className="text-teal-500" /> Ask AI
+                  <div className="group flex items-center justify-end gap-1.5 cursor-pointer" onClick={fetchWeather}>
+                    {lastUpdate && (
+                      <span className="text-[10px] text-stone-300 dark:text-stone-600 font-mono tracking-tighter transition-colors group-hover:text-stone-400 dark:group-hover:text-stone-500">
+                        {lastUpdate}
+                      </span>
+                    )}
+                    <button disabled={isLoading} className="text-stone-300 dark:text-stone-700 transition-all duration-300 group-hover:text-blue-500 group-hover:scale-90" title="刷新天氣">
+                      <RefreshCw size={10} className={isLoading ? 'animate-spin text-blue-500 opacity-100' : ''} />
                     </button>
+                  </div>
+
+
                 </div>
               </div>
             ) : (
@@ -937,8 +944,8 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
             )}
           </div>
         </div>
-         
-                {/* 未來24小時預報 (保持原樣) */}
+
+        {/* 未來24小時預報 (保持原樣) */}
         {data && nextHours.length > 0 && (
           <div className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-100 dark:border-stone-700 shadow-sm">
             <div className="flex items-center">
@@ -970,6 +977,15 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
             </div>
           </div>
         )}
+        {/* 🔥🔥🔥 2. 在這裡按下 Enter，貼上這段新程式碼 🔥🔥🔥 */}
+        <button
+          onClick={() => window.open('https://www.perplexity.ai/search?q=Chiang+Mai+travel+guide', '_blank')}
+          className="w-full mt-3 py-3 bg-white/90 dark:bg-stone-800/90 backdrop-blur-md border border-stone-200 dark:border-stone-700 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold text-stone-600 dark:text-stone-200 active:scale-95 transition-all shadow-sm hover:bg-stone-50 dark:hover:bg-stone-700 group"
+        >
+          <Sparkles size={16} className="text-teal-500 group-hover:rotate-12 transition-transform" />
+          Ask AI (Perplexity)
+        </button>
+
       </div>
     </div>
   );
@@ -985,32 +1001,31 @@ const FloatingStatus = ({ itinerary }) => {
 
   useEffect(() => {
     const findNextStop = () => {
-      // 🔥 修正：強制使用泰國時區
-      const now = new Date(new Date().toLocaleString("en-US", {
-        timeZone: "Asia/Bangkok"
-      }));
+      // 1. 取得現在的「泰國時間」
+      const now = new Date();
+      const thaiTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+      const nowInThai = new Date(thaiTimeStr);
 
-      // 1. 攤平所有行程，並計算具體時間
       const allStops = [];
 
       itinerary.forEach((day) => {
         const dateStr = day.date; // 例如 "2026-02-19"
 
         day.locations.forEach((loc) => {
-          // 嘗試從字串中抓出 HH:MM (例如 "17:30" 或 "17:30-19:00")
           const timeMatch = loc.time.match(/(\d{1,2}):(\d{2})/);
-
-          // 🔥 修正：明確使用泰國時區建立日期
-          let stopTime = new Date(dateStr + 'T00:00:00+07:00');
+          
+          // 🔥 修正：建立行程時間時，加上時區標記 (+07:00)
+          // 這樣 new Date 就會知道這是泰國時間
+          let stopTimeStr = `${dateStr}T23:59:00+07:00`; // 預設當天最後
 
           if (timeMatch) {
-            // 如果抓得到時間，就設定進去
-            stopTime.setHours(parseInt(timeMatch[1]), parseInt(timeMatch[2]));
-          } else {
-            // ⚠️ 防呆：如果你打錯字 (例如 "晚上")，抓不到時間
-            // 預設設為當天最後一刻 (23:59)
-            stopTime.setHours(23, 59);
+            // 補零處理 (例如 9:00 變成 09:00) 以符合 ISO 格式
+            const hh = timeMatch[1].padStart(2, '0');
+            const mm = timeMatch[2].padStart(2, '0');
+            stopTimeStr = `${dateStr}T${hh}:${mm}:00+07:00`;
           }
+          
+          const stopTime = new Date(stopTimeStr);
 
           allStops.push({
             ...loc,
@@ -1020,14 +1035,12 @@ const FloatingStatus = ({ itinerary }) => {
         });
       });
 
-      // 2. 找出所有「還沒發生」的行程
-      const futureStops = allStops.filter((stop) => stop.fullDate > now);
+      // 2. 比較：行程時間 > 泰國現在時間
+      const futureStops = allStops.filter((stop) => stop.fullDate > nowInThai);
 
-      // 3. 取第一個，就是 Coming Up
       if (futureStops.length > 0) {
         setNextStop(futureStops[0]);
       } else {
-        // 如果都沒有 (行程全結束了)，顯示最後一個或特定訊息
         setNextStop({
           name: '旅程圓滿結束 🎉',
           time: 'See you next time!',
