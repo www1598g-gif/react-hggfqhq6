@@ -1042,8 +1042,8 @@ const [secretLinks, setSecretLinks] = useState([]);
                     CHILL & RELAX IN CHIANG MAI
                   </p>
                 </div>
-                {/* 庫洛米圖片 */}
-                <div className="w-16 h-16">
+                {/* 庫洛米酷洛米 圖片尺寸： 200 x 200 px 到 500 x 500 px 之間最剛好正方形 (1:1) 最好 */}
+                <div className="w-24 h-24">
                   <img 
                     src="https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Kuromi_Sanrio.png/220px-Kuromi_Sanrio.png" 
                     alt="Kuromi" 
