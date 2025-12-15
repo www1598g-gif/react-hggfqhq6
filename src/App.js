@@ -1078,8 +1078,10 @@ const [secretLinks, setSecretLinks] = useState([]);
 
               {/* A. 連結列表區 */}
               <div className="space-y-3 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                {/* 👇 重點：這裡的箭頭後面是用 小括號 ( 包住整個 div */}
                 {secretLinks.map((link, idx) => (
                   <div key={idx} className="flex items-center gap-2 group">
+                    {/* 1. 連結按鈕 */}
                     <button 
                       onClick={() => window.open(link.url, '_blank')}
                       className="flex-1 bg-purple-600/80 hover:bg-purple-500 text-white text-xs font-bold py-2 px-4 rounded-xl shadow-lg border border-purple-400/50 transition-all active:scale-95 flex justify-between items-center backdrop-blur-sm"
@@ -1088,14 +1090,14 @@ const [secretLinks, setSecretLinks] = useState([]);
                       <Navigation size={12} className="opacity-70" />
                     </button>
 
+                    {/* 2. 刪除按鈕 (權限控管) */}
                     {isAdmin && (
-                    {/* 刪除按鈕 */}
-                    <button 
-                      onClick={() => handleDeleteLink(idx)}
-                      className="p-2 bg-red-500/20 text-red-300 rounded-lg border border-red-500/30 hover:bg-red-500 hover:text-white transition-colors"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                      <button 
+                        onClick={() => handleDeleteLink(idx)}
+                        className="p-2 bg-red-500/20 text-red-300 rounded-lg border border-red-500/30 hover:bg-red-500 hover:text-white transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     )}
                   </div>
                 ))}
@@ -1131,7 +1133,7 @@ const [secretLinks, setSecretLinks] = useState([]);
                   </div>
                 </div>
               </div>
- )}
+             )}
 
             </div>
           </div>
