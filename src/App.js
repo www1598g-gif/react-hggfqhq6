@@ -80,19 +80,19 @@ const LotusIcon = ({ className }) => (
 // 圖片處理自動對應 dayX_Y.jpg
 // ============================================
 const getLocationImage = (imageId) => {
-    // 1. 防呆：如果沒有 ID，回傳預設圖 (Unsplash)
-    if (!imageId) return 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
+  // 1. 防呆：如果沒有 ID，回傳預設圖 (Unsplash)
+  if (!imageId) return 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800&q=80';
 
-    // 2. 升級邏輯：判斷是否為「網址 (http)」或「Base64 (data:)」
-    // 這樣之後您在管理員模式貼網址或上傳照片，系統會直接吃，不會笨笨地去加 .jpg
-    if (imageId.startsWith('http') || imageId.startsWith('data:')) {
-      return imageId;
-    }
+  // 2. 升級邏輯：判斷是否為「網址 (http)」或「Base64 (data:)」
+  // 這樣之後您在管理員模式貼網址或上傳照片，系統會直接吃，不會笨笨地去加 .jpg
+  if (imageId.startsWith('http') || imageId.startsWith('data:')) {
+    return imageId;
+  }
 
-    // 3. 本地圖檔邏輯：
-    // 🔥 確認使用 .jpg (直接讀取 public/images 裡面的原檔)
-    return process.env.PUBLIC_URL + `/images/${imageId}.jpg`;
-  };
+  // 3. 本地圖檔邏輯：
+  // 🔥 確認使用 .jpg (直接讀取 public/images 裡面的原檔)
+  return process.env.PUBLIC_URL + `/images/${imageId}.jpg`;
+};
 
 // ============================================
 // 初始行程資料 日期改回 2026ㄌ
@@ -663,7 +663,7 @@ const UTILS_DATA = {
 // ============================================
 //  修正後的 WeatherHero (含手動刷新 + 全市平均 AQI) 
 // ============================================
-const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
+const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret }) => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
   const [daysLeft, setDaysLeft] = useState(0);
@@ -795,15 +795,15 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
 
   const getNext24Hours = () => {
     if (!data || !data.hourly || !data.hourly.time) return [];
-    
+
     // 🔥 時區修正：取得目前泰國是「幾點」 (0-23)
     const now = new Date();
     const thaiTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
     const currentHourIndex = new Date(thaiTimeStr).getHours();
-    
+
     const startIndex = currentHourIndex + 1; // 從下一個小時開始預報
     const endIndex = startIndex + 24;        // 抓未來 24 小時
-    
+
     return data.hourly.time.slice(startIndex, endIndex).map((t, i) => ({
       time: t.split('T')[1].slice(0, 5),
       temp: Math.round(data.hourly.temperature_2m[startIndex + i]),
@@ -992,7 +992,40 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock }) => {
           <Sparkles size={16} className="text-teal-500 group-hover:rotate-12 transition-transform" />
           Ask AI (Perplexity)
         </button>
+{/* 😈 隱藏彩蛋：庫洛米大麻卡片 (只要 showSecret 是 true 就會出現) */}
+        {showSecret && (
+          <div className="mt-4 relative overflow-hidden rounded-2xl border-2 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.6)] animate-in fade-in zoom-in duration-500">
+            {/* 背景：迷幻紫綠漸層 */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900 to-green-900 opacity-90"></div>
+            
+            <div className="relative p-4 flex items-center justify-between">
+              <div className="flex flex-col">
+                <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-green-400 drop-shadow-sm" style={{ fontFamily: '"Cinzel Decorative", serif' }}>
+                  SECRET STASH
+                </h3>
+                <p className="text-xs text-green-300 font-bold tracking-wider mt-1">
+                  CHILL & RELAX IN CHIANG MAI
+                </p>
+                <button 
+                  onClick={() => window.open('https://dispensary.in.th/map/chiang-mai', '_blank')}
+                  className="mt-3 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold py-1.5 px-4 rounded-full shadow-lg border border-purple-400 transition-all active:scale-95 w-fit"
+                >
+                  🚀 尋找飛行指南 (Map)
+                </button>
+              </div>
 
+              {/* 庫洛米圖片 */}
+              <div className="relative w-20 h-20">
+                <div className="absolute inset-0 bg-green-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/en/thumb/8/86/Kuromi_Sanrio.png/220px-Kuromi_Sanrio.png" 
+                  alt="Kuromi" 
+                  className="relative w-full h-full object-contain drop-shadow-[0_0_10px_rgba(0,255,0,0.5)] transform hover:rotate-12 transition-transform duration-300"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1020,7 +1053,7 @@ const FloatingStatus = ({ itinerary }) => {
 
         day.locations.forEach((loc) => {
           const timeMatch = loc.time.match(/(\d{1,2}):(\d{2})/);
-          
+
           // 🔥 修正：建立行程時間時，加上時區標記 (+07:00)
           // 這樣 new Date 就會知道這是泰國時間
           let stopTimeStr = `${dateStr}T23:59:00+07:00`; // 預設當天最後
@@ -1031,7 +1064,7 @@ const FloatingStatus = ({ itinerary }) => {
             const mm = timeMatch[2].padStart(2, '0');
             stopTimeStr = `${dateStr}T${hh}:${mm}:00+07:00`;
           }
-          
+
           const stopTime = new Date(stopTimeStr);
 
           allStops.push({
@@ -2297,7 +2330,12 @@ const ThaiTips = () => {
               <div className="min-w-[24px] text-green-600 dark:text-green-400 font-bold">
                 <AlertTriangle size={18} />
               </div>
-              <div>
+              <div
+                // 🔥 這裡就是機關！綁定觸發函式
+                onClick={handleSecretTrigger}
+                // 加上一點點互動效果 (滑鼠變手手、點擊縮放)
+                className="cursor-pointer select-none active:scale-95 transition-transform"
+              >
                 <strong className="text-stone-900 dark:text-stone-100 block">大麻法規</strong>
                 帶回台灣屬
                 <span className="text-red-600 dark:text-red-400 font-bold">二級毒品重罪</span>
@@ -2781,6 +2819,23 @@ export default function TravelApp() {
   const [appVersion, setAppVersion] = useState('2026');
   const [systemInfo, setSystemInfo] = useState('System Ver. 10.0 清邁4人團🧋');
 
+  // 😈 Phase 3 彩蛋：全域狀態
+  const [secretClickCount, setSecretClickCount] = useState(0); // 點幾下了？
+  const [showSecret, setShowSecret] = useState(false);         // 是否顯示卡片？
+
+  // 😈 觸發函式：綁定在法規文字上
+  const handleSecretTrigger = () => {
+    const newCount = secretClickCount + 1;
+    setSecretClickCount(newCount);
+    if (newCount === 5) {
+      setShowSecret(true);
+      alert("😈 禁忌解除！Kuromi Mode Activated! 🌿");
+    }
+  };
+
+
+
+
   // 🔥 1. 自動切換深色模式邏輯
   useEffect(() => {
     const hour = new Date().getHours();
@@ -3072,6 +3127,7 @@ export default function TravelApp() {
               isAdmin={isAdmin}
               versionText={appVersion}
               updateVersion={handleUpdateVersion}
+              showSecret={showSecret}
               onLock={() => {
                 setIsLocked(true);      // 鎖定
                 setIsUnlocking(false);  // 🚪 重置開門動畫 (關鍵!)
