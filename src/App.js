@@ -44,6 +44,11 @@ import {
   Upload,
   RefreshCw,
   Trash2,
+  Coffee,
+  Beer,
+  Flower2,
+  ShoppingBag,
+  Compass,
 } from 'lucide-react';
 
 
@@ -671,7 +676,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret }
   const [lastUpdate, setLastUpdate] = useState('');
   const [alerts, setAlerts] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // 新增 Loading 狀態
-const [secretLinks, setSecretLinks] = useState([]);
+  const [secretLinks, setSecretLinks] = useState([]);
   const [newLinkName, setNewLinkName] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
 
@@ -793,11 +798,11 @@ const [secretLinks, setSecretLinks] = useState([]);
         const diff = startDate - nowInThai;
         const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
         setBannerText(`✈️ 距離出發還有 ${days} 天！`);
-      } 
+      }
       // B. 旅程已結束 (現在時間 > 結束時間)
       else if (nowInThai > endDate) {
         setBannerText('👋 旅程結束了 QQ');
-      } 
+      }
       // C. 旅程進行中 (介於中間)
       else {
         // 計算今天是第幾天
@@ -873,7 +878,7 @@ const [secretLinks, setSecretLinks] = useState([]);
       {/* 1. 頂部狀態條 (改用 bannerText 控制) */}
       {bannerText && (
         <div className={`absolute top-0 left-0 right-0 py-1.5 z-20 shadow-sm text-[10px] font-bold text-center transition-colors duration-500
-          ${bannerText.includes('結束') 
+          ${bannerText.includes('結束')
             ? 'bg-stone-200 text-stone-500 dark:bg-stone-800 dark:text-stone-400' // 結束變灰
             : 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200' // 其他維持黃
           }`}
@@ -1049,13 +1054,13 @@ const [secretLinks, setSecretLinks] = useState([]);
           <Sparkles size={16} className="text-teal-500 group-hover:rotate-12 transition-transform" />
           Ask AI (Perplexity)
         </button>
-{/* 😈 隱藏彩蛋：庫洛米大麻卡片 (只要 showSecret 是 true 就會出現) */}
+        {/* 😈 隱藏彩蛋：庫洛米大麻卡片 (只要 showSecret 是 true 就會出現) */}
         {/* 😈 隱藏彩蛋：庫洛米大麻卡片 (可編輯版) */}
         {showSecret && (
           <div className="mt-4 relative overflow-hidden rounded-2xl border-2 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.6)] animate-in fade-in zoom-in duration-500">
             {/* 背景：迷幻紫綠漸層 */}
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900 to-green-900 opacity-90"></div>
-            
+
             <div className="relative p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex flex-col">
@@ -1068,9 +1073,9 @@ const [secretLinks, setSecretLinks] = useState([]);
                 </div>
                 {/* 庫洛米酷洛米 圖片尺寸： 200 x 200 px 到 500 x 500 px 之間最剛好正方形 (1:1) 最好 */}
                 <div className="w-24 h-24 mr-4">
-                  <img 
+                  <img
                     src={process.env.PUBLIC_URL + '/sanrio/kuromi.png'}
-                    alt="Kuromi" 
+                    alt="Kuromi"
                     className="w-full h-full object-contain drop-shadow-[0_0_10px_rgba(0,255,0,0.5)] animate-bounce"
                   />
                 </div>
@@ -1082,7 +1087,7 @@ const [secretLinks, setSecretLinks] = useState([]);
                 {secretLinks.map((link, idx) => (
                   <div key={idx} className="flex items-center gap-2 group">
                     {/* 1. 連結按鈕 */}
-                    <button 
+                    <button
                       onClick={() => window.open(link.url, '_blank')}
                       className="flex-1 bg-purple-600/80 hover:bg-purple-500 text-white text-xs font-bold py-2 px-4 rounded-xl shadow-lg border border-purple-400/50 transition-all active:scale-95 flex justify-between items-center backdrop-blur-sm"
                     >
@@ -1092,7 +1097,7 @@ const [secretLinks, setSecretLinks] = useState([]);
 
                     {/* 2. 刪除按鈕 (權限控管) */}
                     {isAdmin && (
-                      <button 
+                      <button
                         onClick={() => handleDeleteLink(idx)}
                         className="p-2 bg-red-500/20 text-red-300 rounded-lg border border-red-500/30 hover:bg-red-500 hover:text-white transition-colors"
                       >
@@ -1104,35 +1109,35 @@ const [secretLinks, setSecretLinks] = useState([]);
               </div>
 
               {/* B. 新增連結表單區 */}
-          {isAdmin && (
-              <div className="mt-4 pt-3 border-t border-purple-500/30">
-                <div className="text-[10px] text-purple-300 mb-2 font-bold flex items-center gap-1">
-                  <Sparkles size={10} /> 新增私房景點
-                </div>
-                <div className="flex flex-col gap-2">
-                  <input
-                    value={newLinkName}
-                    onChange={(e) => setNewLinkName(e.target.value)}
-                    placeholder="名稱 (例: 巷口好店)"
-                    className="bg-black/40 border border-purple-500/30 rounded-lg px-3 py-1.5 text-xs text-purple-100 placeholder:text-purple-400/30 focus:outline-none focus:border-green-400 transition-colors"
-                  />
-                  <div className="flex gap-2">
+              {isAdmin && (
+                <div className="mt-4 pt-3 border-t border-purple-500/30">
+                  <div className="text-[10px] text-purple-300 mb-2 font-bold flex items-center gap-1">
+                    <Sparkles size={10} /> 新增私房景點
+                  </div>
+                  <div className="flex flex-col gap-2">
                     <input
-                      value={newLinkUrl}
-                      onChange={(e) => setNewLinkUrl(e.target.value)}
-                      placeholder="網址 (https://...)"
-                      className="flex-1 bg-black/40 border border-purple-500/30 rounded-lg px-3 py-1.5 text-xs text-purple-100 placeholder:text-purple-400/30 focus:outline-none focus:border-green-400 transition-colors"
+                      value={newLinkName}
+                      onChange={(e) => setNewLinkName(e.target.value)}
+                      placeholder="名稱 (例: 巷口好店)"
+                      className="bg-black/40 border border-purple-500/30 rounded-lg px-3 py-1.5 text-xs text-purple-100 placeholder:text-purple-400/30 focus:outline-none focus:border-green-400 transition-colors"
                     />
-                    <button
-                      onClick={handleAddLink}
-                      className="bg-green-600 hover:bg-green-500 text-white rounded-lg px-4 py-1.5 font-bold text-xs shadow-lg transition-all active:scale-95"
-                    >
-                      +
-                    </button>
+                    <div className="flex gap-2">
+                      <input
+                        value={newLinkUrl}
+                        onChange={(e) => setNewLinkUrl(e.target.value)}
+                        placeholder="網址 (https://...)"
+                        className="flex-1 bg-black/40 border border-purple-500/30 rounded-lg px-3 py-1.5 text-xs text-purple-100 placeholder:text-purple-400/30 focus:outline-none focus:border-green-400 transition-colors"
+                      />
+                      <button
+                        onClick={handleAddLink}
+                        className="bg-green-600 hover:bg-green-500 text-white rounded-lg px-4 py-1.5 font-bold text-xs shadow-lg transition-all active:scale-95"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-             )}
+              )}
 
             </div>
           </div>
@@ -1635,8 +1640,8 @@ const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, updateContent, 
 
     // 計算偏移量：讓卡片的頂部停在「螢幕高度的一半再往上一點點」
     // 修改計算公式：直接定位到元素上方，並預留 100px 的緩衝 (避開頂部狀態列)
-// 這樣不管內容多長，標題都會乖乖停在視覺上方
-const offsetPosition = elementPosition - 120;
+    // 這樣不管內容多長，標題都會乖乖停在視覺上方
+    const offsetPosition = elementPosition - 120;
 
     const startPosition = window.pageYOffset;
     const distance = offsetPosition - startPosition;
@@ -2003,6 +2008,97 @@ const CurrencySection = () => {
     </section>
   );
 };
+
+
+// ============================================
+// 新增：指南頁面 (GuidePage)
+// ============================================
+const GuidePage = () => {
+  const guideSections = [
+    {
+      title: '咖啡地圖',
+      icon: <Coffee className="text-amber-600" />,
+      mapUrl: 'https://maps.app.goo.gl/vgKmgeXXo4Dzkad29',
+      aiQuery: '清邁咖啡廳推薦10家及特色',
+      desc: '蒐集清邁最具特色的工業風與老宅咖啡廳。',
+      color: 'bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800'
+    },
+    {
+      title: '微醺酒吧',
+      icon: <Beer className="text-purple-600" />,
+      mapUrl: 'https://maps.app.goo.gl/placeholder1', // 酒吧待更新
+      aiQuery: '清邁酒吧推薦10家及特色',
+      desc: '清邁夜晚的靈魂，從尼曼路到河濱區的小酌選單。',
+      color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800'
+    },
+    {
+      title: '極致 SPA',
+      icon: <Flower2 className="text-emerald-600" />,
+      mapUrl: 'https://maps.app.goo.gl/placeholder2', // SPA 待更新
+      aiQuery: '清邁spa推薦10家及特色',
+      desc: '舒緩雙腿的爛腳救星，包含高檔 SPA 與在地按摩。',
+      color: 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800'
+    },
+    {
+      title: '百貨商場',
+      icon: <ShoppingBag className="text-blue-600" />,
+      mapUrl: 'https://maps.app.goo.gl/placeholder3', // 百貨待更新
+      aiQuery: '清邁百貨商場推薦6家及特色',
+      desc: '整理行李、吹冷氣、買伴手禮與國際品牌。',
+      color: 'bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800'
+    }
+  ];
+
+  const handleAskAI = (query) => {
+    window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent(query)}`, '_blank');
+  };
+
+  return (
+    <div className="p-6 space-y-4 pb-24 animate-fadeIn">
+      <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100 mb-6">探索清邁</h2>
+
+      {guideSections.map((section, idx) => (
+        <div key={idx} className={`p-5 rounded-2xl border ${section.color} shadow-sm transition-all active:scale-[0.98]`}>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-white dark:bg-stone-800 rounded-xl shadow-sm">
+              {section.icon}
+            </div>
+            <h3 className="text-lg font-bold text-stone-800 dark:text-stone-100">{section.title}</h3>
+          </div>
+
+          <p className="text-xs text-stone-500 dark:text-stone-400 mb-5 leading-relaxed">
+            {section.desc}
+          </p>
+
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => window.open(section.mapUrl, '_blank')}
+              className="flex items-center justify-center gap-2 py-2.5 bg-stone-800 dark:bg-stone-700 text-amber-50 rounded-xl text-xs font-bold shadow-md active:scale-95 transition-all"
+            >
+              <MapPin size={14} /> 開啟清單
+            </button>
+            <button
+              onClick={() => handleAskAI(section.aiQuery)}
+              className="flex items-center justify-center gap-2 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all"
+            >
+              <Sparkles size={14} className="text-teal-500" /> 問問 AI
+            </button>
+          </div>
+        </div>
+      ))}
+
+      <div className="bg-stone-100 dark:bg-stone-800 p-4 rounded-xl text-center">
+        <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">
+          Tip: 點擊「問問 AI」會由 Perplexity 提供 2026 最新推薦
+        </p>
+      </div>
+    </div>
+  );
+};
+
+
+
+
 
 // 修改 UtilsPage
 // ============================================
@@ -2622,18 +2718,18 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
   const [showToast, setShowToast] = useState(false);
 
   const CHARACTER_MAP = {
-    佑任: process.env.PUBLIC_URL + '/sanrio/img_rank1.png', 
-    軒寶: process.env.PUBLIC_URL + '/sanrio/hellokitty.png', 
-    學弟: process.env.PUBLIC_URL + '/sanrio/img_rank2.png', 
-    腳慢: process.env.PUBLIC_URL + '/sanrio/mymelody2.png', 
+    佑任: process.env.PUBLIC_URL + '/sanrio/img_rank1.png',
+    軒寶: process.env.PUBLIC_URL + '/sanrio/hellokitty.png',
+    學弟: process.env.PUBLIC_URL + '/sanrio/img_rank2.png',
+    腳慢: process.env.PUBLIC_URL + '/sanrio/mymelody2.png',
   };
 
   // 1. 選單按鈕的大圖設定 (保持不變)
   const STYLE_MAP = {
-    佑任: 'w-16 h-16 translate-y-4', 
-    軒寶: 'w-14 h-14 translate-y-1', 
-    學弟: 'w-24 h-24 translate-y-8', 
-    腳慢: 'w-30 h-30 translate-y-7', 
+    佑任: 'w-16 h-16 translate-y-4',
+    軒寶: 'w-14 h-14 translate-y-1',
+    學弟: 'w-24 h-24 translate-y-8',
+    腳慢: 'w-30 h-30 translate-y-7',
   };
 
   // 🔥 2. 新增：標題旁的小圖設定 (在這裡把學弟跟腳慢放大！)
@@ -2759,7 +2855,7 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
               className={`
                 relative flex flex-col items-center justify-end rounded-2xl border transition-all duration-300 h-auto py-2
                 ${currentUser === user
-                  ? 'bg-stone-800 border-amber-400/50 shadow-[0_0_15px_rgba(251,191,36,0.3)] text-stone-50' 
+                  ? 'bg-stone-800 border-amber-400/50 shadow-[0_0_15px_rgba(251,191,36,0.3)] text-stone-50'
                   : 'bg-stone-900/50 border-stone-800 opacity-60 hover:opacity-100 hover:bg-stone-800 text-stone-300'
                 }
               `}
@@ -2777,12 +2873,12 @@ const PackingPage = ({ isKonamiActive, isAdmin, isMember, onSecretTrigger }) => 
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-end h-[60px] pb-2">
-                   <span>{user}</span>
-                   {packingData[user] && (
-                     <span className="text-[10px] opacity-80 font-normal">
-                       {getProgress(user)}%
-                     </span>
-                   )}
+                  <span>{user}</span>
+                  {packingData[user] && (
+                    <span className="text-[10px] opacity-80 font-normal">
+                      {getProgress(user)}%
+                    </span>
+                  )}
                 </div>
               )}
             </button>
@@ -3321,7 +3417,10 @@ export default function TravelApp() {
               {activeTab === 'packing' && (
                 <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} isMember={isMember} onSecretTrigger={handleSecretTrigger} />
               )}
-
+              {/* 🔥🔥🔥 在這裡貼上新的 Guide 頁面判斷式 🔥🔥🔥 */}
+              {activeTab === 'guide' && (
+                <GuidePage />
+              )}
               {activeTab === 'utils' && (
                 <div className="">
                   {/* 🔥 手動切換深色模式的按鈕 - 這裡加上自己的 padding */}
@@ -3345,17 +3444,38 @@ export default function TravelApp() {
               )}
             </main>
 
-<BackToTop />
+            <BackToTop />
 
 
 
             {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div className="bg-[#FFF0F5] p-6 rounded-3xl text-center"><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" alt="Egg" className="w-full rounded-xl mb-4" /><p className="text-pink-500 font-bold">搖出驚喜! 旅途順利~</p></div></div>)}
 
-            <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-stone-900/90 backdrop-blur-lg border-t border-stone-200 dark:border-stone-800 flex justify-around py-3 pb-4 z-40 transition-colors">
-              <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}><MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">行程</span></button>
-              <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}><CheckCircle size={22} strokeWidth={activeTab === 'packing' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">準備</span></button>
-              <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}><Wallet size={22} strokeWidth={activeTab === 'utils' ? 2.5 : 2} /><span className="text-[10px] font-bold tracking-wide">工具</span></button>
-            </nav>
+            // 在 TravelApp 返回的 JSX 中尋找 <nav>
+              <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-stone-900/90 backdrop-blur-lg border-t border-stone-200 dark:border-stone-800 flex justify-around py-3 pb-4 z-40 transition-colors">
+                {/* 行程 */}
+                <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
+                  <MapPin size={20} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
+                  <span className="text-[10px] font-bold tracking-wide">行程</span>
+                </button>
+
+                {/* 準備 */}
+                <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
+                  <CheckCircle size={20} strokeWidth={activeTab === 'packing' ? 2.5 : 2} />
+                  <span className="text-[10px] font-bold tracking-wide">準備</span>
+                </button>
+
+                {/* Guide (新增) */}
+                <button onClick={() => setActiveTab('guide')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'guide' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
+                  <Compass size={20} strokeWidth={activeTab === 'guide' ? 2.5 : 2} />
+                  <span className="text-[10px] font-bold tracking-wide">指南</span>
+                </button>
+
+                {/* 工具 */}
+                <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
+                  <Wallet size={20} strokeWidth={activeTab === 'utils' ? 2.5 : 2} />
+                  <span className="text-[10px] font-bold tracking-wide">工具</span>
+                </button>
+              </nav>
           </div>
         )}
       </div>
