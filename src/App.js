@@ -2029,7 +2029,7 @@ const GuidePage = () => {
       title: '必吃清單',
       icon: <UtensilsCrossed className="text-red-600" />,
       mapUrl: 'https://maps.app.goo.gl/4wmbvZrToa8N59Jd8', //必吃
-      aiQuery: '清邁必吃在地美食與名店推薦10家',
+      aiQuery: '清邁必吃在地美食與名店推薦15家 2026',
       desc: '泰北金麵 (Khao Soy)、烤雞、泰北拼盤，沒吃到不算來過清邁！',
       color: 'bg-red-50 border-red-100 dark:bg-red-900/20 dark:border-red-800'
     },
