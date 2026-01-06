@@ -2032,7 +2032,7 @@ const GuidePage = () => {
       color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800'
     },
     {
-      title: '極致 SPA與按摩',
+      title: '極致SPA與按摩',
       icon: <Flower2 className="text-emerald-600" />,
       mapUrl: 'https://maps.app.goo.gl/Kw3c8NTVD9ZuVXXo8', // SPA 待更新
       aiQuery: '清邁spa推薦10家及特色 2026',
