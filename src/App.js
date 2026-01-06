@@ -2115,7 +2115,7 @@ const GuidePage = () => {
       <div className="bg-stone-100 dark:bg-stone-800/50 p-4 rounded-2xl text-center mt-4">
         <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest leading-loose">
           這份指南是為了 2026 四人團特別準備的<br/>
-          希望大家要玩得開心 🇹🇭
+          希望大家玩得開心 🇹🇭
         </p>
       </div>
     </div>
