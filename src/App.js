@@ -2026,7 +2026,7 @@ const GuidePage = () => {
     {
       title: '微醺酒吧',
       icon: <Beer className="text-purple-600" />,
-      mapUrl: 'https://maps.app.goo.gl/xJwFHhz4zzGHND3P8', // 酒吧待更新
+      mapUrl: 'https://maps.app.goo.gl/xJwFHhz4zzGHND3P8', // 酒吧
       aiQuery: '清邁酒吧推薦10家及特色 2026',
       desc: '清邁夜晚的靈魂，從尼曼路到河濱區的小酌選單。',
       color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800'
