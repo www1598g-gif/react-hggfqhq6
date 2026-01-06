@@ -48,6 +48,8 @@ import {
   Beer,
   Flower2,
   ShoppingBag,
+  IceCream,
+  UtensilsCrossed,
   Compass,
 } from 'lucide-react';
 
@@ -2024,6 +2026,22 @@ const GuidePage = () => {
       color: 'bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800'
     },
     {
+      title: '必吃清單',
+      icon: <UtensilsCrossed className="text-red-600" />,
+      mapUrl: 'https://maps.app.goo.gl/4wmbvZrToa8N59Jd8', //必吃
+      aiQuery: '清邁必吃在地美食與名店推薦10家',
+      desc: '泰北金麵 (Khao Soy)、烤雞、泰北拼盤，沒吃到不算來過清邁！',
+      color: 'bg-red-50 border-red-100 dark:bg-red-900/20 dark:border-red-800'
+    },
+    {
+      title: '甜點清單',
+      icon: <IceCream className="text-pink-600" />,
+      mapUrl: 'https://maps.app.goo.gl/RQSchhVcqjjftE4x6', // 甜點
+      aiQuery: '清邁甜點下午茶店推薦15家及特色 芒果糯米飯 椰子派也要 2026',
+      desc: '清邁限定椰子派、芒果糯米以及各種高顏值網美甜點。',
+      color: 'bg-pink-50 border-pink-100 dark:bg-pink-900/20 dark:border-pink-800'
+    },
+    {
       title: '微醺酒吧',
       icon: <Beer className="text-purple-600" />,
       mapUrl: 'https://maps.app.goo.gl/xJwFHhz4zzGHND3P8', // 酒吧
@@ -2034,7 +2052,7 @@ const GuidePage = () => {
     {
       title: '極致SPA與按摩',
       icon: <Flower2 className="text-emerald-600" />,
-      mapUrl: 'https://maps.app.goo.gl/Kw3c8NTVD9ZuVXXo8', // SPA 待更新
+      mapUrl: 'https://maps.app.goo.gl/Kw3c8NTVD9ZuVXXo8', // SPA
       aiQuery: '清邁spa推薦10家及特色 2026',
       desc: '舒緩雙腿的爛腳救星，包含高檔 SPA 與在地按摩。',
       color: 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800'
@@ -2042,7 +2060,7 @@ const GuidePage = () => {
     {
       title: '百貨商場',
       icon: <ShoppingBag className="text-blue-600" />,
-      mapUrl: 'https://maps.app.goo.gl/ehpNk2BDJHWBZTtz6', // 百貨待更新
+      mapUrl: 'https://maps.app.goo.gl/ehpNk2BDJHWBZTtz6', // 百貨
       aiQuery: '清邁百貨商場推薦6家及特色 2026',
       desc: '整理行李、吹冷氣、買伴手禮與國際品牌。',
       color: 'bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800'
@@ -2050,46 +2068,54 @@ const GuidePage = () => {
   ];
 
   const handleAskAI = (query) => {
-    window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent(query)}`, '_blank');
+    // 這裡維持你希望使用的 Perplexity 查詢方式
+    window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent('清邁 ' + query)}`, '_blank');
   };
 
   return (
     <div className="p-6 space-y-4 pb-24 animate-fadeIn">
-      <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100 mb-6">探索清邁</h2>
-
-      {guideSections.map((section, idx) => (
-        <div key={idx} className={`p-5 rounded-2xl border ${section.color} shadow-sm transition-all active:scale-[0.98]`}>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-white dark:bg-stone-800 rounded-xl shadow-sm">
-              {section.icon}
+      <div className="flex items-center gap-3 mb-6">
+        <Compass className="text-stone-400" size={28} />
+        <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100">探索清邁</h2>
+      </div>
+      
+      {/* 這裡改用 grid 兩欄顯示，在手機上會比較緊湊好看 */}
+      <div className="grid grid-cols-1 gap-4">
+        {guideSections.map((section, idx) => (
+          <div key={idx} className={`p-5 rounded-3xl border ${section.color} shadow-sm transition-all active:scale-[0.98]`}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2.5 bg-white dark:bg-stone-800 rounded-2xl shadow-sm">
+                {section.icon}
+              </div>
+              <h3 className="text-lg font-bold text-stone-800 dark:text-stone-100">{section.title}</h3>
             </div>
-            <h3 className="text-lg font-bold text-stone-800 dark:text-stone-100">{section.title}</h3>
+            
+            <p className="text-[11px] text-stone-500 dark:text-stone-400 mb-5 leading-relaxed h-8 line-clamp-2">
+              {section.desc}
+            </p>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button 
+                onClick={() => window.open(section.mapUrl, '_blank')}
+                className="flex items-center justify-center gap-2 py-2.5 bg-stone-800 dark:bg-stone-700 text-amber-50 rounded-2xl text-xs font-bold shadow-md active:scale-95 transition-all"
+              >
+                <MapPin size={14} /> 開啟清單
+              </button>
+              <button 
+                onClick={() => handleAskAI(section.aiQuery)}
+                className="flex items-center justify-center gap-2 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition-all"
+              >
+                <Sparkles size={14} className="text-teal-500" /> 問問 AI
+              </button>
+            </div>
           </div>
+        ))}
+      </div>
 
-          <p className="text-xs text-stone-500 dark:text-stone-400 mb-5 leading-relaxed">
-            {section.desc}
-          </p>
-
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => window.open(section.mapUrl, '_blank')}
-              className="flex items-center justify-center gap-2 py-2.5 bg-stone-800 dark:bg-stone-700 text-amber-50 rounded-xl text-xs font-bold shadow-md active:scale-95 transition-all"
-            >
-              <MapPin size={14} /> 開啟清單
-            </button>
-            <button
-              onClick={() => handleAskAI(section.aiQuery)}
-              className="flex items-center justify-center gap-2 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all"
-            >
-              <Sparkles size={14} className="text-teal-500" /> 問問 AI
-            </button>
-          </div>
-        </div>
-      ))}
-
-      <div className="bg-stone-100 dark:bg-stone-800 p-4 rounded-xl text-center">
-        <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">
-          Tip: 點擊「問問 AI」會由 Perplexity 提供 2026 最新推薦
+      <div className="bg-stone-100 dark:bg-stone-800/50 p-4 rounded-2xl text-center mt-4">
+        <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest leading-loose">
+          這份指南是為了 2026 四人團特別準備的<br/>
+          希望大家要玩得開心 🇹🇭
         </p>
       </div>
     </div>
