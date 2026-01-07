@@ -58,7 +58,7 @@ import {
 
 
 // 🔥🔥🔥 加入這兩行 (開啟雲端功能) 🔥🔥🔥
-import { ref, onValue, set } from "firebase/database";
+import { ref, onValue, set, goOffline } from "firebase/database";
 import { db } from "./firebase"; // ⚠️ 前提：你要先建立 firebase.js 檔案
 
 // 🪷 泰式蓮花 Icon (線條版 - 仿照您提供的圖片)
@@ -674,7 +674,7 @@ const UTILS_DATA = {
 // ============================================
 //  修正後的 WeatherHero (含手動刷新 + 全市平均 AQI) 
 // ============================================
-const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret }) => {
+const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, onHardRefresh }) => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
   const [bannerText, setBannerText] = useState('');
@@ -996,7 +996,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret }
 
                 {/* 更新時間 & AI 按鈕 */}
                 <div className="flex flex-col items-end gap-1 mt-2">
-                  <div className="group flex items-center justify-end gap-1.5 cursor-pointer" onClick={fetchWeather}>
+                  <div className="group flex items-center justify-end gap-1.5 cursor-pointer" onClick={onHardRefresh}>
                     {lastUpdate && (
                       <span className="text-[10px] text-stone-300 dark:text-stone-600 font-mono tracking-tighter transition-colors group-hover:text-stone-400 dark:group-hover:text-stone-500">
                         {lastUpdate}
@@ -3392,7 +3392,16 @@ export default function TravelApp() {
       }
     }
   };
+  const handleHardRefresh = () => {
+    if (db) goOffline(db); // 第一步：強制資料庫斷線
 
+    // 第二步：準備帶有時間戳的新網址
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('v', Date.now());
+
+    // 第三步：強迫跳轉
+    window.location.href = currentUrl.toString();
+  };
   // 解鎖邏輯
   const handleUnlock = () => {
     if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
@@ -3467,8 +3476,9 @@ export default function TravelApp() {
 
 
                 {/* 修改：右上角重整按鈕 */}
+                {/* 修改：右上角重整按鈕 */}
                 <button
-                  onClick={() => window.location.reload()}
+                  onClick={handleHardRefresh} // ✅ 直接改成這行，簡單乾淨！
                   className="absolute top-12 right-6 p-2 rounded-full bg-white/10 text-white/50 hover:bg-white/20 hover:text-white transition-all z-50 backdrop-blur-sm"
                 >
                   <RefreshCw size={20} />
@@ -3524,6 +3534,7 @@ export default function TravelApp() {
                 setIsAdmin(false);
                 setIsMember(false);
               }}
+              onHardRefresh={handleHardRefresh}
             />
 
             <main className="pb-28">
