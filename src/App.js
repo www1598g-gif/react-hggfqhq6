@@ -3410,8 +3410,8 @@ export default function TravelApp() {
 
     // 🔥 新增：清除瀏覽器暫存資料（除了密碼相關的以外）
     // 如果你有用 localStorage 存東西，這會強迫 App 重新初始化
-    localStorage.clear();
-    sessionStorage.clear();
+    //localStorage.clear();
+    //sessionStorage.clear();
 
     const currentUrl = new URL(window.location.href);
     currentUrl.searchParams.set('v', Date.now());
