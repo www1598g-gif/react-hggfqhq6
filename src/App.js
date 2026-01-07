@@ -51,6 +51,9 @@ import {
   IceCream,
   UtensilsCrossed,
   Compass,
+  Pin,       // 🔥 補上這個
+  Ban,       // 🔥 補上這個
+  Languages, // 🔥 補上這個
 } from 'lucide-react';
 
 
