@@ -996,7 +996,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
 
                 {/* 更新時間 & AI 按鈕 */}
                 <div className="flex flex-col items-end gap-1 mt-2">
-                  <div className="group flex items-center justify-end gap-1.5 cursor-pointer" onClick={onHardRefresh}>
+                  <div className="group flex items-center justify-end gap-1.5 cursor-pointer" onClick={fetchWeather}>
                     {lastUpdate && (
                       <span className="text-[10px] text-stone-300 dark:text-stone-600 font-mono tracking-tighter transition-colors group-hover:text-stone-400 dark:group-hover:text-stone-500">
                         {lastUpdate}
