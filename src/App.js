@@ -3393,15 +3393,17 @@ export default function TravelApp() {
     }
   };
   const handleHardRefresh = () => {
-    if (db) goOffline(db); // 第一步：強制資料庫斷線
+  if (db) goOffline(db);
+  
+  // 🔥 新增：清除瀏覽器暫存資料（除了密碼相關的以外）
+  // 如果你有用 localStorage 存東西，這會強迫 App 重新初始化
+  localStorage.clear(); 
+  sessionStorage.clear();
 
-    // 第二步：準備帶有時間戳的新網址
-    const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set('v', Date.now());
-
-    // 第三步：強迫跳轉
-    window.location.href = currentUrl.toString();
-  };
+  const currentUrl = new URL(window.location.href);
+  currentUrl.searchParams.set('v', Date.now());
+  window.location.href = currentUrl.toString();
+};
   // 解鎖邏輯
   const handleUnlock = () => {
     if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
