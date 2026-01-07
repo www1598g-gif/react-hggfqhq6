@@ -3145,7 +3145,10 @@ const BackToTop = () => {
 
 // 🔥🔥🔥 修正後的 TravelApp 主程式 (含深色模式自動切換) 
 export default function TravelApp() {
-  const [isLocked, setIsLocked] = useState(true);
+  const [isLocked, setIsLocked] = useState(() => {
+    // 啟動時先檢查：如果 localStorage 裡有解鎖標記，就直接進入主畫面
+    return localStorage.getItem('isUnlocked') !== 'true';
+  });
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [inputPwd, setInputPwd] = useState('');
 
@@ -3191,7 +3194,17 @@ export default function TravelApp() {
     }
   };
 
-
+  // 檢查通行證並恢復身分
+  useEffect(() => {
+    const savedRole = localStorage.getItem('userRole');
+    if (savedRole === 'ODY4Njc3MDg=') {
+      setIsAdmin(true);
+      setIsMember(true);
+    } else if (savedRole === 'MTMxNDUyMA==') {
+      setIsAdmin(false);
+      setIsMember(true);
+    }
+  }, []);
 
 
   // 🔥 1. 自動切換深色模式邏輯
@@ -3393,27 +3406,46 @@ export default function TravelApp() {
     }
   };
   const handleHardRefresh = () => {
-  if (db) goOffline(db);
-  
-  // 🔥 新增：清除瀏覽器暫存資料（除了密碼相關的以外）
-  // 如果你有用 localStorage 存東西，這會強迫 App 重新初始化
-  localStorage.clear(); 
-  sessionStorage.clear();
+    if (db) goOffline(db);
 
-  const currentUrl = new URL(window.location.href);
-  currentUrl.searchParams.set('v', Date.now());
-  window.location.href = currentUrl.toString();
-};
+    // 🔥 新增：清除瀏覽器暫存資料（除了密碼相關的以外）
+    // 如果你有用 localStorage 存東西，這會強迫 App 重新初始化
+    localStorage.clear();
+    sessionStorage.clear();
+
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('v', Date.now());
+    window.location.href = currentUrl.toString();
+  };
   // 解鎖邏輯
   const handleUnlock = () => {
     if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
       DeviceMotionEvent.requestPermission().catch(console.error);
     }
+
     const encodedInput = btoa(inputPwd);
-    if (encodedInput === 'ODY4Njc3MDg=') { setIsAdmin(true); setIsMember(true); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
-    else if (encodedInput === 'MTMxNDUyMA==') { setIsAdmin(false); setIsMember(true); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
-    else if (encodedInput === 'ODg4OA==') { setIsAdmin(false); setIsMember(false); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800); }
-    else { alert('密碼錯誤！再試一次吧 🔒'); setInputPwd(''); }
+
+    // --- 🔥 新增：通行證邏輯 ---
+    // 如果輸入的是這三個正確密碼之一
+    const validCodes = ['ODY4Njc3MDg=', 'MTMxNDUyMA==', 'ODg4OA=='];
+    if (validCodes.includes(encodedInput)) {
+      localStorage.setItem('isUnlocked', 'true');    // 存下「已解鎖」標記
+      localStorage.setItem('userRole', encodedInput); // 存下「身分證」
+    }
+    // -------------------------
+
+    if (encodedInput === 'ODY4Njc3MDg=') {
+      setIsAdmin(true); setIsMember(true); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800);
+    }
+    else if (encodedInput === 'MTMxNDUyMA==') {
+      setIsAdmin(false); setIsMember(true); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800);
+    }
+    else if (encodedInput === 'ODg4OA==') {
+      setIsAdmin(false); setIsMember(false); setIsUnlocking(true); setTimeout(() => setIsLocked(false), 800);
+    }
+    else {
+      alert('密碼錯誤！再試一次吧 🔒'); setInputPwd('');
+    }
   };
 
   const handlePressStart = () => { pressTimerRef.current = setTimeout(() => setShowHelloKitty(true), 2000); };
@@ -3535,6 +3567,8 @@ export default function TravelApp() {
                 setInputPwd('');        // 清空密碼欄
                 setIsAdmin(false);
                 setIsMember(false);
+                localStorage.removeItem('isUnlocked');
+                localStorage.removeItem('userRole');
               }}
               onHardRefresh={handleHardRefresh}
             />
