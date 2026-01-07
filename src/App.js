@@ -2110,7 +2110,7 @@ const GuidePage = ({ isAdmin, noticeText, updateNoticeText }) => {
 
       {/* 🚫 2. 挑食救援卡 */}
       <section>
-        <button 
+        <button
           onClick={() => setShowPickyEater(!showPickyEater)}
           className="w-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 rounded-2xl p-4 flex items-center justify-between group active:scale-95 transition-all"
         >
@@ -2157,7 +2157,7 @@ const GuidePage = ({ isAdmin, noticeText, updateNoticeText }) => {
         <Compass className="text-stone-400" size={28} />
         <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100">探索清邁</h2>
       </div>
-      
+
       <div className="grid grid-cols-1 gap-4">
         {guideSections.map((section, idx) => (
           <div key={idx} className={`p-5 rounded-[2rem] border ${section.color} shadow-sm transition-all active:scale-[0.98]`}>
@@ -2171,13 +2171,13 @@ const GuidePage = ({ isAdmin, noticeText, updateNoticeText }) => {
               {section.desc}
             </p>
             <div className="grid grid-cols-2 gap-3">
-              <button 
+              <button
                 onClick={() => window.open(section.mapUrl, '_blank')}
                 className="flex items-center justify-center gap-2 py-2.5 bg-stone-800 dark:bg-stone-700 text-amber-50 rounded-2xl text-xs font-bold shadow-md active:scale-95 transition-all"
               >
                 <MapPin size={14} /> 開啟清單
               </button>
-              <button 
+              <button
                 onClick={() => window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent('清邁 ' + section.aiQuery)}`, '_blank')}
                 className="flex items-center justify-center gap-2 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition-all"
               >
@@ -2190,7 +2190,7 @@ const GuidePage = ({ isAdmin, noticeText, updateNoticeText }) => {
 
       <div className="bg-stone-100 dark:bg-stone-800/50 p-4 rounded-2xl text-center mt-4">
         <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest leading-loose">
-          這份指南是為了 2026 四人團特別準備的<br/>
+          這份指南是為了 2026 四人團特別準備的<br />
           希望大家玩得開心 🇹🇭
         </p>
       </div>
@@ -3422,11 +3422,24 @@ export default function TravelApp() {
     <div className={`${darkMode ? 'dark' : ''}`}>
       {/* 🔥 引入泰式/奢華感字體 Cinzel Decorative */}
       <style>
-        {`@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@1,700&display=swap');`}
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@1,700&display=swap');
+        
+        /* 🔥 新增這段：鎖定所有圖示不被選取 */
+        svg, img {
+          user-select: none;
+          -webkit-user-select: none;
+          pointer-events: none; /* 這行可以防止圖示擋住下層的長按動作 */
+        }
+
+        /* 讓捲軸美化一點（選配） */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 10px; }
+      `}
       </style>
 
-
-      <div className={`min-h-screen font-sans text-stone-800 dark:text-stone-100 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none select-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7] dark:bg-stone-900'}`}>
+      {/* 20260107修改全域開放複製 */}
+      <div className={`min-h-screen font-sans text-stone-800 dark:text-stone-100 max-w-md mx-auto relative overflow-hidden overscroll-behavior-none ${isLocked ? 'bg-stone-900' : 'bg-[#FDFBF7] dark:bg-stone-900'}`}>
 
         {/* 橫式警告 */}
         <div className="fixed inset-0 z-[9999] bg-stone-900 text-white flex-col items-center justify-center hidden landscape:flex">
@@ -3579,7 +3592,7 @@ export default function TravelApp() {
             {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div className="bg-[#FFF0F5] p-6 rounded-3xl text-center"><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" alt="Egg" className="w-full rounded-xl mb-4" /><p className="text-pink-500 font-bold">搖出驚喜! 旅途順利~</p></div></div>)}
 
 
-            <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-stone-900/90 backdrop-blur-lg border-t border-stone-200 dark:border-stone-800 flex justify-around py-3 pb-4 z-40 transition-colors">
+            <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-stone-900/90 backdrop-blur-lg border-t border-stone-200 dark:border-stone-800 flex justify-around py-3 pb-4 z-40 transition-colors select-none">
               {/* 行程 */}
               <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
                 <MapPin size={20} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
