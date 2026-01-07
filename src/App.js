@@ -1050,7 +1050,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret }
         )}
         {/* 🔥🔥🔥 2. 在這裡按下 Enter，貼上這段新程式碼 🔥🔥🔥 */}
         <button
-          onClick={() => window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent('清邁 2026 2月下旬 必吃美食與私房景點 歷史文化深度介紹')}`, '_blank')}
+          onClick={() => window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent('清邁 2026 2月下旬 必吃美食與私房景點 歷史文化深度介紹 也請納入參考Pantip 與 Wongnai的評價')}`, '_blank')}
           className="w-full mt-3 py-3 bg-white/90 dark:bg-stone-800/90 backdrop-blur-md border border-stone-200 dark:border-stone-700 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold text-stone-600 dark:text-stone-200 active:scale-95 transition-all shadow-sm hover:bg-stone-50 dark:hover:bg-stone-700 group"
         >
           <Sparkles size={16} className="text-teal-500 group-hover:rotate-12 transition-transform" />
@@ -2021,7 +2021,7 @@ const GuidePage = () => {
       title: '咖啡地圖',
       icon: <Coffee className="text-amber-600" />,
       mapUrl: 'https://maps.app.goo.gl/vgKmgeXXo4Dzkad29',
-      aiQuery: '咖啡廳推薦10家及特色 2026',
+      aiQuery: '咖啡廳推薦10家及特色 2026年 也請納入參考Pantip 與 Wongnai的評價',
       desc: '蒐集清邁最具特色的工業風與老宅咖啡廳。',
       color: 'bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800'
     },
@@ -2029,7 +2029,7 @@ const GuidePage = () => {
       title: '必吃清單',
       icon: <UtensilsCrossed className="text-red-600" />,
       mapUrl: 'https://maps.app.goo.gl/4wmbvZrToa8N59Jd8', //必吃
-      aiQuery: '必吃在地美食與名店推薦15家 2026',
+      aiQuery: '必吃在地美食與名店推薦15家 2026年 也請納入參考Pantip 與 Wongnai的評價',
       desc: '泰北金麵 (Khao Soy)、烤雞、泰北拼盤，沒吃到不算來過清邁！',
       color: 'bg-red-50 border-red-100 dark:bg-red-900/20 dark:border-red-800'
     },
@@ -2037,7 +2037,7 @@ const GuidePage = () => {
       title: '甜點清單',
       icon: <IceCream className="text-pink-600" />,
       mapUrl: 'https://maps.app.goo.gl/RQSchhVcqjjftE4x6', // 甜點
-      aiQuery: '甜點下午茶店推薦15家及特色 芒果糯米飯 椰子派也要 2026',
+      aiQuery: '甜點下午茶店推薦15家及特色 芒果糯米飯 椰子派也要 2026年 也請納入參考Pantip 與 Wongnai的評價',
       desc: '清邁限定椰子派、芒果糯米以及各種高顏值網美甜點。',
       color: 'bg-pink-50 border-pink-100 dark:bg-pink-900/20 dark:border-pink-800'
     },
@@ -2045,7 +2045,7 @@ const GuidePage = () => {
       title: '微醺酒吧',
       icon: <Beer className="text-purple-600" />,
       mapUrl: 'https://maps.app.goo.gl/xJwFHhz4zzGHND3P8', // 酒吧
-      aiQuery: '酒吧推薦10家及特色 2026',
+      aiQuery: '酒吧推薦10家及特色 2026年 也請納入參考Pantip 與 Wongnai的評價',
       desc: '清邁夜晚的靈魂，從尼曼路到河濱區的小酌選單。',
       color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800'
     },
@@ -2053,7 +2053,7 @@ const GuidePage = () => {
       title: '極致SPA與按摩',
       icon: <Flower2 className="text-emerald-600" />,
       mapUrl: 'https://maps.app.goo.gl/Kw3c8NTVD9ZuVXXo8', // SPA
-      aiQuery: 'spa推薦10家及特色 2026',
+      aiQuery: 'spa推薦10家及特色 2026年 也請納入參考Pantip 與 Wongnai的評價',
       desc: '舒緩雙腿的爛腳救星，包含高檔 SPA 與在地按摩。',
       color: 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800'
     },
@@ -2061,7 +2061,7 @@ const GuidePage = () => {
       title: '百貨商場',
       icon: <ShoppingBag className="text-blue-600" />,
       mapUrl: 'https://maps.app.goo.gl/ehpNk2BDJHWBZTtz6', // 百貨
-      aiQuery: '百貨商場推薦6家及特色 2026',
+      aiQuery: '百貨商場推薦6家及特色 2026年 也請納入參考Pantip 與 Wongnai的評價',
       desc: '整理行李、吹冷氣、買伴手禮與國際品牌。',
       color: 'bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800'
     }
