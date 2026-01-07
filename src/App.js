@@ -2254,7 +2254,7 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
           rel="noreferrer"
           className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 active:scale-95 transition-all"
         >
-          <Info size={16} /> 開啟電子機票存摺
+          <Info size={16} /> 開啟電子機票存摺/泰簽
         </a>
       </section>
 
