@@ -2276,21 +2276,6 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
       </h2>
 
 
-      {/* 📥 下面這段是新增的按鈕 */}
-      <section className="no-print">
-        <button
-          onClick={() => window.print()}
-          className="w-full py-4 bg-stone-800 text-amber-50 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all"
-        >
-          <FileText size={20} className="text-amber-400" />
-          一鍵匯出精裝行程表 (PDF)
-        </button>
-        <p className="text-[10px] text-stone-400 mt-2 text-center">
-          💡 點擊後選擇「儲存為 PDF」，排版會自動展開成書本格式
-        </p>
-      </section>
-
-
 
       {/* 🔥 管理員專屬設定區 */}
       {isAdmin && (
@@ -3559,40 +3544,22 @@ export default function TravelApp() {
           .custom-scrollbar::-webkit-scrollbar { width: 4px; }
           .custom-scrollbar::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 10px; }
 
-          /* 🖨️ 精裝手冊列印邏輯 */
           @media print {
-            /* 1. 殺掉原本 App 的所有 UI 元件，不留活口 */
-            body > div > div:first-child, /* 隱藏原本的 Tab 容器 */
-            nav, button, .fixed, .no-print, .WeatherHero, .OutfitGuide {
-              display: none !important;
-            }
+      /* 🔴 1. 隱藏整個手機版內容 */
+      #main-app-container {
+        display: none !important;
+      }
 
-            /* 2. 顯示剛剛建立的隱藏區 */
-            .print\\:block {
-              display: block !important;
-            }
+      /* 🟢 2. 強制顯示列印區 */
+      #print-zone {
+        display: block !important;
+        background: white !important;
+        color: black !important;
+      }
 
-            /* 3. 確保紙張全白，文字全黑 */
-            body, html {
-              background: white !important;
-              color: black !important;
-              width: 100%;
-              margin: 0;
-              padding: 0;
-            }
-
-            /* 4. 避免表格在中間斷掉，並在每一天之前強制換頁 (選配) */
-            .page-break-inside-avoid {
-              page-break-inside: avoid !important;
-              break-inside: avoid !important;
-              margin-bottom: 50px;
-            }
-
-            /* 5. 繪製框線與背景色 (PDF 列印時必須勾選「顯示背景圖形」) */
-            * {
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
+      body { background: white !important; }
+      .page-break-inside-avoid { page-break-inside: avoid !important; break-inside: avoid !important; margin-bottom: 40px; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           }
         `}
       </style>
@@ -3670,7 +3637,7 @@ export default function TravelApp() {
 
         {/* 解鎖後的主畫面 */}
         {!isLocked && (
-          <div className="bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
+          <div id="main-app-container" className="bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
             {/* 🔥 傳入 onLock 讓子元件可以呼叫鎖定 */}
             <WeatherHero
               isAdmin={isAdmin}
@@ -3708,7 +3675,17 @@ export default function TravelApp() {
                         onMove={(locIdx, dir) => handleMoveLocation(day.day, locIdx, dir)}
                       />
                     ))}
-                    <div className="text-center text-xs text-stone-400 mt-12 mb-8 font-serif italic">— Journey to Chiang Mai —</div>
+                    <div className="text-center text-xs text-stone-400 mt-12 mb-4 font-serif italic">— Journey to Chiang Mai —</div>
+
+                    {/* 🔥 小巧的匯出按鈕：text-[10px] 極小化、顏色極淡 */}
+                    <div className="flex justify-center mb-8 no-print">
+                      <button
+                        onClick={() => window.print()}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200 dark:border-stone-800 text-[10px] font-bold text-stone-300 dark:text-stone-600 active:scale-95 transition-all hover:bg-stone-50"
+                      >
+                        <FileText size={10} /> 匯出 PDF 行程
+                      </button>
+                    </div>
                   </div>
                   <FloatingStatus itinerary={itinerary} />
                 </div>
@@ -3781,61 +3758,45 @@ export default function TravelApp() {
                 <span className="text-[10px] font-bold tracking-wide">工具</span>
               </button>
             </nav>
-            {/* 🖨️ 就在這裡貼上：隱藏的列印專用區 (Only visible when printing) */}
-            <div className="hidden print:block print:static print:w-full print:p-0 no-print">
-              <div className="p-8 bg-white text-stone-900">
-                <h1 className="text-4xl font-serif font-bold border-b-4 border-amber-500 pb-4 mb-8 text-center">
-                  清邁探尋之旅 2026
-                  <br />
-                  <span className="text-xl text-stone-500">佑任・軒寶・學弟・腳慢 專屬行程手冊</span>
-                </h1>
-
-                {itinerary.map((day) => (
-                  <div key={day.day} className="mb-12 page-break-inside-avoid">
-                    <div className="flex items-end gap-4 mb-4 border-b-2 border-stone-200 pb-2">
-                      <div className="text-5xl font-serif font-bold text-amber-600">D{day.day}</div>
-                      <div className="text-xl font-bold text-stone-800">{day.displayDate} — {day.title}</div>
-                    </div>
-
-                    <table className="w-full border-collapse">
-                      <thead>
-                        <tr className="bg-stone-100 text-left text-xs uppercase tracking-widest">
-                          <th className="p-3 w-20">時間</th>
-                          <th className="p-3 w-40">地點</th>
-                          <th className="p-3">行程重點與細節</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-stone-100">
-                        {day.locations.map((loc, idx) => (
-                          <tr key={idx} className="align-top">
-                            <td className="p-3 font-mono font-bold text-sm text-stone-50">{loc.time}</td>
-                            <td className="p-3 font-bold text-base text-stone-800">{loc.name}</td>
-                            <td className="p-3">
-                              <div className="text-sm font-bold text-amber-700 mb-1">{loc.note}</div>
-                              <div className="text-xs text-stone-500 leading-relaxed">{loc.desc}</div>
-                              {loc.difficulty && (
-                                <div className="mt-2 text-[10px] text-stone-400 font-bold italic">
-                                  難度：{loc.difficulty}
-                                </div>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ))}
-
-                <div className="mt-20 pt-8 border-t border-dashed border-stone-300 text-center text-stone-400 text-xs italic">
-                  Generated by Chiang Mai Travel App 2026 — Have a safe flight!
-                </div>
-              </div>
-            </div>
-            {/* 🖨️ 結束貼上 */}
+            
 
           </div>
         )}
-      </div>
-    </div>
-  );
+        {/* 🔥 關鍵點 B：列印專用區要放在這裡！跟手機版容器「併列」 */}
+        <div id="print-zone" className="hidden print:block bg-white text-stone-900">
+          <div className="p-10">
+            <h1 className="text-3xl font-serif font-bold border-b-2 border-amber-500 pb-4 mb-8 text-center">
+              CHIANG MAI 2026<br />
+              <span className="text-sm text-stone-400 font-sans tracking-widest uppercase">Itinerary Guidebook</span>
+            </h1>
+
+            {itinerary.map((day) => (
+              <div key={day.day} className="mb-12 page-break-inside-avoid">
+                <div className="flex items-baseline gap-3 mb-4 border-b border-stone-200 pb-1">
+                  <span className="text-4xl font-serif font-bold text-amber-600">D{day.day}</span>
+                  <span className="text-lg font-bold text-stone-800">{day.displayDate} - {day.title}</span>
+                </div>
+
+                <table className="w-full text-left border-collapse">
+                  <tbody>
+                    {day.locations.map((loc, idx) => (
+                      <tr key={idx} className="align-top border-b border-stone-50">
+                        {/* ⚠️ 確認這裡改成 text-stone-500，印出來才看得到字 */}
+                        <td className="py-4 pr-4 font-mono font-bold text-xs text-stone-500 w-16">{loc.time}</td>
+                        <td className="py-4">
+                          <div className="font-bold text-stone-800 text-sm mb-0.5">{loc.name}</div>
+                          <div className="text-[11px] text-amber-700 font-bold mb-1">{loc.note}</div>
+                          <div className="text-[10px] text-stone-500 leading-relaxed">{loc.desc}</div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+            <div className="mt-10 text-center text-[10px] text-stone-300 italic">Generated by Chiang Mai App 2026</div>
+          </div>
+        </div>
+      </div>   
+      );
 }
