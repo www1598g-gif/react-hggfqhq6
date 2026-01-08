@@ -2275,7 +2275,7 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
         實用工具
       </h2>
 
-      
+
       {/* 📥 下面這段是新增的按鈕 */}
       <section className="no-print">
         <button
@@ -3559,36 +3559,36 @@ export default function TravelApp() {
           .custom-scrollbar::-webkit-scrollbar { width: 4px; }
           .custom-scrollbar::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 10px; }
 
-          /* 🖨️ PDF 匯出列印優化 (新增這段) */
+          /* 🖨️ 精裝手冊列印邏輯 */
           @media print {
-            /* 1. 隱藏所有不需要出現在 PDF 的 UI (導覽列、按鈕、鎖定鍵) */
-            nav, button, .fixed, .no-print, form, select, .z-40, .z-30 {
+            /* 1. 殺掉原本 App 的所有 UI 元件，不留活口 */
+            body > div > div:first-child, /* 隱藏原本的 Tab 容器 */
+            nav, button, .fixed, .no-print, .WeatherHero, .OutfitGuide {
               display: none !important;
             }
 
-            /* 2. 強制展開所有 DayCard 的內容（不管網頁上是否摺疊） */
-            div[class*="DayCard"] > div:last-child {
+            /* 2. 顯示剛剛建立的隱藏區 */
+            .print\\:block {
               display: block !important;
-              opacity: 1 !important;
-              height: auto !important;
             }
 
-            /* 3. 背景與文字顏色，確保列印清晰 */
-            body, .min-h-screen, #FDFBF7 {
+            /* 3. 確保紙張全白，文字全黑 */
+            body, html {
               background: white !important;
-              color: #1c1917 !important;
+              color: black !important;
+              width: 100%;
+              margin: 0;
+              padding: 0;
             }
 
-            /* 4. 避免行程卡片在分頁時被切斷 */
-            div[class*="DayCard"] {
+            /* 4. 避免表格在中間斷掉，並在每一天之前強制換頁 (選配) */
+            .page-break-inside-avoid {
               page-break-inside: avoid !important;
               break-inside: avoid !important;
-              border: 1px solid #e7e5e4 !important;
-              margin-bottom: 1.5rem !important;
-              background: white !important;
+              margin-bottom: 50px;
             }
 
-            /* 5. 確保顏色顯示 (強制輸出背景圖形) */
+            /* 5. 繪製框線與背景色 (PDF 列印時必須勾選「顯示背景圖形」) */
             * {
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
@@ -3781,6 +3781,58 @@ export default function TravelApp() {
                 <span className="text-[10px] font-bold tracking-wide">工具</span>
               </button>
             </nav>
+            {/* 🖨️ 就在這裡貼上：隱藏的列印專用區 (Only visible when printing) */}
+            <div className="hidden print:block print:static print:w-full print:p-0 no-print">
+              <div className="p-8 bg-white text-stone-900">
+                <h1 className="text-4xl font-serif font-bold border-b-4 border-amber-500 pb-4 mb-8 text-center">
+                  清邁探尋之旅 2026
+                  <br />
+                  <span className="text-xl text-stone-500">佑任・軒寶・學弟・腳慢 專屬行程手冊</span>
+                </h1>
+
+                {itinerary.map((day) => (
+                  <div key={day.day} className="mb-12 page-break-inside-avoid">
+                    <div className="flex items-end gap-4 mb-4 border-b-2 border-stone-200 pb-2">
+                      <div className="text-5xl font-serif font-bold text-amber-600">D{day.day}</div>
+                      <div className="text-xl font-bold text-stone-800">{day.displayDate} — {day.title}</div>
+                    </div>
+
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-stone-100 text-left text-xs uppercase tracking-widest">
+                          <th className="p-3 w-20">時間</th>
+                          <th className="p-3 w-40">地點</th>
+                          <th className="p-3">行程重點與細節</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-stone-100">
+                        {day.locations.map((loc, idx) => (
+                          <tr key={idx} className="align-top">
+                            <td className="p-3 font-mono font-bold text-sm text-stone-50">{loc.time}</td>
+                            <td className="p-3 font-bold text-base text-stone-800">{loc.name}</td>
+                            <td className="p-3">
+                              <div className="text-sm font-bold text-amber-700 mb-1">{loc.note}</div>
+                              <div className="text-xs text-stone-500 leading-relaxed">{loc.desc}</div>
+                              {loc.difficulty && (
+                                <div className="mt-2 text-[10px] text-stone-400 font-bold italic">
+                                  難度：{loc.difficulty}
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ))}
+
+                <div className="mt-20 pt-8 border-t border-dashed border-stone-300 text-center text-stone-400 text-xs italic">
+                  Generated by Chiang Mai Travel App 2026 — Have a safe flight!
+                </div>
+              </div>
+            </div>
+            {/* 🖨️ 結束貼上 */}
+
           </div>
         )}
       </div>
