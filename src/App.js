@@ -2561,24 +2561,51 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
               </div>
             </div>
           </div>
-          <div className="bg-stone-800 dark:bg-stone-950 rounded-xl p-4 text-stone-300 text-sm space-y-3">
-            <div className="flex justify-between items-center border-b border-stone-700 pb-2">
-              <span>🇹🇼 駐泰辦事處 (急難)</span>
-              <a href="tel:0816664006" className="text-amber-400 font-bold hover:underline">
-                081-666-4006
-              </a>
+          <div className="bg-stone-800 dark:bg-stone-950 rounded-xl p-4 text-stone-300 text-sm space-y-4">
+            {/* 1. App 下載建議 - 亮點標示 */}
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 flex items-center gap-3">
+              <div className="p-2 bg-amber-500 rounded-full text-stone-900 flex-shrink-0">
+                <Smartphone size={16} strokeWidth={2.5} />
+              </div>
+              <div>
+                <div className="text-[11px] font-black text-amber-500 uppercase tracking-tighter">必備救命工具</div>
+                <div className="text-xs font-bold text-stone-100">下載 Thailand Tourist Police App</div>
+                <div className="text-[9px] text-stone-400 mt-0.5 leading-tight">支援 GPS 定位與即時求救諮詢</div>
+              </div>
             </div>
-            <div className="flex justify-between items-center border-b border-stone-700 pb-2">
-              <span>👮 當地報案 (Police)</span>
-              <a href="tel:191" className="text-white font-bold hover:underline">
-                191
-              </a>
-            </div>
-            <div className="flex justify-between items-center pt-1">
-              <span>💳 Visa 全球掛失</span>
-              <a href="tel:001800115350660" className="text-stone-400 text-xs hover:text-white">
-                001-800-11-535-0660
-              </a>
+
+            <div className="space-y-3">
+              {/* 2. 辦事處一般電話 */}
+              <div className="flex justify-between items-center border-b border-stone-700 pb-2">
+                <span>🇹🇼 駐泰辦事處 (一般)</span>
+                <a href="tel:+6621193555" className="text-stone-300 font-bold hover:underline">
+                  +66-2-119-35-55
+                </a>
+              </div>
+
+              {/* 3. 辦事處急難救助 */}
+              <div className="flex justify-between items-center border-b border-stone-700 pb-2">
+                <span>🇹🇼 駐泰辦事處 (急難)</span>
+                <a href="tel:0816664006" className="text-amber-400 font-bold hover:underline">
+                  081-666-4006
+                </a>
+              </div>
+
+              {/* 4. 當地報案 */}
+              <div className="flex justify-between items-center border-b border-stone-700 pb-2">
+                <span>👮 當地報案 (Police)</span>
+                <a href="tel:191" className="text-white font-bold hover:underline">
+                  191
+                </a>
+              </div>
+
+              {/* 5. Visa 全球掛失 */}
+              <div className="flex justify-between items-center pt-1">
+                <span>💳 Visa 全球掛失</span>
+                <a href="tel:001800115350660" className="text-stone-400 text-xs hover:text-white">
+                  001-800-11-535-0660
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -3638,158 +3665,158 @@ export default function TravelApp() {
         {/* 解鎖後的主畫面 */}
         {!isLocked && (
           <> {/* 🔥 加上這個：React Fragment，讓兩個兄弟併列 */}
-          <div id="main-app-container" className="bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
-            {/* 🔥 傳入 onLock 讓子元件可以呼叫鎖定 */}
-            <WeatherHero
-              isAdmin={isAdmin}
-              versionText={appVersion}
-              updateVersion={handleUpdateVersion}
-              showSecret={showSecret}
-              onLock={() => {
-                setIsLocked(true);      // 鎖定
-                setIsUnlocking(false);  // 🚪 重置開門動畫 (關鍵!)
-                setInputPwd('');        // 清空密碼欄
-                setIsAdmin(false);
-                setIsMember(false);
-                localStorage.removeItem('isUnlocked');
-                localStorage.removeItem('userRole');
-              }}
-              onHardRefresh={handleHardRefresh}
-            />
+            <div id="main-app-container" className="bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
+              {/* 🔥 傳入 onLock 讓子元件可以呼叫鎖定 */}
+              <WeatherHero
+                isAdmin={isAdmin}
+                versionText={appVersion}
+                updateVersion={handleUpdateVersion}
+                showSecret={showSecret}
+                onLock={() => {
+                  setIsLocked(true);      // 鎖定
+                  setIsUnlocking(false);  // 🚪 重置開門動畫 (關鍵!)
+                  setInputPwd('');        // 清空密碼欄
+                  setIsAdmin(false);
+                  setIsMember(false);
+                  localStorage.removeItem('isUnlocked');
+                  localStorage.removeItem('userRole');
+                }}
+                onHardRefresh={handleHardRefresh}
+              />
 
-            <main className="pb-28">
-              {activeTab === 'itinerary' && (
-                <div className="pb-4">
-                  <OutfitGuide />
-                  <div className="p-4 mt-2">
-                    {itinerary.map((day, idx) => (
-                      <DayCard
-                        key={day.day}
-                        dayData={day}
-                        isOpen={openDay === idx}
-                        toggle={() => setOpenDay(openDay === idx ? -1 : idx)}
-                        isAdmin={isAdmin}
-                        updateTime={handleTimeUpdate}
-                        updateContent={handleContentUpdate}
-                        onAdd={() => handleAddLocation(day.day)}
-                        onDelete={(locIdx) => handleDeleteLocation(day.day, locIdx)}
-                        onMove={(locIdx, dir) => handleMoveLocation(day.day, locIdx, dir)}
-                      />
-                    ))}
-                    <div className="text-center text-xs text-stone-400 mt-12 mb-4 font-serif italic">— Journey to Chiang Mai —</div>
-
-                    {/* 🔥 小巧的匯出按鈕：text-[10px] 極小化、顏色極淡 */}
-                    <div className="flex justify-center mb-8 no-print">
-                      <button
-                        onClick={() => window.print()}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200 dark:border-stone-800 text-[10px] font-bold text-stone-300 dark:text-stone-600 active:scale-95 transition-all hover:bg-stone-50"
-                      >
-                        <FileText size={10} /> 匯出 PDF 行程
-                      </button>
-                    </div>
-                  </div>
-                  <FloatingStatus itinerary={itinerary} />
-                </div>
-              )}
-
-              {activeTab === 'packing' && (
-                <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} isMember={isMember} onSecretTrigger={handleSecretTrigger} />
-              )}
-              {/* 🔥🔥🔥 請在這裡貼上這段新程式碼 🔥🔥🔥 */}
-              {activeTab === 'guide' && (
-                <GuidePage
-                  isAdmin={isAdmin}
-                  isMember={isMember}
-                  noticeText={noticeText}
-                  updateNoticeText={handleUpdateNotice}
-                />
-              )}
-              {activeTab === 'utils' && (
-                <div className="">
-                  {/* 🔥 手動切換深色模式的按鈕 - 這裡加上自己的 padding */}
-                  <div className="px-6 pt-6">
-                    <div className="flex items-center justify-between bg-white dark:bg-stone-800 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6">
-                      <div className="flex items-center gap-2 font-bold dark:text-white">
-                        {darkMode ? <div className="p-2 bg-stone-700 rounded-full text-amber-400"><Sun size={18} /></div> : <div className="p-2 bg-stone-100 rounded-full text-stone-400"><CloudRain size={18} /></div>}
-                        <span>{darkMode ? '深色模式 (On)' : '淺色模式 (Off)'}</span>
-                      </div>
-                      <button
-                        onClick={() => setDarkMode(!darkMode)}
-                        className={`w-12 h-6 rounded-full p-1 transition-colors ${darkMode ? 'bg-amber-500' : 'bg-stone-300'}`}
-                      >
-                        <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${darkMode ? 'translate-x-6' : 'translate-x-0'}`} />
-                      </button>
-                    </div>
-                  </div>
-
-                  <UtilsPage isAdmin={isAdmin} isMember={isMember} systemInfo={systemInfo} updateSystemInfo={updateSystemInfo} />
-                </div>
-              )}
-            </main>
-
-            <BackToTop />
-
-
-
-            {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div className="bg-[#FFF0F5] p-6 rounded-3xl text-center"><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" alt="Egg" className="w-full rounded-xl mb-4" /><p className="text-pink-500 font-bold">搖出驚喜! 旅途順利~</p></div></div>)}
-
-{/* 1. 這是你的五個按鈕導覽列 */}
-            <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-stone-900/90 backdrop-blur-lg border-t border-stone-200 dark:border-stone-800 flex justify-around py-3 pb-4 z-40 transition-colors select-none">
-              <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
-                <MapPin size={20} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
-                <span className="text-[10px] font-bold tracking-wide">行程</span>
-              </button>
-              <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
-                <CheckCircle size={20} strokeWidth={activeTab === 'packing' ? 2.5 : 2} />
-                <span className="text-[10px] font-bold tracking-wide">準備</span>
-              </button>
-              <button onClick={() => setActiveTab('guide')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'guide' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
-                <Compass size={20} strokeWidth={activeTab === 'guide' ? 2.5 : 2} />
-                <span className="text-[10px] font-bold tracking-wide">指南</span>
-              </button>
-              <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
-                <Wallet size={20} strokeWidth={activeTab === 'utils' ? 2.5 : 2} />
-                <span className="text-[10px] font-bold tracking-wide">工具</span>
-              </button>
-            </nav>
-          </div>
-
-          {/* 🖨️ 這是唯一的「精裝列印專用區」，它在手機版容器 (main-app-container) 的外面，但仍在 !isLocked 裡面 */}
-          <div id="print-zone" className="hidden print:block bg-white text-stone-900 min-h-screen">
-            <div className="p-10">
-              <h1 className="text-3xl font-serif font-bold border-b-2 border-amber-500 pb-4 mb-8 text-center">
-                CHIANG MAI 2026<br />
-                <span className="text-sm text-stone-400 font-sans tracking-widest uppercase">Itinerary Guidebook</span>
-              </h1>
-
-              {itinerary.map((day) => (
-                <div key={day.day} className="mb-12 page-break-inside-avoid">
-                  <div className="flex items-baseline gap-3 mb-4 border-b border-stone-200 pb-1">
-                    <span className="text-4xl font-serif font-bold text-amber-600">D{day.day}</span>
-                    <span className="text-lg font-bold text-stone-800">{day.displayDate} - {day.title}</span>
-                  </div>
-
-                  <table className="w-full text-left border-collapse">
-                    <tbody>
-                      {day.locations.map((loc, idx) => (
-                        <tr key={idx} className="align-top border-b border-stone-50">
-                          <td className="py-4 pr-4 font-mono font-bold text-xs text-stone-500 w-16">{loc.time}</td>
-                          <td className="py-4">
-                            <div className="font-bold text-stone-800 text-sm mb-0.5">{loc.name}</div>
-                            <div className="text-[11px] text-amber-700 font-bold mb-1">{loc.note}</div>
-                            <div className="text-[10px] text-stone-500 leading-relaxed">{loc.desc}</div>
-                          </td>
-                        </tr>
+              <main className="pb-28">
+                {activeTab === 'itinerary' && (
+                  <div className="pb-4">
+                    <OutfitGuide />
+                    <div className="p-4 mt-2">
+                      {itinerary.map((day, idx) => (
+                        <DayCard
+                          key={day.day}
+                          dayData={day}
+                          isOpen={openDay === idx}
+                          toggle={() => setOpenDay(openDay === idx ? -1 : idx)}
+                          isAdmin={isAdmin}
+                          updateTime={handleTimeUpdate}
+                          updateContent={handleContentUpdate}
+                          onAdd={() => handleAddLocation(day.day)}
+                          onDelete={(locIdx) => handleDeleteLocation(day.day, locIdx)}
+                          onMove={(locIdx, dir) => handleMoveLocation(day.day, locIdx, dir)}
+                        />
                       ))}
-                    </tbody>
-                  </table>
-                </div>
-              ))}
-              <div className="mt-10 text-center text-[10px] text-stone-300 italic">Generated by Chiang Mai App 2026 — Have a nice trip!</div>
+                      <div className="text-center text-xs text-stone-400 mt-12 mb-4 font-serif italic">— Journey to Chiang Mai —</div>
+
+                      {/* 🔥 小巧的匯出按鈕：text-[10px] 極小化、顏色極淡 */}
+                      <div className="flex justify-center mb-8 no-print">
+                        <button
+                          onClick={() => window.print()}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200 dark:border-stone-800 text-[10px] font-bold text-stone-300 dark:text-stone-600 active:scale-95 transition-all hover:bg-stone-50"
+                        >
+                          <FileText size={10} /> 匯出 PDF 行程
+                        </button>
+                      </div>
+                    </div>
+                    <FloatingStatus itinerary={itinerary} />
+                  </div>
+                )}
+
+                {activeTab === 'packing' && (
+                  <PackingPage isKonamiActive={isKonamiActive} isAdmin={isAdmin} isMember={isMember} onSecretTrigger={handleSecretTrigger} />
+                )}
+                {/* 🔥🔥🔥 請在這裡貼上這段新程式碼 🔥🔥🔥 */}
+                {activeTab === 'guide' && (
+                  <GuidePage
+                    isAdmin={isAdmin}
+                    isMember={isMember}
+                    noticeText={noticeText}
+                    updateNoticeText={handleUpdateNotice}
+                  />
+                )}
+                {activeTab === 'utils' && (
+                  <div className="">
+                    {/* 🔥 手動切換深色模式的按鈕 - 這裡加上自己的 padding */}
+                    <div className="px-6 pt-6">
+                      <div className="flex items-center justify-between bg-white dark:bg-stone-800 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6">
+                        <div className="flex items-center gap-2 font-bold dark:text-white">
+                          {darkMode ? <div className="p-2 bg-stone-700 rounded-full text-amber-400"><Sun size={18} /></div> : <div className="p-2 bg-stone-100 rounded-full text-stone-400"><CloudRain size={18} /></div>}
+                          <span>{darkMode ? '深色模式 (On)' : '淺色模式 (Off)'}</span>
+                        </div>
+                        <button
+                          onClick={() => setDarkMode(!darkMode)}
+                          className={`w-12 h-6 rounded-full p-1 transition-colors ${darkMode ? 'bg-amber-500' : 'bg-stone-300'}`}
+                        >
+                          <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${darkMode ? 'translate-x-6' : 'translate-x-0'}`} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <UtilsPage isAdmin={isAdmin} isMember={isMember} systemInfo={systemInfo} updateSystemInfo={updateSystemInfo} />
+                  </div>
+                )}
+              </main>
+
+              <BackToTop />
+
+
+
+              {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div className="bg-[#FFF0F5] p-6 rounded-3xl text-center"><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" alt="Egg" className="w-full rounded-xl mb-4" /><p className="text-pink-500 font-bold">搖出驚喜! 旅途順利~</p></div></div>)}
+
+              {/* 1. 這是你的五個按鈕導覽列 */}
+              <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-stone-900/90 backdrop-blur-lg border-t border-stone-200 dark:border-stone-800 flex justify-around py-3 pb-4 z-40 transition-colors select-none">
+                <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
+                  <MapPin size={20} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
+                  <span className="text-[10px] font-bold tracking-wide">行程</span>
+                </button>
+                <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
+                  <CheckCircle size={20} strokeWidth={activeTab === 'packing' ? 2.5 : 2} />
+                  <span className="text-[10px] font-bold tracking-wide">準備</span>
+                </button>
+                <button onClick={() => setActiveTab('guide')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'guide' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
+                  <Compass size={20} strokeWidth={activeTab === 'guide' ? 2.5 : 2} />
+                  <span className="text-[10px] font-bold tracking-wide">指南</span>
+                </button>
+                <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
+                  <Wallet size={20} strokeWidth={activeTab === 'utils' ? 2.5 : 2} />
+                  <span className="text-[10px] font-bold tracking-wide">工具</span>
+                </button>
+              </nav>
             </div>
-          </div>
-        </>
-      )}
+
+            {/* 🖨️ 這是唯一的「精裝列印專用區」，它在手機版容器 (main-app-container) 的外面，但仍在 !isLocked 裡面 */}
+            <div id="print-zone" className="hidden print:block bg-white text-stone-900 min-h-screen">
+              <div className="p-10">
+                <h1 className="text-3xl font-serif font-bold border-b-2 border-amber-500 pb-4 mb-8 text-center">
+                  CHIANG MAI 2026<br />
+                  <span className="text-sm text-stone-400 font-sans tracking-widest uppercase">Itinerary Guidebook</span>
+                </h1>
+
+                {itinerary.map((day) => (
+                  <div key={day.day} className="mb-12 page-break-inside-avoid">
+                    <div className="flex items-baseline gap-3 mb-4 border-b border-stone-200 pb-1">
+                      <span className="text-4xl font-serif font-bold text-amber-600">D{day.day}</span>
+                      <span className="text-lg font-bold text-stone-800">{day.displayDate} - {day.title}</span>
+                    </div>
+
+                    <table className="w-full text-left border-collapse">
+                      <tbody>
+                        {day.locations.map((loc, idx) => (
+                          <tr key={idx} className="align-top border-b border-stone-50">
+                            <td className="py-4 pr-4 font-mono font-bold text-xs text-stone-500 w-16">{loc.time}</td>
+                            <td className="py-4">
+                              <div className="font-bold text-stone-800 text-sm mb-0.5">{loc.name}</div>
+                              <div className="text-[11px] text-amber-700 font-bold mb-1">{loc.note}</div>
+                              <div className="text-[10px] text-stone-500 leading-relaxed">{loc.desc}</div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ))}
+                <div className="mt-10 text-center text-[10px] text-stone-300 italic">Generated by Chiang Mai App 2026 — Have a nice trip!</div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
