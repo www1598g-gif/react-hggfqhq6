@@ -2056,14 +2056,14 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   // 2. ☁️ 新增商家邏輯
   const handleAddStore = () => {
     if (!newStoreName.trim()) return alert("請輸入商家名稱 🐹");
-    
-    const finalUrl = newStoreUrl.trim() 
-      ? newStoreUrl 
+
+    const finalUrl = newStoreUrl.trim()
+      ? newStoreUrl
       : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(newStoreName)}`;
 
-    const newList = [...sharedStores, { 
-      name: newStoreName, 
-      url: finalUrl, 
+    const newList = [...sharedStores, {
+      name: newStoreName,
+      url: finalUrl,
       note: newStoreNote,
       adder: adderName // 🔥 存入選取的成員名字
     }];
@@ -2184,7 +2184,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
           )}
           {sharedStores.map((store, i) => (
             <div key={i} className="flex items-start gap-3 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-amber-200 dark:border-stone-800 group transition-all active:scale-[0.98]">
-              <button 
+              <button
                 onClick={() => window.open(store.url, '_blank')}
                 className="flex-1 text-left min-w-0"
               >
@@ -2214,7 +2214,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
             <div className="flex justify-between items-center ml-1">
               <div className="text-[11px] text-amber-900 dark:text-amber-400 font-black uppercase tracking-tighter">誰要許願？</div>
               {/* 🔥 成員選單 */}
-              <select 
+              <select
                 value={adderName}
                 onChange={(e) => setAdderName(e.target.value)}
                 className="bg-white dark:bg-stone-900 border border-amber-300 dark:border-stone-700 rounded-lg text-[10px] px-2 py-1 font-bold text-amber-800 dark:text-amber-300 outline-none"
@@ -2224,15 +2224,15 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
                 ))}
               </select>
             </div>
-            
-            <input 
+
+            <input
               value={newStoreName}
               onChange={(e) => setNewStoreName(e.target.value)}
               placeholder="商家名稱 (必填)"
               className="w-full bg-white dark:bg-stone-900 border-2 border-amber-200 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:border-amber-500 transition-all shadow-inner"
             />
-            
-            <input 
+
+            <input
               value={newStoreNote}
               onChange={(e) => setNewStoreNote(e.target.value)}
               placeholder="推薦理由？(例如：這家店 IG 超紅)"
@@ -2240,7 +2240,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
             />
 
             <div className="flex gap-2">
-              <input 
+              <input
                 value={newStoreUrl}
                 onChange={(e) => setNewStoreUrl(e.target.value)}
                 placeholder="貼上網址 (IG/TikTok/網頁...)"
@@ -2274,6 +2274,23 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
       <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100 mb-6">
         實用工具
       </h2>
+
+      
+      {/* 📥 下面這段是新增的按鈕 */}
+      <section className="no-print">
+        <button
+          onClick={() => window.print()}
+          className="w-full py-4 bg-stone-800 text-amber-50 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all"
+        >
+          <FileText size={20} className="text-amber-400" />
+          一鍵匯出精裝行程表 (PDF)
+        </button>
+        <p className="text-[10px] text-stone-400 mt-2 text-center">
+          💡 點擊後選擇「儲存為 PDF」，排版會自動展開成書本格式
+        </p>
+      </section>
+
+
 
       {/* 🔥 管理員專屬設定區 */}
       {isAdmin && (
@@ -3531,17 +3548,53 @@ export default function TravelApp() {
         {`
           @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@1,700&display=swap');
         
-        /* 🔥 新增這段：鎖定所有圖示不被選取 */
-        svg, img {
-          user-select: none;
-          -webkit-user-select: none;
-          pointer-events: none; /* 這行可以防止圖示擋住下層的長按動作 */
-        }
+          /* 🔥 鎖定所有圖示不被選取 */
+          svg, img {
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: none;
+          }
 
-        /* 讓捲軸美化一點（選配） */
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 10px; }
-      `}
+          /* 讓捲軸美化一點 */
+          .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+          .custom-scrollbar::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 10px; }
+
+          /* 🖨️ PDF 匯出列印優化 (新增這段) */
+          @media print {
+            /* 1. 隱藏所有不需要出現在 PDF 的 UI (導覽列、按鈕、鎖定鍵) */
+            nav, button, .fixed, .no-print, form, select, .z-40, .z-30 {
+              display: none !important;
+            }
+
+            /* 2. 強制展開所有 DayCard 的內容（不管網頁上是否摺疊） */
+            div[class*="DayCard"] > div:last-child {
+              display: block !important;
+              opacity: 1 !important;
+              height: auto !important;
+            }
+
+            /* 3. 背景與文字顏色，確保列印清晰 */
+            body, .min-h-screen, #FDFBF7 {
+              background: white !important;
+              color: #1c1917 !important;
+            }
+
+            /* 4. 避免行程卡片在分頁時被切斷 */
+            div[class*="DayCard"] {
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              border: 1px solid #e7e5e4 !important;
+              margin-bottom: 1.5rem !important;
+              background: white !important;
+            }
+
+            /* 5. 確保顏色顯示 (強制輸出背景圖形) */
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+          }
+        `}
       </style>
 
       {/* 20260107修改全域開放複製 */}
