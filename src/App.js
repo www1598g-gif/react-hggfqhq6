@@ -1905,110 +1905,80 @@ const CurrencySection = ({ isAdmin, isMember }) => {
   const [rate, setRate] = useState(1.08);
   const [twd, setTwd] = useState('');
   const [thb, setThb] = useState('');
-  const [lastUpdate, setLastUpdate] = useState('');
-  
-  // ☁️ 雲端換匯所清單
-  const [exchanges, setExchanges] = useState([]);
+  const [exchanges, setExchanges] = useState([]); // 確保初始化為空陣列
   const [newExName, setNewExName] = useState('');
   const [newExNote, setNewExNote] = useState('');
 
-  // 1. ☁️ 從 Firebase 監聽換匯所
   useEffect(() => {
+    // 抓取即時匯率
+    fetch('https://api.exchangerate-api.com/v4/latest/TWD')
+      .then(res => res.json())
+      .then(data => { if(data?.rates?.THB) setRate(data.rates.THB); })
+      .catch(() => console.log('匯率更新失敗'));
+
+    // 監聽雲端換匯所
     const exRef = ref(db, 'exchanges');
     const unsubscribe = onValue(exRef, (snapshot) => {
       const val = snapshot.val();
-      if (val) setExchanges(val);
-      else {
-        // 預設資料
-        setExchanges([
-          { name: 'Super Rich (清邁店)', note: '🔥 匯率通常全清邁最好', map: 'Super Rich Chiang Mai' },
-          { name: 'Mr. Pierre (巫宗雄)', note: '👍 古城內匯率王，老闆會說中文', map: 'Mr. Pierre Money Exchange' }
-        ]);
-      }
+      setExchanges(val || [
+        { name: 'Super Rich (清邁店)', note: '🔥 匯率通常全清邁最好', map: 'Super Rich Chiang Mai' },
+        { name: 'Mr. Pierre (巫宗雄)', note: '👍 古城內匯率王', map: 'Mr. Pierre Money Exchange' }
+      ]);
     });
     return () => unsubscribe();
   }, []);
 
-  // 2. 抓即時匯率
-  useEffect(() => {
-    const fetchRate = async () => {
-      try {
-        const res = await fetch('https://api.exchangerate-api.com/v4/latest/TWD');
-        const data = await res.json();
-        if (data?.rates?.THB) {
-          setRate(data.rates.THB);
-          setLastUpdate(new Date().toLocaleDateString());
-        }
-      } catch (e) { console.error(e); }
-    };
-    fetchRate();
-  }, []);
-
-  // 3. ☁️ 新增與刪除
   const handleAddEx = () => {
-    if (!newExName.trim()) return alert("請輸入換匯所名稱 🐹");
-    const newList = [...exchanges, { name: newExName, note: newExNote, map: newExName }];
-    set(ref(db, 'exchanges'), newList).then(() => {
-      setNewExName(''); setNewExNote('');
-    });
+    if (!newExName.trim()) return alert("請輸入名稱 🐹");
+    const newList = [...(exchanges || []), { name: newExName, note: newExNote, map: newExName }];
+    set(ref(db, 'exchanges'), newList).then(() => { setNewExName(''); setNewExNote(''); });
   };
 
-  const handleDeleteEx = (index) => {
-    if (!window.confirm("要移除這間換匯所嗎？")) return;
-    const newList = exchanges.filter((_, i) => i !== index);
+  const handleDeleteEx = (idx) => {
+    if (!window.confirm("確定移除嗎？")) return;
+    const newList = exchanges.filter((_, i) => i !== idx);
     set(ref(db, 'exchanges'), newList);
   };
 
   return (
-    <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6 transition-colors">
+    <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6">
       <h3 className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
-        <Wallet size={18} className="text-green-600" /> 匯率計算與推薦換匯
+        <Wallet size={18} className="text-green-600" /> 匯率計算與動態換匯
       </h3>
-
+      
       {/* 計算機 */}
-      <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl mb-6 border border-green-100 dark:border-green-800/30">
-        <div className="text-xs text-green-600 dark:text-green-400 font-bold mb-2 flex justify-between">
-          <span>即時 TWD/THB 匯率</span>
-          <span>1 TWD ≈ {rate} THB</span>
-        </div>
+      <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl mb-6">
         <div className="flex items-center gap-2">
           <input type="number" value={twd} onChange={(e) => {setTwd(e.target.value); setThb(e.target.value ? (parseFloat(e.target.value)*rate).toFixed(2) : '');}} placeholder="台幣" className="w-full p-2 rounded-lg border dark:bg-stone-700 dark:text-white" />
-          <div className="text-stone-400">=</div>
+          <span className="text-stone-400">=</span>
           <input type="number" value={thb} onChange={(e) => {setThb(e.target.value); setTwd(e.target.value ? (parseFloat(e.target.value)/rate).toFixed(2) : '');}} placeholder="泰銖" className="w-full p-2 rounded-lg border dark:bg-stone-700 dark:text-white" />
         </div>
       </div>
 
-      {/* 推薦清單 */}
-      <div className="space-y-2 mb-6">
-        {exchanges.map((ex, i) => (
-          <div key={i} className="flex justify-between items-center p-3 bg-stone-50 dark:bg-stone-700/50 rounded-xl border border-stone-100 dark:border-stone-600 transition-all">
+      {/* 推薦名單 */}
+      <div className="space-y-2 mb-4">
+        {(exchanges || []).map((ex, i) => (
+          <div key={i} className="flex justify-between items-center p-3 bg-stone-50 dark:bg-stone-700/50 rounded-xl border border-stone-100 dark:border-stone-600">
             <div className="flex-1 min-w-0 mr-2">
               <div className="font-bold text-stone-700 dark:text-stone-200 text-sm truncate">{ex.name}</div>
-              <div className="text-[10px] text-stone-500 dark:text-stone-400">{ex.note}</div>
+              <div className="text-[10px] text-stone-500">{ex.note}</div>
             </div>
             <div className="flex items-center gap-2">
-              <button 
-                onClick={() => window.open(`https://www.google.com/maps/search/${encodeURIComponent(ex.map)}`, '_blank')}
-                className="w-8 h-8 bg-white dark:bg-stone-600 rounded-full flex items-center justify-center text-stone-500 dark:text-stone-300 shadow-sm border border-stone-200 dark:border-stone-500"
-              >
-                <Navigation size={14} />
-              </button>
+              <button onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ex.map)}`, '_blank')} className="w-8 h-8 bg-white dark:bg-stone-600 rounded-full flex items-center justify-center text-stone-400 shadow-sm border border-stone-200 dark:border-stone-500"><Navigation size={14} /></button>
               {(isAdmin || isMember) && (
-                <button onClick={() => handleDeleteEx(i)} className="text-stone-300 hover:text-red-400">
-                  <Trash2 size={14} />
-                </button>
+                <button onClick={() => handleDeleteEx(i)} className="text-stone-300 hover:text-red-400"><Trash2 size={14} /></button>
               )}
             </div>
           </div>
         ))}
       </div>
 
-      {/* 新增表單 */}
+      {/* 管理員新增區 */}
       {(isAdmin || isMember) && (
-        <div className="pt-4 border-t border-stone-100 dark:border-stone-700 space-y-2">
-          <input value={newExName} onChange={(e) => setNewExName(e.target.value)} placeholder="換匯所名稱" className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-800 dark:text-white outline-none focus:border-green-500" />
+        <div className="pt-3 border-t border-stone-100 dark:border-stone-700 space-y-2">
+          <input value={newExName} onChange={(e) => setNewExName(e.target.value)} placeholder="新換匯所名稱" className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-800 dark:text-white outline-none" />
           <div className="flex gap-2">
-            <input value={newExNote} onChange={(e) => setNewExNote(e.target.value)} placeholder="備註 (例: 匯率最高)" className="flex-1 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-800 dark:text-white outline-none focus:border-green-500" />
+            <input value={newExNote} onChange={(e) => setNewExNote(e.target.value)} placeholder="匯率描述" className="flex-1 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-800 dark:text-white outline-none" />
             <button onClick={handleAddEx} className="bg-green-600 text-white px-4 rounded-xl text-xs font-bold active:scale-95">+</button>
           </div>
         </div>
@@ -3262,7 +3232,7 @@ export default function TravelApp() {
   // 資料狀態
   const [itinerary, setItinerary] = useState(INITIAL_ITINERARY_DATA);
   const [appVersion, setAppVersion] = useState('2026');
-  const [systemInfo, setSystemInfo] = useState('System Ver. 35.0 清邁4人團🧋');
+  const [systemInfo, setSystemInfo] = useState('System Ver. 32.5 清邁4人團🧋');
   const [noticeText, setNoticeText] = useState('載入中...');
   // 😈 Phase 3 彩蛋：全域狀態
   const [secretClickCount, setSecretClickCount] = useState(0); // 點幾下了？
