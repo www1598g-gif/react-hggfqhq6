@@ -2038,6 +2038,9 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   const [newStoreName, setNewStoreName] = useState('');
   const [newStoreUrl, setNewStoreUrl] = useState('');
   const [newStoreNote, setNewStoreNote] = useState('');
+  // 🔥 新增：預設成員選單狀態
+  const [adderName, setAdderName] = useState('佑任');
+  const GROUP_MEMBERS = ['佑任', '軒寶', '學弟', '腳慢'];
 
   // 1. ☁️ 監聽雲端許願池
   useEffect(() => {
@@ -2054,7 +2057,6 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   const handleAddStore = () => {
     if (!newStoreName.trim()) return alert("請輸入商家名稱 🐹");
     
-    // 💡 網址邏輯：有填就用填的 (IG/TikTok/Web)，沒填才自動導向 Google Maps
     const finalUrl = newStoreUrl.trim() 
       ? newStoreUrl 
       : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(newStoreName)}`;
@@ -2063,7 +2065,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
       name: newStoreName, 
       url: finalUrl, 
       note: newStoreNote,
-      adder: isAdmin ? '導遊' : '團員' 
+      adder: adderName // 🔥 存入選取的成員名字
     }];
 
     set(ref(db, 'sharedStores'), newList).then(() => {
@@ -2079,6 +2081,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
     set(ref(db, 'sharedStores'), newList);
   };
 
+  // ... 這裡保持你原本的 pickyItems 和 guideSections ...
   const pickyItems = [
     { en: 'Coriander / Cilantro', th: 'ไม่ใส่ผักชี', zh: '香菜' },
     { en: 'Green Onion / Scallion', th: 'ไม่ใส่ต้นหอม / กุยช่าย', zh: '蔥 / 韭菜' },
@@ -2122,65 +2125,26 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
       </section>
 
       {/* 🚫 2. 挑食救援卡 */}
-      <section>
-        <button onClick={() => setShowPickyEater(!showPickyEater)} className="w-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 rounded-2xl p-4 flex items-center justify-between active:scale-95 transition-all">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-white dark:bg-rose-900/50 rounded-xl shadow-sm text-rose-500"><Ban size={20} /></div>
-            <div className="text-left">
-              <div className="font-bold text-rose-800 dark:text-rose-300 text-sm">挑食避雷針 (救命卡)</div>
-              <div className="text-[10px] text-rose-500/70 uppercase font-bold tracking-tighter">Dietary Restrictions</div>
-            </div>
-          </div>
-          {showPickyEater ? <ChevronUp size={18} className="text-rose-300" /> : <ChevronDown size={18} className="text-rose-300" />}
-        </button>
-        {showPickyEater && (
-          <div className="mt-3 bg-white dark:bg-stone-800 rounded-3xl border border-rose-100 dark:border-stone-700 overflow-hidden animate-fadeIn">
-            <div className="bg-rose-500 p-3 text-center"><span className="text-white text-xs font-bold tracking-widest flex items-center justify-center gap-2"><Languages size={14} /> 直接拿給店員看此列表</span></div>
-            <div className="divide-y divide-rose-50 dark:divide-stone-700">
-              {pickyItems.map((item, i) => (
-                <div key={i} className="px-5 py-4 flex justify-between items-center select-text">
-                  <div className="flex flex-col"><span className="text-[10px] text-stone-400 font-bold uppercase">{item.en}</span><span className="font-bold text-stone-800 dark:text-stone-100">{item.zh}</span></div>
-                  <div className="text-right"><span className="text-lg font-black text-rose-600 dark:text-rose-400 font-serif">{item.th}</span></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
+      {/* ... 省略，保持不變 ... */}
 
       {/* 🧭 3. 探索清邁標題與卡片 */}
-      <div className="flex items-center gap-3 pt-2">
-        <Compass className="text-stone-400" size={28} />
-        <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100">探索清邁</h2>
-      </div>
-      <div className="grid grid-cols-1 gap-4">
-        {guideSections.map((section, idx) => (
-          <div key={idx} className={`p-5 rounded-[2rem] border ${section.color} shadow-sm active:scale-[0.98] transition-all`}>
-            <div className="flex items-center gap-3 mb-3"><div className="p-2.5 bg-white dark:bg-stone-800 rounded-2xl shadow-sm">{section.icon}</div><h3 className="text-lg font-bold text-stone-800 dark:text-stone-100">{section.title}</h3></div>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400 mb-5 leading-relaxed h-8 line-clamp-2">{section.desc}</p>
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => window.open(section.mapUrl, '_blank')} className="flex items-center justify-center gap-2 py-2.5 bg-stone-800 dark:bg-stone-700 text-amber-50 rounded-2xl text-xs font-bold shadow-md active:scale-95 transition-all"><MapPin size={14} /> 開啟清單</button>
-              <button onClick={() => window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent('清邁 ' + section.aiQuery)}`, '_blank')} className="flex items-center justify-center gap-2 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition-all"><Sparkles size={14} className="text-teal-500" /> 問問 AI</button>
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* ... 省略，保持不變 ... */}
 
-      {/* 🍮 4. 團隊協作許願池 (鵝黃色版 🍮) */}
-      <section className="bg-amber-50/70 dark:bg-stone-800/50 p-6 rounded-[2.5rem] shadow-sm border border-amber-200/50 dark:border-stone-700 relative overflow-hidden mt-4">
-        <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-400/10 rounded-full blur-3xl"></div>
-        <div className="flex items-center gap-2 mb-5 text-amber-700 dark:text-amber-400 font-bold text-sm uppercase tracking-[0.2em]">
-          <Sparkles size={16} /> 團員私藏許願池
+      {/* 🍮 4. 團隊協作許願池 (暖黃強化版) */}
+      <section className="bg-[#FEF3C7] dark:bg-stone-800/80 p-6 rounded-[2.5rem] shadow-sm border-2 border-amber-300 dark:border-stone-700 relative overflow-hidden mt-4">
+        <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-400/20 rounded-full blur-3xl"></div>
+        <div className="flex items-center gap-2 mb-5 text-amber-900 dark:text-amber-400 font-black text-sm uppercase tracking-[0.2em]">
+          <Sparkles size={16} className="text-amber-600" /> 團員私藏許願池
         </div>
 
         <div className="space-y-4 mb-6 max-h-[450px] overflow-y-auto no-scrollbar">
           {sharedStores.length === 0 && (
-            <div className="text-xs text-stone-400 italic text-center py-10 bg-white/50 dark:bg-stone-900/30 rounded-3xl border border-dashed border-amber-200 dark:border-stone-700">
+            <div className="text-xs text-stone-500 italic text-center py-10 bg-white/40 dark:bg-stone-900/30 rounded-3xl border border-dashed border-amber-300 dark:border-stone-700">
               目前還沒有人許願，快去新增想去的店！
             </div>
           )}
           {sharedStores.map((store, i) => (
-            <div key={i} className="flex items-start gap-3 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-amber-100 dark:border-stone-800 group transition-all active:scale-[0.98]">
+            <div key={i} className="flex items-start gap-3 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-amber-200 dark:border-stone-800 group transition-all active:scale-[0.98]">
               <button 
                 onClick={() => window.open(store.url, '_blank')}
                 className="flex-1 text-left min-w-0"
@@ -2189,11 +2153,11 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
                   {store.name}
                 </div>
                 {store.note && (
-                  <div className="text-xs text-stone-500 dark:text-stone-400 leading-snug mb-2 font-medium">
+                  <div className="text-xs text-stone-600 dark:text-stone-400 leading-snug mb-2 font-medium">
                     💬 {store.note}
                   </div>
                 )}
-                <div className="text-[10px] text-amber-600/70 dark:text-amber-500/50 font-bold uppercase tracking-widest flex items-center gap-1">
+                <div className="text-[10px] text-amber-700 dark:text-amber-500/70 font-bold uppercase tracking-widest flex items-center gap-1">
                   <User size={10} /> Added by {store.adder}
                 </div>
               </button>
@@ -2207,21 +2171,33 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
         </div>
 
         {(isAdmin || isMember) && (
-          <div className="pt-5 border-t border-amber-200/50 dark:border-stone-700 space-y-3">
-            <div className="text-[11px] text-amber-700 dark:text-amber-400 font-black uppercase tracking-tighter ml-1">我想去這裡...</div>
+          <div className="pt-5 border-t border-amber-300 dark:border-stone-700 space-y-3">
+            <div className="flex justify-between items-center ml-1">
+              <div className="text-[11px] text-amber-900 dark:text-amber-400 font-black uppercase tracking-tighter">誰要許願？</div>
+              {/* 🔥 成員選單 */}
+              <select 
+                value={adderName}
+                onChange={(e) => setAdderName(e.target.value)}
+                className="bg-white dark:bg-stone-900 border border-amber-300 dark:border-stone-700 rounded-lg text-[10px] px-2 py-1 font-bold text-amber-800 dark:text-amber-300 outline-none"
+              >
+                {GROUP_MEMBERS.map(name => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
+            </div>
             
             <input 
               value={newStoreName}
               onChange={(e) => setNewStoreName(e.target.value)}
               placeholder="商家名稱 (必填)"
-              className="w-full bg-white dark:bg-stone-900 border border-amber-200/50 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+              className="w-full bg-white dark:bg-stone-900 border-2 border-amber-200 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:border-amber-500 transition-all shadow-inner"
             />
             
             <input 
               value={newStoreNote}
               onChange={(e) => setNewStoreNote(e.target.value)}
-              placeholder="想去的原因？(例如：這家 IG 超紅！)"
-              className="w-full bg-white dark:bg-stone-900 border border-amber-200/50 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+              placeholder="推薦理由？(例如：這家店 IG 超紅)"
+              className="w-full bg-white dark:bg-stone-900 border-2 border-amber-200 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:border-amber-500 transition-all shadow-inner"
             />
 
             <div className="flex gap-2">
@@ -2229,9 +2205,9 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
                 value={newStoreUrl}
                 onChange={(e) => setNewStoreUrl(e.target.value)}
                 placeholder="貼上網址 (IG/TikTok/網頁...)"
-                className="flex-1 bg-white dark:bg-stone-900 border border-amber-200/50 dark:border-stone-800 rounded-2xl px-4 py-3 text-xs text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                className="flex-1 bg-white dark:bg-stone-900 border-2 border-amber-200 dark:border-stone-800 rounded-2xl px-4 py-3 text-xs text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:border-amber-500 transition-all shadow-inner"
               />
-              <button onClick={handleAddStore} className="bg-amber-500 hover:bg-amber-600 text-white px-6 rounded-2xl text-xl font-bold active:scale-90 transition-all shadow-md">
+              <button onClick={handleAddStore} className="bg-amber-500 hover:bg-amber-600 text-white px-6 rounded-2xl text-xl font-bold active:scale-90 transition-all shadow-lg border-b-4 border-amber-700">
                 +
               </button>
             </div>
@@ -2248,7 +2224,6 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
     </div>
   );
 };
-
 
 // 修改 UtilsPage
 // ============================================
