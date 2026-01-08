@@ -685,7 +685,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
   const [newLinkName, setNewLinkName] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
 
-// ✅ 貼上這一段：
+  // ✅ 貼上這一段：
   // 1. ☁️ 從 Firebase 監聽雲端連結
   useEffect(() => {
     const linksRef = ref(db, 'secretLinks');
@@ -708,7 +708,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
   const handleAddLink = () => {
     if (!newLinkName || !newLinkUrl) return alert("請輸入名稱和網址喔！");
     const newLinks = [...secretLinks, { name: newLinkName, url: newLinkUrl }];
-    
+
     // 直接更新 Firebase，所有團員會同步看到
     set(ref(db, 'secretLinks'), newLinks).then(() => {
       setNewLinkName('');
@@ -2037,8 +2037,9 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   const [sharedStores, setSharedStores] = useState([]);
   const [newStoreName, setNewStoreName] = useState('');
   const [newStoreUrl, setNewStoreUrl] = useState('');
+  const [newStoreNote, setNewStoreNote] = useState(''); // 🔥 新增備註狀態
 
-  // 1. ☁️ 監聽雲端許願池 (共用 sharedStores 節點)
+  // 1. ☁️ 監聽雲端許願池
   useEffect(() => {
     const storeRef = ref(db, 'sharedStores');
     const unsubscribe = onValue(storeRef, (snapshot) => {
@@ -2052,6 +2053,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   // 2. ☁️ 新增商家邏輯
   const handleAddStore = () => {
     if (!newStoreName.trim()) return alert("請輸入商家名稱 🐹");
+    
     const finalUrl = newStoreUrl.trim() 
       ? newStoreUrl 
       : `https://www.google.com/maps/search/${encodeURIComponent(newStoreName)}`;
@@ -2059,12 +2061,14 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
     const newList = [...sharedStores, { 
       name: newStoreName, 
       url: finalUrl, 
+      note: newStoreNote, // 🔥 存入備註
       adder: isAdmin ? '導遊' : '團員' 
     }];
 
     set(ref(db, 'sharedStores'), newList).then(() => {
       setNewStoreName('');
       setNewStoreUrl('');
+      setNewStoreNote(''); // 🔥 清空備註欄
     });
   };
 
@@ -2085,7 +2089,6 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
     { en: 'Celery', th: 'ไม่ใส่ขึ้นฉ่าย', zh: '芹菜' },
   ];
 
-  // 🔥 這裡已復原為你最完整的版本
   const guideSections = [
     {
       title: '咖啡地圖',
@@ -2205,31 +2208,42 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
         ))}
       </div>
 
-      {/* 🍱 4. 團隊協作許願池 (底部 & 捲軸保護) */}
-      <section className="bg-stone-800 dark:bg-stone-950 p-6 rounded-[2.5rem] shadow-xl border border-stone-700 relative overflow-hidden mt-4">
-        <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-3xl"></div>
-        <div className="flex items-center gap-2 mb-5 text-emerald-400 font-bold text-xs uppercase tracking-[0.2em]">
-          <Sparkles size={14} /> 團員私藏許願池
+      {/* 🍱 4. 團隊協作許願池 (優化亮度與備註欄) */}
+      <section className="bg-emerald-50/50 dark:bg-stone-800 p-6 rounded-[2.5rem] shadow-sm border border-emerald-100 dark:border-stone-700 relative overflow-hidden mt-4">
+        <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <div className="flex items-center gap-2 mb-5 text-emerald-600 dark:text-emerald-400 font-bold text-sm uppercase tracking-[0.2em]">
+          <Sparkles size={16} /> 團員私藏許願池
         </div>
 
-        <div className="space-y-3 mb-6 max-h-[400px] overflow-y-auto no-scrollbar">
+        <div className="space-y-4 mb-6 max-h-[450px] overflow-y-auto no-scrollbar">
           {sharedStores.length === 0 && (
-            <div className="text-[10px] text-stone-500 italic text-center py-8 bg-stone-900/30 rounded-3xl border border-dashed border-stone-800">
+            <div className="text-xs text-stone-400 italic text-center py-10 bg-white/50 dark:bg-stone-900/30 rounded-3xl border border-dashed border-emerald-200 dark:border-stone-700">
               目前還沒有人許願，快去新增想去的店！
             </div>
           )}
           {sharedStores.map((store, i) => (
-            <div key={i} className="flex items-center gap-3 bg-stone-900/50 p-4 rounded-2xl border border-stone-800 group transition-all active:bg-stone-900">
+            <div key={i} className="flex items-start gap-3 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-emerald-100/50 dark:border-stone-800 group transition-all active:scale-[0.98]">
               <button 
                 onClick={() => window.open(store.url, '_blank')}
                 className="flex-1 text-left min-w-0"
               >
-                <div className="text-sm font-bold text-stone-200 truncate">{store.name}</div>
-                <div className="text-[9px] text-stone-500 uppercase tracking-widest mt-0.5">Added by {store.adder}</div>
+                {/* 🔥 放大商家店名 */}
+                <div className="text-base font-black text-stone-800 dark:text-stone-100 truncate mb-1">
+                  {store.name}
+                </div>
+                {/* 🔥 新增備註欄顯示 */}
+                {store.note && (
+                  <div className="text-xs text-stone-500 dark:text-stone-400 leading-snug mb-2 font-medium">
+                    💬 {store.note}
+                  </div>
+                )}
+                <div className="text-[10px] text-emerald-600/70 dark:text-emerald-500/50 font-bold uppercase tracking-widest">
+                  Added by {store.adder}
+                </div>
               </button>
               {(isAdmin || isMember) && (
-                <button onClick={() => handleDeleteStore(i)} className="p-2 text-stone-700 hover:text-red-400 transition-colors">
-                  <Trash2 size={16} />
+                <button onClick={() => handleDeleteStore(i)} className="p-2 text-stone-300 hover:text-red-400 transition-colors mt-1">
+                  <Trash2 size={18} />
                 </button>
               )}
             </div>
@@ -2237,21 +2251,33 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
         </div>
 
         {(isAdmin || isMember) && (
-          <div className="pt-5 border-t border-stone-700/50 space-y-3">
+          <div className="pt-5 border-t border-emerald-100 dark:border-stone-700 space-y-3">
+            <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-black uppercase tracking-tighter ml-1">我想去這裡...</div>
+            
+            {/* 店名 */}
             <input 
               value={newStoreName}
               onChange={(e) => setNewStoreName(e.target.value)}
               placeholder="商家名稱 (必填)"
-              className="w-full bg-stone-900 border border-stone-800 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-stone-600 outline-none focus:border-emerald-500 transition-all"
+              className="w-full bg-white dark:bg-stone-900 border border-emerald-100 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
             />
+            
+            {/* 備註 - 🔥 新功能 */}
+            <input 
+              value={newStoreNote}
+              onChange={(e) => setNewStoreNote(e.target.value)}
+              placeholder="給這家店的簡單介紹 (例: 必吃椰子派)"
+              className="w-full bg-white dark:bg-stone-900 border border-emerald-100 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+            />
+
             <div className="flex gap-2">
               <input 
                 value={newStoreUrl}
                 onChange={(e) => setNewStoreUrl(e.target.value)}
-                placeholder="網址 (選填，不填會自動搜尋)"
-                className="flex-1 bg-stone-900 border border-stone-800 rounded-2xl px-4 py-3 text-xs text-white placeholder:text-stone-600 outline-none focus:border-emerald-500 transition-all"
+                placeholder="Google Map 網址 (選填)"
+                className="flex-1 bg-white dark:bg-stone-900 border border-emerald-100 dark:border-stone-800 rounded-2xl px-4 py-3 text-xs text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
               />
-              <button onClick={handleAddStore} className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 rounded-2xl text-lg font-bold active:scale-90 transition-all shadow-lg">
+              <button onClick={handleAddStore} className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 rounded-2xl text-xl font-bold active:scale-90 transition-all shadow-md">
                 +
               </button>
             </div>
@@ -2259,7 +2285,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
         )}
       </section>
 
-      <div className="bg-stone-100 dark:bg-stone-800/50 p-4 rounded-2xl text-center mt-4">
+      <div className="bg-stone-100 dark:bg-stone-800/50 p-4 rounded-2xl text-center mt-4 mb-4">
         <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest leading-loose">
           這份指南是為了 2026 四人團特別準備的<br />
           希望大家玩得開心 🇹🇭
