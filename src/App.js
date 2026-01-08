@@ -1914,14 +1914,14 @@ const CurrencySection = ({ isAdmin, isMember }) => {
     // 抓取即時匯率
     fetch('https://api.exchangerate-api.com/v4/latest/TWD')
       .then(res => res.json())
-      .then(data => { if(data?.rates?.THB) setRate(data.rates.THB); })
+      .then(data => { if (data?.rates?.THB) setRate(data.rates.THB); })
       .catch(() => console.log('匯率更新失敗'));
 
     // 2. ☁️ 雲端燒錄邏輯
     const exRef = ref(db, 'exchanges');
     const unsubscribe = onValue(exRef, (snapshot) => {
       const val = snapshot.val();
-      
+
       if (val === null) {
         // 🔥 偵測到雲端是空的，執行「燒錄」初始化
         const defaultExchanges = [
@@ -1931,7 +1931,7 @@ const CurrencySection = ({ isAdmin, isMember }) => {
           { name: '清邁機場換匯 (Arrival)', note: '🚨 抵達應急用，匯率較差', map: 'Chiang Mai International Airport' },
           { name: 'S.K. Money Exchange', note: '塔佩門附近，方便快速', map: 'S.K. Money Exchange Chiang Mai' }
         ];
-        
+
         // 動作：直接寫入 Firebase 
         set(exRef, defaultExchanges);
         setExchanges(defaultExchanges);
@@ -1946,7 +1946,7 @@ const CurrencySection = ({ isAdmin, isMember }) => {
 
 
 
-  
+
   const handleAddEx = () => {
     if (!newExName.trim()) return alert("請輸入名稱 🐹");
     const newList = [...(exchanges || []), { name: newExName, note: newExNote, map: newExName }];
@@ -1964,13 +1964,13 @@ const CurrencySection = ({ isAdmin, isMember }) => {
       <h3 className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
         <Wallet size={18} className="text-green-600" /> 匯率計算與動態換匯
       </h3>
-      
+
       {/* 計算機 */}
       <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl mb-6">
         <div className="flex items-center gap-2">
-          <input type="number" value={twd} onChange={(e) => {setTwd(e.target.value); setThb(e.target.value ? (parseFloat(e.target.value)*rate).toFixed(2) : '');}} placeholder="台幣" className="w-full p-2 rounded-lg border dark:bg-stone-700 dark:text-white" />
+          <input type="number" value={twd} onChange={(e) => { setTwd(e.target.value); setThb(e.target.value ? (parseFloat(e.target.value) * rate).toFixed(2) : ''); }} placeholder="台幣" className="w-full p-2 rounded-lg border dark:bg-stone-700 dark:text-white" />
           <span className="text-stone-400">=</span>
-          <input type="number" value={thb} onChange={(e) => {setThb(e.target.value); setTwd(e.target.value ? (parseFloat(e.target.value)/rate).toFixed(2) : '');}} placeholder="泰銖" className="w-full p-2 rounded-lg border dark:bg-stone-700 dark:text-white" />
+          <input type="number" value={thb} onChange={(e) => { setThb(e.target.value); setTwd(e.target.value ? (parseFloat(e.target.value) / rate).toFixed(2) : ''); }} placeholder="泰銖" className="w-full p-2 rounded-lg border dark:bg-stone-700 dark:text-white" />
         </div>
       </div>
 
@@ -2250,6 +2250,19 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
 // 3. 修正 UtilsPage (完整夜間模式版)
 // ============================================
 const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
+  const handleAppDownload = () => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    // 判斷是否為 iOS (iPhone, iPad, iPod)
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      window.open('https://apps.apple.com/tw/app/thailand-tourist-police/id6479636779', '_blank');
+    } else {
+      // 預設為 Android
+      window.open('https://play.google.com/store/apps/details?id=tourist.police.app&hl=zh_TW', '_blank');
+    }
+  };
+
+
   return (
     <div className="p-6 space-y-6 pb-24 animate-fade-in bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
       <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100 mb-6">
@@ -2544,15 +2557,25 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
           </div>
           <div className="bg-stone-800 dark:bg-stone-950 rounded-xl p-4 text-stone-300 text-sm space-y-4">
             {/* 1. App 下載建議 - 亮點標示 */}
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 flex items-center gap-3">
-              <div className="p-2 bg-amber-500 rounded-full text-stone-900 flex-shrink-0">
+
+
+            {/* 🚨 緊急救援中心裡面的 App 下載區塊 */}
+            <div
+              onClick={handleAppDownload}
+              className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 flex items-center gap-3 cursor-pointer active:scale-95 transition-all hover:bg-amber-500/20 group"
+            >
+              <div className="p-2 bg-amber-500 rounded-full text-stone-900 flex-shrink-0 group-hover:shadow-[0_0_10px_rgba(245,158,11,0.5)]">
                 <Smartphone size={16} strokeWidth={2.5} />
               </div>
-              <div>
-                <div className="text-[11px] font-black text-amber-500 uppercase tracking-tighter">必備救命工具</div>
+              <div className="flex-1">
+                <div className="flex justify-between items-center">
+                  <div className="text-[10px] font-black text-amber-500 uppercase tracking-tighter">必備救命工具</div>
+                  <div className="text-[9px] text-amber-500/60 font-bold bg-amber-500/10 px-1.5 py-0.5 rounded">點擊跳轉商店</div>
+                </div>
                 <div className="text-xs font-bold text-stone-100">下載 Thailand Tourist Police App</div>
                 <div className="text-[9px] text-stone-400 mt-0.5 leading-tight">支援 GPS 定位與即時求救諮詢</div>
               </div>
+              <ArrowRight size={14} className="text-stone-600 group-hover:text-amber-500" />
             </div>
 
             <div className="space-y-3">
