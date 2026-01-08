@@ -3734,36 +3734,31 @@ export default function TravelApp() {
             {showShakeEgg && (<div onClick={() => setShowShakeEgg(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8 backdrop-blur-sm animate-fadeIn"><div className="bg-[#FFF0F5] p-6 rounded-3xl text-center"><img src="https://i.pinimg.com/originals/24/63/40/24634090aa96299f569a8bb60c9dda14.gif" alt="Egg" className="w-full rounded-xl mb-4" /><p className="text-pink-500 font-bold">搖出驚喜! 旅途順利~</p></div></div>)}
 
 
+            {/* 1. 這是你的五個按鈕導覽列 */}
             <nav className="fixed bottom-0 w-full max-w-md bg-white/90 dark:bg-stone-900/90 backdrop-blur-lg border-t border-stone-200 dark:border-stone-800 flex justify-around py-3 pb-4 z-40 transition-colors select-none">
-              {/* 行程 */}
               <button onClick={() => setActiveTab('itinerary')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'itinerary' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
                 <MapPin size={20} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
                 <span className="text-[10px] font-bold tracking-wide">行程</span>
               </button>
-
-              {/* 準備 */}
               <button onClick={() => setActiveTab('packing')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'packing' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
                 <CheckCircle size={20} strokeWidth={activeTab === 'packing' ? 2.5 : 2} />
                 <span className="text-[10px] font-bold tracking-wide">準備</span>
               </button>
-
-              {/* Guide (新增) */}
               <button onClick={() => setActiveTab('guide')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'guide' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
                 <Compass size={20} strokeWidth={activeTab === 'guide' ? 2.5 : 2} />
                 <span className="text-[10px] font-bold tracking-wide">指南</span>
               </button>
-
-              {/* 工具 */}
               <button onClick={() => setActiveTab('utils')} className={`flex flex-col items-center gap-1.5 transition-colors ${activeTab === 'utils' ? 'text-stone-800 dark:text-stone-100' : 'text-stone-400 dark:text-stone-600'}`}>
                 <Wallet size={20} strokeWidth={activeTab === 'utils' ? 2.5 : 2} />
                 <span className="text-[10px] font-bold tracking-wide">工具</span>
               </button>
             </nav>
-          
-          </div>
+            {/* ⚠️ 原本這裡多出的舊列印區和 )} 已經被我刪除了 */}
+          </div> 
         )}
-        
-        <div id="print-zone" className="hidden print:block bg-white text-stone-900">
+
+        {/* 🖨️ 這是唯一的「精裝列印專用區」，它在手機版容器 (main-app-container) 的外面 */}
+        <div id="print-zone" className="hidden print:block bg-white text-stone-900 min-h-screen">
           <div className="p-10">
             <h1 className="text-3xl font-serif font-bold border-b-2 border-amber-500 pb-4 mb-8 text-center">
               CHIANG MAI 2026<br />
@@ -3781,7 +3776,6 @@ export default function TravelApp() {
                   <tbody>
                     {day.locations.map((loc, idx) => (
                       <tr key={idx} className="align-top border-b border-stone-50">
-                        {/* ⚠️ 確認這裡改成 text-stone-500，印出來才看得到字 */}
                         <td className="py-4 pr-4 font-mono font-bold text-xs text-stone-500 w-16">{loc.time}</td>
                         <td className="py-4">
                           <div className="font-bold text-stone-800 text-sm mb-0.5">{loc.name}</div>
