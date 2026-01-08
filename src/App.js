@@ -736,7 +736,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
       );
       const json = await res.json();
 
-      // 2. AQI (改用城市名稱 chiangmai，取得全市平均)
+      // 2. AQI (保留你最完整的雙 API 備援邏輯)
       let currentAqi = 50;
       let aqiSource = 'default';
 
@@ -748,13 +748,12 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
 
         if (waqiData.status === 'ok' && waqiData.data?.aqi) {
           currentAqi = waqiData.data.aqi;
-          aqiSource = 'WAQI'; // 標記來源
+          aqiSource = 'WAQI'; // ✅ 標記來源
         } else {
           throw new Error('WAQI API 回應異常');
         }
       } catch (waqiError) {
         console.warn('⚠️ WAQI 失敗，切換到 IQAir 備援...');
-        // 備援：IQAir
         try {
           const iqairRes = await fetch(
             'https://api.airvisual.com/v2/nearest_city?lat=18.7883&lon=98.9853&key=4743d035-1b8f-4a42-9ddf-66dee64f8b8a'
@@ -762,7 +761,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
           const iqairData = await iqairRes.json();
           if (iqairData.status === 'success' && iqairData.data?.current?.pollution) {
             currentAqi = iqairData.data.current.pollution.aqius;
-            aqiSource = 'IQAir';
+            aqiSource = 'IQAir'; // ✅ 標記來源
           }
         } catch (iqairError) {
           console.error('❌ 全部失敗，使用預設值');
@@ -770,11 +769,18 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
         }
       }
 
+      // --- 🔥 關鍵點 A：成功抓到資料後，存入 LocalStorage (燒錄快取) ---
+      const cacheData = {
+        weather: json,
+        aqi: currentAqi,
+        source: aqiSource,
+        time: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })
+      };
+      localStorage.setItem('cm_weather_cache', JSON.stringify(cacheData));
+
       setAqi(currentAqi);
-      // 僅顯示時間，來源顯示在 Console 或 Tooltip 即可，保持介面乾淨
-      setLastUpdate(
-        `${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}`
-      );
+      // ✅ 找回數據來源標籤：顯示在時間後面
+      setLastUpdate(`${cacheData.time} (${aqiSource})`);
 
       if (json && json.current) {
         setData(json);
@@ -792,7 +798,15 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
         setAlerts(newAlerts);
       }
     } catch (e) {
-      console.error(e);
+      console.error("🌐 偵測到斷網，啟動備援電路...", e);
+      // --- 🔥 關鍵點 B：斷網保護，從 LocalStorage 讀取舊資料 ---
+      const saved = localStorage.getItem('cm_weather_cache');
+      if (saved) {
+        const cache = JSON.parse(saved);
+        setData(cache.weather);
+        setAqi(cache.aqi);
+        setLastUpdate(`${cache.time} (Offline)`); // 標註目前為離線資料
+      }
     } finally {
       setIsLoading(false); // 結束轉圈圈
     }
@@ -1911,37 +1925,61 @@ const CurrencySection = ({ isAdmin, isMember }) => {
   const [newExNote, setNewExNote] = useState('');
 
   useEffect(() => {
-    // 抓取即時匯率
+    // 1. [匯率快取] 啟動時先拉出上次存的匯率，防止開機白屏
+    const savedRate = localStorage.getItem('cm_exchange_rate');
+    const savedRateTime = localStorage.getItem('cm_exchange_time');
+    if (savedRate) {
+      setRate(parseFloat(savedRate));
+      setLastUpdate(savedRateTime + ' (離線備援)');
+    }
+
+    // 2. 抓取即時匯率
     fetch('https://api.exchangerate-api.com/v4/latest/TWD')
       .then(res => res.json())
-      .then(data => { if (data?.rates?.THB) setRate(data.rates.THB); })
-      .catch(() => console.log('匯率更新失敗'));
+      .then(data => {
+        if (data?.rates?.THB) {
+          const newRate = data.rates.THB;
+          const newTime = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+          setRate(newRate);
+          setLastUpdate(newTime); // ✅ 恢復：更新時間顯示
+          
+          // 燒錄進快取，下次沒網也能用
+          localStorage.setItem('cm_exchange_rate', newRate);
+          localStorage.setItem('cm_exchange_time', newTime);
+        }
+      })
+      .catch(() => console.log('匯率更新失敗，目前使用離線資料'));
 
-    // 2. ☁️ 雲端燒錄邏輯
+    // 3. ☁️ 雲端換匯所監聽 (含 LocalStorage 備援)
     const exRef = ref(db, 'exchanges');
     const unsubscribe = onValue(exRef, (snapshot) => {
       const val = snapshot.val();
 
       if (val === null) {
-        // 🔥 偵測到雲端是空的，執行「燒錄」初始化
-        const defaultExchanges = [
-          { name: 'Super Rich (清邁店)', note: '🔥 匯率通常全清邁最好', map: 'Super Rich Chiang Mai' },
-          { name: 'Mr. Pierre (巫宗雄)', note: '👍 古城內匯率王，老闆會說中文', map: 'Mr. Pierre Money Exchange' },
-          { name: 'G Exchange', note: 'Loi Kroh 路熱門店，評價極高', map: 'G Exchange Chiang Mai' },
-          { name: '清邁機場換匯 (Arrival)', note: '🚨 抵達應急用，匯率較差', map: 'Chiang Mai International Airport' },
-          { name: 'S.K. Money Exchange', note: '塔佩門附近，方便快速', map: 'S.K. Money Exchange Chiang Mai' }
-        ];
-
-        // 動作：直接寫入 Firebase 
-        set(exRef, defaultExchanges);
-        setExchanges(defaultExchanges);
+        // 🔥 這裡解決 Claude 提的 Bug：
+        // 先檢查 LocalStorage，如果連 LocalStorage 都是空的，才執行「燒錄」初始化
+        const cachedEx = localStorage.getItem('cm_exchanges_list');
+        if (cachedEx) {
+          setExchanges(JSON.parse(cachedEx));
+        } else {
+          const defaultExchanges = [
+            { name: 'Super Rich (清邁店)', note: '🔥 匯率通常全清邁最好', map: 'Super Rich Chiang Mai' },
+            { name: 'Mr. Pierre (巫宗雄)', note: '👍 古城內匯率王，老闆會說中文', map: 'Mr. Pierre Money Exchange' },
+            { name: 'G Exchange', note: 'Loi Kroh 路熱門店，評價極高', map: 'G Exchange Chiang Mai' },
+            { name: '清邁機場換匯 (Arrival)', note: '🚨 抵達應急用，匯率較差', map: 'Chiang Mai International Airport' },
+            { name: 'S.K. Money Exchange', note: '塔佩門附近，方便快速', map: 'S.K. Money Exchange Chiang Mai' }
+          ];
+          set(exRef, defaultExchanges);
+          setExchanges(defaultExchanges);
+        }
       } else {
-        // 如果雲端已有資料（不管是原本這 5 間還是你後來新增的），就讀取雲端
+        // 如果雲端有資料，顯示並存入本地快取
         setExchanges(val);
+        localStorage.setItem('cm_exchanges_list', JSON.stringify(val));
       }
     });
     return () => unsubscribe();
-  }, []);;
+  }, []);
 
 
 
