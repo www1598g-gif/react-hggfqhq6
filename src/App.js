@@ -1923,6 +1923,7 @@ const CurrencySection = ({ isAdmin, isMember }) => {
   const [exchanges, setExchanges] = useState([]); // 確保初始化為空陣列
   const [newExName, setNewExName] = useState('');
   const [newExNote, setNewExNote] = useState('');
+  const [lastUpdate, setLastUpdate] = useState('');
 
   useEffect(() => {
     // 1. [匯率快取] 啟動時先拉出上次存的匯率，防止開機白屏
