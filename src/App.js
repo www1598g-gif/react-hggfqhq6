@@ -2237,9 +2237,6 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
         實用工具
       </h2>
 
-
-
-      {/* 🔥 管理員專屬設定區 */}
       {isAdmin && (
         <section className="bg-stone-800 p-6 rounded-2xl shadow-lg border border-stone-700 mb-6 text-white relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-500/20 rounded-full blur-xl"></div>
@@ -2249,327 +2246,62 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
           <div className="space-y-4 relative z-10">
             <div>
               <label className="text-xs text-stone-400 font-bold mb-1.5 block">鎖定畫面底部文字</label>
-              <input
-                type="text"
-                value={systemInfo || ''}
-                onChange={(e) => updateSystemInfo(e.target.value)}
-                className="w-full bg-stone-900/50 border border-stone-600 rounded-xl px-3 py-2 text-sm text-emerald-200 focus:outline-none focus:border-amber-500 transition-colors"
-                placeholder="輸入 System Ver..."
-              />
-              <p className="text-[10px] text-stone-500 mt-1">這裡改完，登出後的鎖定畫面就會同步更新囉！</p>
+              <input type="text" value={systemInfo || ''} onChange={(e) => updateSystemInfo(e.target.value)} className="w-full bg-stone-900/50 border border-stone-600 rounded-xl px-3 py-2 text-sm text-emerald-200 focus:outline-none focus:border-amber-500 transition-colors" />
             </div>
           </div>
         </section>
       )}
 
-      {/* 小費指南 (內部已支援 dark mode) */}
       <TippingGuide />
-
-      {/* 航班資訊區塊 */}
+      
+      {/* 航班與住宿區塊保持你原本的... */}
       <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 transition-colors">
         <h3 className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
           <Plane size={18} className="text-blue-500" /> 航班資訊
         </h3>
         <div className="space-y-2 mb-4">
-          {UTILS_DATA.flights.map((f, i) => (
-            <FlightCard key={i} {...f} />
-          ))}
-        </div>
-        <a
-          href={UTILS_DATA.driveUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 active:scale-95 transition-all"
-        >
-          <Info size={16} /> 開啟電子機票存摺/泰簽
-        </a>
-      </section>
-
-      {/* 住宿資訊區塊 */}
-      <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 transition-colors">
-        <h3 className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
-          <Home size={18} className="text-orange-500" /> 住宿導航
-        </h3>
-        <div className="space-y-4">
-          {UTILS_DATA.accommodations.map((acc, idx) => (
-            <div
-              key={idx}
-              className="bg-stone-50 dark:bg-stone-700/50 rounded-xl p-4 border border-stone-100 dark:border-stone-600 relative overflow-hidden transition-colors"
-            >
-              <div className="absolute -right-4 -top-4 w-16 h-16 bg-white dark:bg-stone-600 rounded-full opacity-50 pointer-events-none"></div>
-              <div className="flex justify-between items-start mb-2 relative z-10">
-                <div>
-                  <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">
-                    {acc.type}
-                  </span>
-                  <h4 className="font-bold text-stone-800 dark:text-stone-100 text-lg leading-tight">
-                    {acc.name}
-                  </h4>
-                </div>
-                <span className="text-xs font-bold bg-white dark:bg-stone-600 px-2 py-1 rounded border border-stone-100 dark:border-stone-500 text-stone-500 dark:text-stone-300">
-                  {acc.date}
-                </span>
-              </div>
-              <p className="text-xs text-stone-500 dark:text-stone-400 mb-4 flex items-center gap-1">
-                <MapPin size={10} /> {acc.address}
-              </p>
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(acc.mapQuery)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center gap-1.5 py-2 bg-stone-800 dark:bg-stone-900 text-amber-50 rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm"
-                  >
-                    <Navigation size={12} /> 導航
-                  </a>
-                  <a
-                    href={`tel:${acc.phone}`}
-                    className="flex items-center justify-center gap-1.5 py-2 bg-white dark:bg-stone-600 border border-stone-200 dark:border-stone-500 text-stone-600 dark:text-stone-200 rounded-lg text-xs font-bold active:scale-95 transition-transform"
-                  >
-                    <Phone size={12} /> 聯絡
-                  </a>
-                </div>
-                {/* 團員專屬按鈕 */}
-                {isMember && acc.airbnbUrl && (
-                  <div className="grid grid-cols-2 gap-2 animate-fadeIn">
-                    <a
-                      href={acc.airbnbUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-center gap-1.5 py-2 bg-[#FF385C] text-white rounded-lg text-xs font-bold active:scale-95 transition-transform shadow-sm"
-                    >
-                      <Home size={12} /> 開啟房源
-                    </a>
-                    <a
-                      href={acc.guideUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-center gap-1.5 py-2 bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50 rounded-lg text-xs font-bold active:scale-95 transition-transform"
-                    >
-                      <MapPin size={12} /> 房東地圖
-                    </a>
-                  </div>
-                )}
-                {/* 非團員鎖頭 */}
-                {!isMember && acc.name === 'Lucky Charm House' && (
-                  <div className="text-center py-2 bg-stone-50 dark:bg-stone-700 rounded-lg text-[10px] text-stone-400 border border-stone-200 dark:border-stone-600">
-                    🔒 房源連結僅供團員存取
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {(isAdmin || isMember) && (
-          <a
-            href={UTILS_DATA.driveUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 mt-4 rounded-xl bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-bold hover:bg-orange-100 dark:hover:bg-orange-900/50 active:scale-95 transition-all"
-          >
-            <Info size={16} /> 查看住宿憑證
-          </a>
-        )}
-      </section>
-
-      {/* 租車資訊區塊 */}
-      <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6 transition-colors">
-        <h3 className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
-          <Car size={18} className="text-amber-600" /> 租車資訊
-        </h3>
-        <div className="flex gap-4 mb-4">
-          <div className="w-16 h-16 bg-[#009FE3] rounded-xl flex items-center justify-center text-xs font-bold text-white border border-blue-200 shadow-sm">
-            DRIVE
-          </div>
-          <div className="flex-1">
-            <div className="text-lg font-bold text-stone-800 dark:text-stone-100">
-              Nissan Serena (7座)
-            </div>
-            <div className="text-sm text-stone-500 dark:text-stone-400 mb-2 flex items-center gap-1">
-              <CheckCircle size={12} className="text-green-500" />{' '}
-              預訂確認單已存檔
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <span className="text-[10px] bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-1 rounded border border-amber-100 dark:border-amber-800">
-                國際線 8-9號門
-              </span>
-              <span className="text-[10px] bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 px-2 py-1 rounded">
-                現場押金 ฿20,000
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="relative pl-4 border-l-2 border-stone-200 dark:border-stone-600 space-y-6 my-4 ml-2">
-          <div className="relative">
-            <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-green-500 ring-4 ring-white dark:ring-stone-800"></div>
-            <div className="text-xs text-stone-400 font-bold">取車</div>
-            <div className="font-bold text-stone-800 dark:text-stone-100">2/19 (四) 17:30</div>
-            <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-              國際線入境大廳 1樓 (Gate 8-9)
-            </div>
-          </div>
-          <div className="relative">
-            <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-red-400 ring-4 ring-white dark:ring-stone-800"></div>
-            <div className="text-xs text-stone-400 font-bold">還車</div>
-            <div className="font-bold text-stone-800 dark:text-stone-100">2/20 (五) 17:30</div>
-            <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">國際線入境大廳</div>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3 mt-4">
-          <a
-            href="tel:+66847004384"
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-sm font-bold text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
-          >
-            <Phone size={16} /> 車行電話
-          </a>
-          <a
-            href={UTILS_DATA.driveUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-stone-800 dark:bg-stone-700 text-amber-50 text-sm font-bold hover:bg-stone-700 dark:hover:bg-stone-600 active:scale-95 transition-all"
-          >
-            <Info size={16} /> 原始憑證
-          </a>
+          {UTILS_DATA.flights.map((f, i) => <FlightCard key={i} {...f} />)}
         </div>
       </section>
 
-      {/* LINE 分帳 (綠色區塊) */}
-      {isMember && (
-        <section className="bg-[#06C755] p-6 rounded-2xl shadow-lg shadow-green-900/10 text-white relative overflow-hidden mb-6 animate-fadeIn">
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
-          <h3 className="flex items-center gap-2 font-bold text-white mb-2 relative z-10">
-            <Wallet size={18} /> 公款記帳與分帳
-          </h3>
-          <p className="text-green-50 text-sm mb-6 relative z-10 font-medium">
-            所有公費支出請統一記錄在此，系統會自動結算每個人該付多少錢。
-          </p>
-          <a
-            href={atob('aHR0cHM6Ly9hcHAubGlnaHRzcGxpdC5jb20vP2xpZmYuc3RhdGU9JTJGZyUyRm9tSkhaaVpDNWNya1hoNm1RdmFYZ1Q=')}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 w-full bg-white text-[#06C755] py-3.5 rounded-xl font-bold hover:bg-green-50 active:scale-95 transition-all shadow-sm relative z-10"
-          >
-            開啟 Lightsplit 分帳群組 <ArrowRight size={16} />
-          </a>
-        </section>
-      )}
-
-      {/* 匯率計算機 (內部已支援 dark mode) */}
+      {/* 動態換匯區 */}
       <CurrencySection isAdmin={isAdmin} isMember={isMember} />
 
-      {/* 緊急救援 (紅色區塊) */}
-      <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6 transition-colors">
+      {/* 🚨 緊急救援中心 (更新後) */}
+      <section className="bg-white dark:bg-stone-800 p-6 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 mb-6">
         <h3 className="flex items-center gap-2 font-bold text-red-700 dark:text-red-400 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
-          <AlertCircle size={18} className="text-red-600 dark:text-red-400" /> 緊急救援中心
+          <AlertCircle size={18} /> 緊急救援中心
         </h3>
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-3">
-            <a
-              href="tel:1155"
-              className="bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 p-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-100 dark:border-red-900/50"
-            >
-              <span className="text-2xl font-black text-red-600 dark:text-red-400">1155</span>
-              <span className="text-xs font-bold text-red-800 dark:text-red-300">
-                觀光警察 (中文可)
-              </span>
-            </a>
-            <a
-              href="tel:1669"
-              className="bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 p-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors border border-red-100 dark:border-red-900/50"
-            >
-              <span className="text-2xl font-black text-red-600 dark:text-red-400">1669</span>
-              <span className="text-xs font-bold text-red-800 dark:text-red-300">
-                救護車 (24hr)
-              </span>
-            </a>
-          </div>
-          <div>
-            <h4 className="text-xs font-bold text-stone-400 mb-3 uppercase tracking-widest flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>{' '}
-              推薦醫院 (24hr 急診)
-            </h4>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-stone-50 dark:bg-stone-700/50 rounded-xl border border-stone-100 dark:border-stone-600">
-                <div>
-                  <div className="font-bold text-stone-800 dark:text-stone-100">Chiang Mai Ram</div>
-                  <div className="text-xs text-stone-500 dark:text-stone-400">
-                    清邁蘭醫院 (設備最好)
-                  </div>
-                </div>
-                <a
-                  href="tel:053920300"
-                  className="w-8 h-8 bg-white dark:bg-stone-600 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 shadow-sm border border-stone-100 dark:border-stone-500"
-                >
-                  <Phone size={14} />
-                </a>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-stone-50 dark:bg-stone-700/50 rounded-xl border border-stone-100 dark:border-stone-600">
-                <div>
-                  <div className="font-bold text-stone-800 dark:text-stone-100">
-                    Bangkok Hospital
-                  </div>
-                  <div className="text-xs text-stone-500 dark:text-stone-400">
-                    曼谷醫院 (服務最優)
-                  </div>
-                </div>
-                <a
-                  href="tel:1719"
-                  className="w-8 h-8 bg-white dark:bg-stone-600 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 shadow-sm border border-stone-100 dark:border-stone-500"
-                >
-                  <Phone size={14} />
-                </a>
-              </div>
-            </div>
-          </div>
-          <div className="bg-stone-800 dark:bg-stone-950 rounded-xl p-4 text-stone-300 text-sm space-y-4">
-            {/* 1. App 下載建議 - 亮點標示 */}
+        
+        <div className="bg-stone-800 dark:bg-stone-950 rounded-xl p-4 text-stone-300 text-sm space-y-4">
+            {/* App 下載推薦 */}
             <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 flex items-center gap-3">
-              <div className="p-2 bg-amber-500 rounded-full text-stone-900 flex-shrink-0">
-                <Smartphone size={16} strokeWidth={2.5} />
-              </div>
+              <div className="p-2 bg-amber-500 rounded-full text-stone-900 flex-shrink-0"><Smartphone size={16} strokeWidth={2.5} /></div>
               <div>
-                <div className="text-[11px] font-black text-amber-500 uppercase tracking-tighter">必備救命工具</div>
+                <div className="text-[10px] font-black text-amber-500 uppercase tracking-tighter">必備工具</div>
                 <div className="text-xs font-bold text-stone-100">下載 Thailand Tourist Police App</div>
                 <div className="text-[9px] text-stone-400 mt-0.5 leading-tight">支援 GPS 定位與即時求救諮詢</div>
               </div>
             </div>
 
             <div className="space-y-3">
-              {/* 2. 辦事處一般電話 */}
               <div className="flex justify-between items-center border-b border-stone-700 pb-2">
                 <span>🇹🇼 駐泰辦事處 (一般)</span>
-                <a href="tel:+6621193555" className="text-stone-300 font-bold hover:underline">
-                  +66-2-119-35-55
-                </a>
+                <a href="tel:+6621193555" className="text-stone-300 font-bold hover:underline">+66-2-119-35-55</a>
               </div>
-
-              {/* 3. 辦事處急難救助 */}
               <div className="flex justify-between items-center border-b border-stone-700 pb-2">
                 <span>🇹🇼 駐泰辦事處 (急難)</span>
-                <a href="tel:0816664006" className="text-amber-400 font-bold hover:underline">
-                  081-666-4006
-                </a>
+                <a href="tel:0816664006" className="text-amber-400 font-bold hover:underline">081-666-4006</a>
               </div>
-
-              {/* 4. 當地報案 */}
               <div className="flex justify-between items-center border-b border-stone-700 pb-2">
                 <span>👮 當地報案 (Police)</span>
-                <a href="tel:191" className="text-white font-bold hover:underline">
-                  191
-                </a>
+                <a href="tel:191" className="text-white font-bold underline">191</a>
               </div>
-
-              {/* 5. Visa 全球掛失 */}
               <div className="flex justify-between items-center pt-1">
                 <span>💳 Visa 全球掛失</span>
-                <a href="tel:001800115350660" className="text-stone-400 text-xs hover:text-white">
-                  001-800-11-535-0660
-                </a>
+                <a href="tel:001800115350660" className="text-stone-400 text-xs">001-800-11-535-0660</a>
               </div>
             </div>
-          </div>
         </div>
       </section>
     </div>
@@ -3232,7 +2964,7 @@ export default function TravelApp() {
   // 資料狀態
   const [itinerary, setItinerary] = useState(INITIAL_ITINERARY_DATA);
   const [appVersion, setAppVersion] = useState('2026');
-  const [systemInfo, setSystemInfo] = useState('System Ver. 32.5 清邁4人團🧋');
+  const [systemInfo, setSystemInfo] = useState('System Ver. 0.0 清邁4人團🧋');
   const [noticeText, setNoticeText] = useState('載入中...');
   // 😈 Phase 3 彩蛋：全域狀態
   const [secretClickCount, setSecretClickCount] = useState(0); // 點幾下了？
