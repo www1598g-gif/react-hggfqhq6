@@ -3262,7 +3262,7 @@ export default function TravelApp() {
   // 資料狀態
   const [itinerary, setItinerary] = useState(INITIAL_ITINERARY_DATA);
   const [appVersion, setAppVersion] = useState('2026');
-  const [systemInfo, setSystemInfo] = useState('System Ver. 10.0 清邁4人團🧋');
+  const [systemInfo, setSystemInfo] = useState('System Ver. 35.0 清邁4人團🧋');
   const [noticeText, setNoticeText] = useState('載入中...');
   // 😈 Phase 3 彩蛋：全域狀態
   const [secretClickCount, setSecretClickCount] = useState(0); // 點幾下了？
