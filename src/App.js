@@ -2173,7 +2173,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
       <section className="bg-[#FEF3C7] dark:bg-stone-800/80 p-6 rounded-[2.5rem] shadow-sm border-2 border-amber-300 dark:border-stone-700 relative overflow-hidden mt-4">
         <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-400/20 rounded-full blur-3xl"></div>
         <div className="flex items-center gap-2 mb-5 text-amber-900 dark:text-amber-400 font-black text-sm uppercase tracking-[0.2em]">
-          <Sparkles size={16} className="text-amber-600" /> 團員私藏許願池
+          <Sparkles size={16} className="text-amber-600" /> 團員私藏許願池/好店速記
         </div>
 
         <div className="space-y-4 mb-6 max-h-[450px] overflow-y-auto no-scrollbar">
