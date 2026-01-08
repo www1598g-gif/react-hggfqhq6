@@ -2307,14 +2307,18 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
             <FlightCard key={i} {...f} />
           ))}
         </div>
-        <a
-          href={UTILS_DATA.driveUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 active:scale-95 transition-all"
-        >
-          <Info size={16} /> 開啟電子機票存摺/泰簽
-        </a>
+
+        {/* 🔥 修正：只有團員才看得到這顆大按鈕 */}
+        {isMember && (
+          <a
+            href={UTILS_DATA.driveUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 active:scale-95 transition-all animate-fadeIn"
+          >
+            <Info size={16} /> 開啟電子機票存摺/泰簽
+          </a>
+        )}
       </section>
 
       {/* 住宿資訊區塊 */}
@@ -2411,60 +2415,74 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
         <h3 className="flex items-center gap-2 font-bold text-stone-800 dark:text-stone-100 mb-4 border-b border-stone-100 dark:border-stone-700 pb-3">
           <Car size={18} className="text-amber-600" /> 租車資訊
         </h3>
-        <div className="flex gap-4 mb-4">
-          <div className="w-16 h-16 bg-[#009FE3] rounded-xl flex items-center justify-center text-xs font-bold text-white border border-blue-200 shadow-sm">
-            DRIVE
-          </div>
-          <div className="flex-1">
-            <div className="text-lg font-bold text-stone-800 dark:text-stone-100">
-              Nissan Serena (7座)
+
+        {isMember ? (
+          /* ✅ 團員看得到的完整版本 */
+          <div className="animate-fadeIn">
+            <div className="flex gap-4 mb-4">
+              <div className="w-16 h-16 bg-[#009FE3] rounded-xl flex items-center justify-center text-xs font-bold text-white border border-blue-200 shadow-sm">
+                DRIVE
+              </div>
+              <div className="flex-1">
+                <div className="text-lg font-bold text-stone-800 dark:text-stone-100">
+                  Nissan Serena (7座)
+                </div>
+                <div className="text-sm text-stone-500 dark:text-stone-400 mb-2 flex items-center gap-1">
+                  <CheckCircle size={12} className="text-green-500" />{' '}
+                  預訂確認單已存檔
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-[10px] bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-1 rounded border border-amber-100 dark:border-amber-800">
+                    國際線 8-9號門
+                  </span>
+                  <span className="text-[10px] bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 px-2 py-1 rounded">
+                    現場押金 ฿20,000
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="text-sm text-stone-500 dark:text-stone-400 mb-2 flex items-center gap-1">
-              <CheckCircle size={12} className="text-green-500" />{' '}
-              預訂確認單已存檔
+            <div className="relative pl-4 border-l-2 border-stone-200 dark:border-stone-600 space-y-6 my-4 ml-2">
+              <div className="relative">
+                <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-green-500 ring-4 ring-white dark:ring-stone-800"></div>
+                <div className="text-xs text-stone-400 font-bold">取車</div>
+                <div className="font-bold text-stone-800 dark:text-stone-100">2/19 (四) 17:30</div>
+                <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                  國際線入境大廳 1樓 (Gate 8-9)
+                </div>
+              </div>
+              <div className="relative">
+                <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-red-400 ring-4 ring-white dark:ring-stone-800"></div>
+                <div className="text-xs text-stone-400 font-bold">還車</div>
+                <div className="font-bold text-stone-800 dark:text-stone-100">2/20 (五) 17:30</div>
+                <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">國際線入境大廳</div>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <span className="text-[10px] bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-1 rounded border border-amber-100 dark:border-amber-800">
-                國際線 8-9號門
-              </span>
-              <span className="text-[10px] bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 px-2 py-1 rounded">
-                現場押金 ฿20,000
-              </span>
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              <a
+                href="tel:+66847004384"
+                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-sm font-bold text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+              >
+                <Phone size={16} /> 車行電話
+              </a>
+              <a
+                href={UTILS_DATA.driveUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-stone-800 dark:bg-stone-700 text-amber-50 text-sm font-bold hover:bg-stone-700 dark:hover:bg-stone-600 active:scale-95 transition-all"
+              >
+                <Info size={16} /> 原始憑證
+              </a>
             </div>
           </div>
-        </div>
-        <div className="relative pl-4 border-l-2 border-stone-200 dark:border-stone-600 space-y-6 my-4 ml-2">
-          <div className="relative">
-            <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-green-500 ring-4 ring-white dark:ring-stone-800"></div>
-            <div className="text-xs text-stone-400 font-bold">取車</div>
-            <div className="font-bold text-stone-800 dark:text-stone-100">2/19 (四) 17:30</div>
-            <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-              國際線入境大廳 1樓 (Gate 8-9)
-            </div>
+        ) : (
+          /* 🔒 訪客看到的鎖定提示 */
+          <div className="py-6 text-center bg-stone-50 dark:bg-stone-900/50 rounded-xl border border-dashed border-stone-200 dark:border-stone-800">
+            <Lock size={24} className="mx-auto text-stone-300 mb-2 opacity-50" />
+            <p className="text-[11px] text-stone-400 font-bold">
+              租車憑證與詳細內容僅供團員存取
+            </p>
           </div>
-          <div className="relative">
-            <div className="absolute -left-[21px] top-0 w-3 h-3 rounded-full bg-red-400 ring-4 ring-white dark:ring-stone-800"></div>
-            <div className="text-xs text-stone-400 font-bold">還車</div>
-            <div className="font-bold text-stone-800 dark:text-stone-100">2/20 (五) 17:30</div>
-            <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">國際線入境大廳</div>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3 mt-4">
-          <a
-            href="tel:+66847004384"
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 text-sm font-bold text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
-          >
-            <Phone size={16} /> 車行電話
-          </a>
-          <a
-            href={UTILS_DATA.driveUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-stone-800 dark:bg-stone-700 text-amber-50 text-sm font-bold hover:bg-stone-700 dark:hover:bg-stone-600 active:scale-95 transition-all"
-          >
-            <Info size={16} /> 原始憑證
-          </a>
-        </div>
+        )}
       </section>
 
       {/* LINE 分帳 (綠色區塊) */}
