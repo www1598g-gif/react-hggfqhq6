@@ -2032,8 +2032,50 @@ const CurrencySection = () => {
 // ============================================
 // 完整指南頁面 (GuidePage) - 公佈欄 + 挑食卡 + 6大清單
 // ============================================
-const GuidePage = ({ isAdmin, noticeText, updateNoticeText }) => {
+const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   const [showPickyEater, setShowPickyEater] = useState(false);
+  const [sharedStores, setSharedStores] = useState([]);
+  const [newStoreName, setNewStoreName] = useState('');
+  const [newStoreUrl, setNewStoreUrl] = useState('');
+
+  // 1. ☁️ 監聽雲端許願池
+  useEffect(() => {
+    const storeRef = ref(db, 'sharedStores');
+    const unsubscribe = onValue(storeRef, (snapshot) => {
+      const val = snapshot.val();
+      if (val) setSharedStores(val);
+      else setSharedStores([]);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 2. ☁️ 新增商家邏輯
+  const handleAddStore = () => {
+    if (!newStoreName.trim()) return alert("請輸入商家名稱 🐹");
+    
+    // 如果沒輸入網址，自動生成 Google Maps 搜尋連結
+    const finalUrl = newStoreUrl.trim() 
+      ? newStoreUrl 
+      : `https://www.google.com/maps/search/${encodeURIComponent(newStoreName)}`;
+
+    const newList = [...sharedStores, { 
+      name: newStoreName, 
+      url: finalUrl, 
+      adder: isAdmin ? '導遊' : '團員' 
+    }];
+
+    set(ref(db, 'sharedStores'), newList).then(() => {
+      setNewStoreName('');
+      setNewStoreUrl('');
+    });
+  };
+
+  // 3. ☁️ 刪除商家
+  const handleDeleteStore = (index) => {
+    if (!window.confirm("確定要移除這個願望嗎？")) return;
+    const newList = sharedStores.filter((_, i) => i !== index);
+    set(ref(db, 'sharedStores'), newList);
+  };
 
   const pickyItems = [
     { en: 'Coriander / Cilantro', th: 'ไม่ใส่ผักชี', zh: '香菜' },
@@ -2046,60 +2088,18 @@ const GuidePage = ({ isAdmin, noticeText, updateNoticeText }) => {
   ];
 
   const guideSections = [
-    {
-      title: '咖啡地圖',
-      icon: <Coffee className="text-amber-600" />,
-      mapUrl: 'https://maps.app.goo.gl/vgKmgeXXo4Dzkad29',
-      aiQuery: '咖啡廳推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的評價 以中文回答',
-      desc: '蒐集清邁最具特色的工業風與老宅咖啡廳。',
-      color: 'bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800'
-    },
-    {
-      title: '必吃清單',
-      icon: <UtensilsCrossed className="text-red-600" />,
-      mapUrl: 'https://maps.app.goo.gl/4wmbvZrToa8N59Jd8',
-      aiQuery: '必吃在地美食與名店推薦15家 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
-      desc: '泰北金麵 (Khao Soy)、烤雞、泰北拼盤，沒吃到不算來過清邁！',
-      color: 'bg-red-50 border-red-100 dark:bg-red-900/20 dark:border-red-800'
-    },
-    {
-      title: '甜點清單',
-      icon: <IceCream className="text-pink-600" />,
-      mapUrl: 'https://maps.app.goo.gl/RQSchhVcqjjftE4x6',
-      aiQuery: '甜點下午茶店推薦15家及特色 芒果糯米飯 椰子派也要 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
-      desc: '清邁限定椰子派、芒果糯米以及各種高顏值網美甜點。',
-      color: 'bg-pink-50 border-pink-100 dark:bg-pink-900/20 dark:border-pink-800'
-    },
-    {
-      title: '微醺酒吧',
-      icon: <Beer className="text-purple-600" />,
-      mapUrl: 'https://maps.app.goo.gl/xJwFHhz4zzGHND3P8',
-      aiQuery: '酒吧推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
-      desc: '清邁夜晚的靈魂，從尼曼路到河濱區的小酌選單。',
-      color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800'
-    },
-    {
-      title: '極致SPA與按摩',
-      icon: <Flower2 className="text-emerald-600" />,
-      mapUrl: 'https://maps.app.goo.gl/Kw3c8NTVD9ZuVXXo8',
-      aiQuery: 'spa推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
-      desc: '舒緩雙腿的爛腳救星，包含高檔 SPA 與在地按摩。',
-      color: 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800'
-    },
-    {
-      title: '百貨商場',
-      icon: <ShoppingBag className="text-blue-600" />,
-      mapUrl: 'https://maps.app.goo.gl/ehpNk2BDJHWBZTtz6',
-      aiQuery: '百貨商場推薦6家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
-      desc: '整理行李、吹冷氣、買伴手禮與國際品牌。',
-      color: 'bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800'
-    }
+    { title: '咖啡地圖', icon: <Coffee className="text-amber-600" />, mapUrl: 'https://maps.app.goo.gl/0', aiQuery: '咖啡廳推薦10家及特色', desc: '蒐集清邁最具特色的工業風與老宅咖啡廳。', color: 'bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800' },
+    { title: '必吃清單', icon: <UtensilsCrossed className="text-red-600" />, mapUrl: 'https://maps.app.goo.gl/1', aiQuery: '必吃在地美食與名店推薦', desc: '泰北金麵、烤雞、泰北拼盤，沒吃到不算來過清邁！', color: 'bg-red-50 border-red-100 dark:bg-red-900/20 dark:border-red-800' },
+    { title: '甜點清單', icon: <IceCream className="text-pink-600" />, mapUrl: 'https://maps.app.goo.gl/2', aiQuery: '甜點下午茶店推薦', desc: '清邁限定椰子派、芒果糯米以及各種高顏值網美甜點。', color: 'bg-pink-50 border-pink-100 dark:bg-pink-900/20 dark:border-pink-800' },
+    { title: '微醺酒吧', icon: <Beer className="text-purple-600" />, mapUrl: 'https://maps.app.goo.gl/3', aiQuery: '酒吧推薦10家及特色', desc: '清邁夜晚的靈魂，從尼曼路到河濱區的小酌選單。', color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800' },
+    { title: '極致SPA與按摩', icon: <Flower2 className="text-emerald-600" />, mapUrl: 'https://maps.app.goo.gl/4', aiQuery: 'spa推薦10家及特色', desc: '舒緩雙腿的爛腳救星，包含高檔 SPA 與在地按摩。', color: 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800' },
+    { title: '百貨商場', icon: <ShoppingBag className="text-blue-600" />, mapUrl: 'https://maps.app.goo.gl/5', aiQuery: '百貨商場推薦6家及特色', desc: '整理行李、吹冷氣、買伴手禮與國際品牌。', color: 'bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800' }
   ];
 
   return (
     <div className="p-6 space-y-6 pb-24 animate-fadeIn">
       {/* 📌 1. 管理員公佈欄 */}
-      <section className="relative">
+      <section>
         <div className="bg-white dark:bg-stone-800 border border-amber-100 dark:border-stone-700 rounded-[2rem] p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-3 text-amber-600 dark:text-amber-400 font-bold text-xs uppercase tracking-widest">
             <Pin size={14} className="rotate-45" /> 團隊重要通知
@@ -2112,7 +2112,7 @@ const GuidePage = ({ isAdmin, noticeText, updateNoticeText }) => {
               placeholder="編輯公佈欄資訊..."
             />
           ) : (
-            <div className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed whitespace-pre-line italic px-1">
+            <div className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed whitespace-pre-line italic px-1 select-text">
               {noticeText}
             </div>
           )}
@@ -2121,14 +2121,9 @@ const GuidePage = ({ isAdmin, noticeText, updateNoticeText }) => {
 
       {/* 🚫 2. 挑食救援卡 */}
       <section>
-        <button
-          onClick={() => setShowPickyEater(!showPickyEater)}
-          className="w-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 rounded-2xl p-4 flex items-center justify-between group active:scale-95 transition-all"
-        >
+        <button onClick={() => setShowPickyEater(!showPickyEater)} className="w-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 rounded-2xl p-4 flex items-center justify-between active:scale-95 transition-all">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white dark:bg-rose-900/50 rounded-xl shadow-sm text-rose-500">
-              <Ban size={20} />
-            </div>
+            <div className="p-2 bg-white dark:bg-rose-900/50 rounded-xl shadow-sm text-rose-500"><Ban size={20} /></div>
             <div className="text-left">
               <div className="font-bold text-rose-800 dark:text-rose-300 text-sm">挑食避雷針 (救命卡)</div>
               <div className="text-[10px] text-rose-500/70 uppercase font-bold tracking-tighter">Dietary Restrictions</div>
@@ -2136,26 +2131,14 @@ const GuidePage = ({ isAdmin, noticeText, updateNoticeText }) => {
           </div>
           {showPickyEater ? <ChevronUp size={18} className="text-rose-300" /> : <ChevronDown size={18} className="text-rose-300" />}
         </button>
-
         {showPickyEater && (
           <div className="mt-3 bg-white dark:bg-stone-800 rounded-3xl border border-rose-100 dark:border-stone-700 overflow-hidden animate-fadeIn">
-            <div className="bg-rose-500 p-3 text-center">
-              <span className="text-white text-xs font-bold tracking-widest flex items-center justify-center gap-2">
-                <Languages size={14} /> 直接拿給店員看此列表
-              </span>
-            </div>
+            <div className="bg-rose-500 p-3 text-center"><span className="text-white text-xs font-bold tracking-widest flex items-center justify-center gap-2"><Languages size={14} /> 直接拿給店員看此列表</span></div>
             <div className="divide-y divide-rose-50 dark:divide-stone-700">
               {pickyItems.map((item, i) => (
-                <div key={i} className="px-5 py-4 flex justify-between items-center group hover:bg-rose-50/50 dark:hover:bg-stone-700/50 transition-colors">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-stone-400 font-bold uppercase">{item.en}</span>
-                    <span className="font-bold text-stone-800 dark:text-stone-100">{item.zh}</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-lg font-black text-rose-600 dark:text-rose-400 font-serif">
-                      {item.th}
-                    </span>
-                  </div>
+                <div key={i} className="px-5 py-4 flex justify-between items-center select-text">
+                  <div className="flex flex-col"><span className="text-[10px] text-stone-400 font-bold uppercase">{item.en}</span><span className="font-bold text-stone-800 dark:text-stone-100">{item.zh}</span></div>
+                  <div className="text-right"><span className="text-lg font-black text-rose-600 dark:text-rose-400 font-serif">{item.th}</span></div>
                 </div>
               ))}
             </div>
@@ -2168,38 +2151,77 @@ const GuidePage = ({ isAdmin, noticeText, updateNoticeText }) => {
         <Compass className="text-stone-400" size={28} />
         <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100">探索清邁</h2>
       </div>
-
       <div className="grid grid-cols-1 gap-4">
         {guideSections.map((section, idx) => (
-          <div key={idx} className={`p-5 rounded-[2rem] border ${section.color} shadow-sm transition-all active:scale-[0.98]`}>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2.5 bg-white dark:bg-stone-800 rounded-2xl shadow-sm">
-                {section.icon}
-              </div>
-              <h3 className="text-lg font-bold text-stone-800 dark:text-stone-100">{section.title}</h3>
-            </div>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400 mb-5 leading-relaxed h-8 line-clamp-2">
-              {section.desc}
-            </p>
+          <div key={idx} className={`p-5 rounded-[2rem] border ${section.color} shadow-sm active:scale-[0.98] transition-all`}>
+            <div className="flex items-center gap-3 mb-3"><div className="p-2.5 bg-white dark:bg-stone-800 rounded-2xl shadow-sm">{section.icon}</div><h3 className="text-lg font-bold text-stone-800 dark:text-stone-100">{section.title}</h3></div>
+            <p className="text-[11px] text-stone-500 dark:text-stone-400 mb-5 leading-relaxed h-8 line-clamp-2">{section.desc}</p>
             <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => window.open(section.mapUrl, '_blank')}
-                className="flex items-center justify-center gap-2 py-2.5 bg-stone-800 dark:bg-stone-700 text-amber-50 rounded-2xl text-xs font-bold shadow-md active:scale-95 transition-all"
-              >
-                <MapPin size={14} /> 開啟清單
-              </button>
-              <button
-                onClick={() => window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent('清邁 ' + section.aiQuery)}`, '_blank')}
-                className="flex items-center justify-center gap-2 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition-all"
-              >
-                <Sparkles size={14} className="text-teal-500" /> 問問 AI
-              </button>
+              <button onClick={() => window.open(section.mapUrl, '_blank')} className="flex items-center justify-center gap-2 py-2.5 bg-stone-800 dark:bg-stone-700 text-amber-50 rounded-2xl text-xs font-bold shadow-md active:scale-95 transition-all"><MapPin size={14} /> 開啟清單</button>
+              <button onClick={() => window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent('清邁 ' + section.aiQuery)}`, '_blank')} className="flex items-center justify-center gap-2 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition-all"><Sparkles size={14} className="text-teal-500" /> 問問 AI</button>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="bg-stone-100 dark:bg-stone-800/50 p-4 rounded-2xl text-center mt-4">
+      {/* 🍱 4. 團隊協作許願池 (移到最下方) */}
+      <section className="bg-stone-800 dark:bg-stone-950 p-6 rounded-[2.5rem] shadow-xl border border-stone-700 relative overflow-hidden mt-4">
+        <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        <div className="flex items-center gap-2 mb-5 text-emerald-400 font-bold text-xs uppercase tracking-[0.2em]">
+          <Sparkles size={14} /> 團員私藏許願池
+        </div>
+
+        {/* 顯示列表 */}
+        <div className="space-y-3 mb-6 max-h-[400px] overflow-y-auto no-scrollbar">
+          {sharedStores.length === 0 && (
+            <div className="text-[10px] text-stone-500 italic text-center py-8 bg-stone-900/30 rounded-3xl border border-dashed border-stone-800">
+              目前還沒有人許願，快去新增想去的店！
+            </div>
+          )}
+          {sharedStores.map((store, i) => (
+            <div key={i} className="flex items-center gap-3 bg-stone-900/50 p-4 rounded-2xl border border-stone-800 group transition-all active:bg-stone-900">
+              <button 
+                onClick={() => window.open(store.url, '_blank')}
+                className="flex-1 text-left min-w-0"
+              >
+                <div className="text-sm font-bold text-stone-200 truncate">{store.name}</div>
+                <div className="text-[9px] text-stone-500 uppercase tracking-widest mt-0.5">Added by {store.adder}</div>
+              </button>
+              {(isAdmin || isMember) && (
+                <button onClick={() => handleDeleteStore(i)} className="p-2 text-stone-700 hover:text-red-400 transition-colors">
+                  <Trash2 size={16} />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* 新增區塊 */}
+        {(isAdmin || isMember) && (
+          <div className="pt-5 border-t border-stone-700/50 space-y-3">
+            <div className="text-[10px] text-emerald-500/70 font-bold uppercase tracking-tighter ml-1">我想去這裡...</div>
+            <input 
+              value={newStoreName}
+              onChange={(e) => setNewStoreName(e.target.value)}
+              placeholder="商家名稱 (必填)"
+              className="w-full bg-stone-900 border border-stone-800 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-stone-600 outline-none focus:border-emerald-500 transition-all"
+            />
+            <div className="flex gap-2">
+              <input 
+                value={newStoreUrl}
+                onChange={(e) => setNewStoreUrl(e.target.value)}
+                placeholder="網址 (選填，不填會自動搜尋)"
+                className="flex-1 bg-stone-900 border border-stone-800 rounded-2xl px-4 py-3 text-xs text-white placeholder:text-stone-600 outline-none focus:border-emerald-500 transition-all"
+              />
+              <button onClick={handleAddStore} className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 rounded-2xl text-lg font-bold active:scale-90 transition-all shadow-lg shadow-emerald-900/20">
+                +
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <div className="bg-stone-100 dark:bg-stone-800/50 p-4 rounded-2xl text-center mt-4 mb-4">
         <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest leading-loose">
           這份指南是為了 2026 四人團特別準備的<br />
           希望大家玩得開心 🇹🇭
@@ -3616,6 +3638,7 @@ export default function TravelApp() {
               {activeTab === 'guide' && (
                 <GuidePage
                   isAdmin={isAdmin}
+                  isMember={isMember}
                   noticeText={noticeText}
                   updateNoticeText={handleUpdateNotice}
                 />
