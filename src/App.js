@@ -54,6 +54,7 @@ import {
   Pin,       // 🔥 補上這個
   Ban,       // 🔥 補上這個
   Languages, // 🔥 補上這個
+  Smartphone,
 } from 'lucide-react';
 
 
