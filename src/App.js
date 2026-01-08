@@ -1917,18 +1917,36 @@ const CurrencySection = ({ isAdmin, isMember }) => {
       .then(data => { if(data?.rates?.THB) setRate(data.rates.THB); })
       .catch(() => console.log('匯率更新失敗'));
 
-    // 監聽雲端換匯所
+    // 2. ☁️ 雲端燒錄邏輯
     const exRef = ref(db, 'exchanges');
     const unsubscribe = onValue(exRef, (snapshot) => {
       const val = snapshot.val();
-      setExchanges(val || [
-        { name: 'Super Rich (清邁店)', note: '🔥 匯率通常全清邁最好', map: 'Super Rich Chiang Mai' },
-        { name: 'Mr. Pierre (巫宗雄)', note: '👍 古城內匯率王', map: 'Mr. Pierre Money Exchange' }
-      ]);
+      
+      if (val === null) {
+        // 🔥 偵測到雲端是空的，執行「燒錄」初始化
+        const defaultExchanges = [
+          { name: 'Super Rich (清邁店)', note: '🔥 匯率通常全清邁最好', map: 'Super Rich Chiang Mai' },
+          { name: 'Mr. Pierre (巫宗雄)', note: '👍 古城內匯率王，老闆會說中文', map: 'Mr. Pierre Money Exchange' },
+          { name: 'G Exchange', note: 'Loi Kroh 路熱門店，評價極高', map: 'G Exchange Chiang Mai' },
+          { name: '清邁機場換匯 (Arrival)', note: '🚨 抵達應急用，匯率較差', map: 'Chiang Mai International Airport' },
+          { name: 'S.K. Money Exchange', note: '塔佩門附近，方便快速', map: 'S.K. Money Exchange Chiang Mai' }
+        ];
+        
+        // 動作：直接寫入 Firebase 
+        set(exRef, defaultExchanges);
+        setExchanges(defaultExchanges);
+      } else {
+        // 如果雲端已有資料（不管是原本這 5 間還是你後來新增的），就讀取雲端
+        setExchanges(val);
+      }
     });
     return () => unsubscribe();
-  }, []);
+  }, []);;
 
+
+
+
+  
   const handleAddEx = () => {
     if (!newExName.trim()) return alert("請輸入名稱 🐹");
     const newList = [...(exchanges || []), { name: newExName, note: newExNote, map: newExName }];
