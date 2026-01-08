@@ -1979,7 +1979,7 @@ const CurrencySection = ({ isAdmin, isMember }) => {
             { name: 'Super Rich (清邁店)', note: '🔥 匯率通常全清邁最好', map: 'Super Rich Chiang Mai' },
             { name: 'Mr. Pierre (巫宗雄)', note: '👍 古城內匯率王，老闆會中文', map: 'Mr. Pierre Money Exchange' },
             { name: 'G Exchange', note: 'Loi Kroh 路熱門店，評價高', map: 'G Exchange Chiang Mai' },
-            { name: '清邁機場換匯', note: '🚨 應急用，匯率較差', map: 'Chiang Mai International Airport' },
+            { name: 'MT Service 2528 Co,.Ltd (ร้านแลกเงิน)', note: '工作人員服務周到，熱情友好，笑容滿面。匯率也很優惠，與當時的匯率相符。新年假期也營業。', map: 'MT Service 2528 Co,.Ltd (ร้านแลกเงิน)' },
             { name: 'S.K. Money Exchange', note: '塔佩門附近方便', map: 'S.K. Money Exchange Chiang Mai' }
           ];
           set(exRef, defaultExchanges); // 燒錄回雲端
