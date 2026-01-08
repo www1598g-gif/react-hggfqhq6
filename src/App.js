@@ -2125,10 +2125,49 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
       </section>
 
       {/* 🚫 2. 挑食救援卡 */}
-      {/* ... 省略，保持不變 ... */}
+      <section>
+        <button onClick={() => setShowPickyEater(!showPickyEater)} className="w-full bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 rounded-2xl p-4 flex items-center justify-between active:scale-95 transition-all">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white dark:bg-rose-900/50 rounded-xl shadow-sm text-rose-500"><Ban size={20} /></div>
+            <div className="text-left">
+              <div className="font-bold text-rose-800 dark:text-rose-300 text-sm">挑食避雷針 (救命卡)</div>
+              <div className="text-[10px] text-rose-500/70 uppercase font-bold tracking-tighter">Dietary Restrictions</div>
+            </div>
+          </div>
+          {showPickyEater ? <ChevronUp size={18} className="text-rose-300" /> : <ChevronDown size={18} className="text-rose-300" />}
+        </button>
+        {showPickyEater && (
+          <div className="mt-3 bg-white dark:bg-stone-800 rounded-3xl border border-rose-100 dark:border-stone-700 overflow-hidden animate-fadeIn">
+            <div className="bg-rose-500 p-3 text-center"><span className="text-white text-xs font-bold tracking-widest flex items-center justify-center gap-2"><Languages size={14} /> 直接拿給店員看此列表</span></div>
+            <div className="divide-y divide-rose-50 dark:divide-stone-700">
+              {pickyItems.map((item, i) => (
+                <div key={i} className="px-5 py-4 flex justify-between items-center select-text">
+                  <div className="flex flex-col"><span className="text-[10px] text-stone-400 font-bold uppercase">{item.en}</span><span className="font-bold text-stone-800 dark:text-stone-100">{item.zh}</span></div>
+                  <div className="text-right"><span className="text-lg font-black text-rose-600 dark:text-rose-400 font-serif">{item.th}</span></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
 
       {/* 🧭 3. 探索清邁標題與卡片 */}
-      {/* ... 省略，保持不變 ... */}
+      <div className="flex items-center gap-3 pt-2">
+        <Compass className="text-stone-400" size={28} />
+        <h2 className="text-2xl font-serif font-bold text-stone-800 dark:text-stone-100">探索清邁</h2>
+      </div>
+      <div className="grid grid-cols-1 gap-4">
+        {guideSections.map((section, idx) => (
+          <div key={idx} className={`p-5 rounded-[2rem] border ${section.color} shadow-sm active:scale-[0.98] transition-all`}>
+            <div className="flex items-center gap-3 mb-3"><div className="p-2.5 bg-white dark:bg-stone-800 rounded-2xl shadow-sm">{section.icon}</div><h3 className="text-lg font-bold text-stone-800 dark:text-stone-100">{section.title}</h3></div>
+            <p className="text-[11px] text-stone-500 dark:text-stone-400 mb-5 leading-relaxed h-8 line-clamp-2">{section.desc}</p>
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={() => window.open(section.mapUrl, '_blank')} className="flex items-center justify-center gap-2 py-2.5 bg-stone-800 dark:bg-stone-700 text-amber-50 rounded-2xl text-xs font-bold shadow-md active:scale-95 transition-all"><MapPin size={14} /> 開啟清單</button>
+              <button onClick={() => window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent('清邁 ' + section.aiQuery)}`, '_blank')} className="flex items-center justify-center gap-2 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-700 dark:text-stone-200 rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition-all"><Sparkles size={14} className="text-teal-500" /> 問問 AI</button>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* 🍮 4. 團隊協作許願池 (暖黃強化版) */}
       <section className="bg-[#FEF3C7] dark:bg-stone-800/80 p-6 rounded-[2.5rem] shadow-sm border-2 border-amber-300 dark:border-stone-700 relative overflow-hidden mt-4">
