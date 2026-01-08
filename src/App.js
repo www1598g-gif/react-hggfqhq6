@@ -685,35 +685,46 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
   const [newLinkName, setNewLinkName] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
 
-  // 1. 讀取連結
+// ✅ 貼上這一段：
+  // 1. ☁️ 從 Firebase 監聽雲端連結
   useEffect(() => {
-    const savedLinks = localStorage.getItem('cm_secret_links');
-    if (savedLinks) {
-      setSecretLinks(JSON.parse(savedLinks));
-    } else {
-      setSecretLinks([
-        { name: '🚀 尋找飛行指南 (Weed.th)', url: 'https://weed.th/cannabis/chiang-mai' }
-      ]);
-    }
+    const linksRef = ref(db, 'secretLinks');
+    const unsubscribe = onValue(linksRef, (snapshot) => {
+      const val = snapshot.val();
+      if (val) {
+        setSecretLinks(val);
+      } else {
+        // 如果雲端尚未有資料，設定一組初始預設值
+        const defaultLinks = [
+          { name: '🚀 尋找飛行指南 (Weed.th)', url: 'https://weed.th/cannabis/chiang-mai' }
+        ];
+        setSecretLinks(defaultLinks);
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
-  // 2. 新增連結
+  // 2. ☁️ 新增連結同步到雲端
   const handleAddLink = () => {
     if (!newLinkName || !newLinkUrl) return alert("請輸入名稱和網址喔！");
     const newLinks = [...secretLinks, { name: newLinkName, url: newLinkUrl }];
-    setSecretLinks(newLinks);
-    localStorage.setItem('cm_secret_links', JSON.stringify(newLinks));
-    setNewLinkName('');
-    setNewLinkUrl('');
+    
+    // 直接更新 Firebase，所有團員會同步看到
+    set(ref(db, 'secretLinks'), newLinks).then(() => {
+      setNewLinkName('');
+      setNewLinkUrl('');
+    }).catch(() => alert("雲端同步失敗 🛜"));
   };
 
-  // 3. 刪除連結
+  // 3. ☁️ 從雲端刪除連結
   const handleDeleteLink = (index) => {
     if (!window.confirm("確定要刪除這個傳送門嗎？")) return;
     const newLinks = secretLinks.filter((_, i) => i !== index);
-    setSecretLinks(newLinks);
-    localStorage.setItem('cm_secret_links', JSON.stringify(newLinks));
+    set(ref(db, 'secretLinks'), newLinks);
   };
+
+
+
   // 抽離 fetch 邏輯，讓按鈕也可以呼叫
   const fetchWeather = async () => {
     setIsLoading(true); // 開始轉圈圈
