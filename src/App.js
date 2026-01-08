@@ -675,7 +675,7 @@ const UTILS_DATA = {
 // ============================================
 //  修正後的 WeatherHero (含手動刷新 + 全市平均 AQI) 
 // ============================================
-const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, onHardRefresh }) => {
+const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, onHardRefresh, itinerary, setItinerary }) => {
   const [data, setData] = useState(null);
   const [aqi, setAqi] = useState(50);
   const [bannerText, setBannerText] = useState('');
@@ -732,7 +732,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
     try {
       // 1. 天氣
       const res = await fetch(
-        'https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&current=temperature_2m,weather_code,relative_humidity_2m&hourly=temperature_2m,weather_code,precipitation_probability&forecast_days=2&timezone=Asia%2FBangkok'
+        'https://api.open-meteo.com/v1/forecast?latitude=18.7883&longitude=98.9853&current=temperature_2m,weather_code,relative_humidity_2m&hourly=temperature_2m,weather_code,precipitation_probability&daily=temperature_2m_max,weather_code&forecast_days=16&timezone=Asia%2FBangkok'
       );
       const json = await res.json();
 
@@ -784,6 +784,38 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
 
       if (json && json.current) {
         setData(json);
+        // 🔥 --- 預報對接補丁開始 (僅微調此區) --- 🔥
+        if (json.daily && json.daily.time) {
+          const forecastDates = json.daily.time;
+          const maxTemps = json.daily.temperature_2m_max;
+          const weatherCodes = json.daily.weather_code; // 取得天氣代碼
+
+          const updatedItinerary = itinerary.map((day) => {
+            const dateIndex = forecastDates.indexOf(day.date);
+            if (dateIndex !== -1) {
+              // 根據 WMO Code 判定圖標字串
+              const code = weatherCodes[dateIndex];
+              let iconStr = 'sunny';
+              if (code >= 51) iconStr = 'rainy';
+              else if (code >= 1 && code <= 3) iconStr = 'cloudy';
+
+              return {
+                ...day,
+                weather: {
+                  ...day.weather,
+                  temp: `${Math.round(maxTemps[dateIndex])}°C`,
+                  icon: iconStr, // ✅ 更新圖標字串，讓它不再死忠於 'sunny'
+                  realData: true,
+                }
+              };
+            }
+            return day;
+          });
+          setItinerary(updatedItinerary);
+        }
+        // 🔥 --- 預報對接補丁結束 --- 🔥
+
+
         const currentHour = new Date().getHours();
         const next3HoursRain = json.hourly.precipitation_probability.slice(currentHour, currentHour + 3);
         const maxRainProb = Math.max(...next3HoursRain);
@@ -1747,7 +1779,17 @@ const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, updateContent, 
           </div>
         </div>
         <div className="text-right">
-          <div className="flex items-center justify-end gap-1 mb-1">
+          <div className="flex items-center justify-end gap-2 mb-1">
+
+            {/* ✅ 新增：根據資料顯示對應小圖示 (使用你原本就有 import 的圖示) */}
+            {!dayData.weather.realData ? null : ( // 只有拿到真實數據才顯示預報圖標，保持介面乾淨
+              <>
+                {dayData.weather.icon === 'sunny' && <Sun size={14} className="text-amber-500" />}
+                {dayData.weather.icon === 'cloudy' && <Cloud size={14} className="text-stone-400" />}
+                {dayData.weather.icon === 'rainy' && <CloudRain size={14} className="text-blue-400" />}
+              </>
+            )}
+
             {dayData.weather.realData && (
               <Signal size={10} className="text-green-500 animate-pulse" />
             )}
@@ -1945,7 +1987,7 @@ const CurrencySection = ({ isAdmin, isMember }) => {
           const newTime = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
           setRate(newRate);
           setLastUpdate(newTime); // ✅ 成功抓到，更新時間戳記
-          
+
           // 燒錄進快取，下次沒網也能用
           localStorage.setItem('cm_exchange_rate', newRate);
           localStorage.setItem('cm_exchange_time', newTime);
@@ -2014,7 +2056,7 @@ const CurrencySection = ({ isAdmin, isMember }) => {
 
       {/* 計算機 - 保留你原本的結構，只補上資訊顯示線 */}
       <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl mb-6 border border-green-100 dark:border-green-800/30">
-        
+
         {/* ✅ 新增：頂部匯率標示燈 */}
         <div className="text-[10px] text-green-600 dark:text-green-400 font-bold mb-2 flex justify-between">
           <span>即時匯率基準 1 TWD ≈ {rate} THB</span>
@@ -2023,20 +2065,20 @@ const CurrencySection = ({ isAdmin, isMember }) => {
 
         {/* 🚀 這是你本來的雙向輸入電路，完全沒動 */}
         <div className="flex items-center gap-2">
-          <input 
-            type="number" 
-            value={twd} 
-            onChange={(e) => { setTwd(e.target.value); setThb(e.target.value ? (parseFloat(e.target.value) * rate).toFixed(2) : ''); }} 
-            placeholder="台幣" 
-            className="w-full p-2 rounded-lg border border-green-200 dark:border-green-800 dark:bg-stone-700 dark:text-white outline-none focus:border-green-500 font-bold text-stone-700" 
+          <input
+            type="number"
+            value={twd}
+            onChange={(e) => { setTwd(e.target.value); setThb(e.target.value ? (parseFloat(e.target.value) * rate).toFixed(2) : ''); }}
+            placeholder="台幣"
+            className="w-full p-2 rounded-lg border border-green-200 dark:border-green-800 dark:bg-stone-700 dark:text-white outline-none focus:border-green-500 font-bold text-stone-700"
           />
           <span className="text-stone-400 font-bold">=</span>
-          <input 
-            type="number" 
-            value={thb} 
-            onChange={(e) => { setThb(e.target.value); setTwd(e.target.value ? (parseFloat(e.target.value) / rate).toFixed(2) : ''); }} 
-            placeholder="泰銖" 
-            className="w-full p-2 rounded-lg border border-green-200 dark:border-green-800 dark:bg-stone-700 dark:text-white outline-none focus:border-green-500 font-bold text-stone-700" 
+          <input
+            type="number"
+            value={thb}
+            onChange={(e) => { setThb(e.target.value); setTwd(e.target.value ? (parseFloat(e.target.value) / rate).toFixed(2) : ''); }}
+            placeholder="泰銖"
+            className="w-full p-2 rounded-lg border border-green-200 dark:border-green-800 dark:bg-stone-700 dark:text-white outline-none focus:border-green-500 font-bold text-stone-700"
           />
         </div>
       </div>
@@ -3758,6 +3800,8 @@ export default function TravelApp() {
               {/* 🔥 傳入 onLock 讓子元件可以呼叫鎖定 */}
               <WeatherHero
                 isAdmin={isAdmin}
+                itinerary={itinerary}           // 🔥 補這行
+                setItinerary={setItinerary}
                 versionText={appVersion}
                 updateVersion={handleUpdateVersion}
                 showSecret={showSecret}
