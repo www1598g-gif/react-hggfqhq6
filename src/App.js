@@ -2038,7 +2038,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   const [newStoreName, setNewStoreName] = useState('');
   const [newStoreUrl, setNewStoreUrl] = useState('');
 
-  // 1. ☁️ 監聽雲端許願池
+  // 1. ☁️ 監聽雲端許願池 (共用 sharedStores 節點)
   useEffect(() => {
     const storeRef = ref(db, 'sharedStores');
     const unsubscribe = onValue(storeRef, (snapshot) => {
@@ -2052,8 +2052,6 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   // 2. ☁️ 新增商家邏輯
   const handleAddStore = () => {
     if (!newStoreName.trim()) return alert("請輸入商家名稱 🐹");
-    
-    // 如果沒輸入網址，自動生成 Google Maps 搜尋連結
     const finalUrl = newStoreUrl.trim() 
       ? newStoreUrl 
       : `https://www.google.com/maps/search/${encodeURIComponent(newStoreName)}`;
@@ -2087,13 +2085,56 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
     { en: 'Celery', th: 'ไม่ใส่ขึ้นฉ่าย', zh: '芹菜' },
   ];
 
+  // 🔥 這裡已復原為你最完整的版本
   const guideSections = [
-    { title: '咖啡地圖', icon: <Coffee className="text-amber-600" />, mapUrl: 'https://maps.app.goo.gl/0', aiQuery: '咖啡廳推薦10家及特色', desc: '蒐集清邁最具特色的工業風與老宅咖啡廳。', color: 'bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800' },
-    { title: '必吃清單', icon: <UtensilsCrossed className="text-red-600" />, mapUrl: 'https://maps.app.goo.gl/1', aiQuery: '必吃在地美食與名店推薦', desc: '泰北金麵、烤雞、泰北拼盤，沒吃到不算來過清邁！', color: 'bg-red-50 border-red-100 dark:bg-red-900/20 dark:border-red-800' },
-    { title: '甜點清單', icon: <IceCream className="text-pink-600" />, mapUrl: 'https://maps.app.goo.gl/2', aiQuery: '甜點下午茶店推薦', desc: '清邁限定椰子派、芒果糯米以及各種高顏值網美甜點。', color: 'bg-pink-50 border-pink-100 dark:bg-pink-900/20 dark:border-pink-800' },
-    { title: '微醺酒吧', icon: <Beer className="text-purple-600" />, mapUrl: 'https://maps.app.goo.gl/3', aiQuery: '酒吧推薦10家及特色', desc: '清邁夜晚的靈魂，從尼曼路到河濱區的小酌選單。', color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800' },
-    { title: '極致SPA與按摩', icon: <Flower2 className="text-emerald-600" />, mapUrl: 'https://maps.app.goo.gl/4', aiQuery: 'spa推薦10家及特色', desc: '舒緩雙腿的爛腳救星，包含高檔 SPA 與在地按摩。', color: 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800' },
-    { title: '百貨商場', icon: <ShoppingBag className="text-blue-600" />, mapUrl: 'https://maps.app.goo.gl/5', aiQuery: '百貨商場推薦6家及特色', desc: '整理行李、吹冷氣、買伴手禮與國際品牌。', color: 'bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800' }
+    {
+      title: '咖啡地圖',
+      icon: <Coffee className="text-amber-600" />,
+      mapUrl: 'https://maps.app.goo.gl/vgKmgeXXo4Dzkad29',
+      aiQuery: '咖啡廳推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的評價 以中文回答',
+      desc: '蒐集清邁最具特色的工業風與老宅咖啡廳。',
+      color: 'bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800'
+    },
+    {
+      title: '必吃清單',
+      icon: <UtensilsCrossed className="text-red-600" />,
+      mapUrl: 'https://maps.app.goo.gl/4wmbvZrToa8N59Jd8',
+      aiQuery: '必吃在地美食與名店推薦15家 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
+      desc: '泰北金麵 (Khao Soy)、烤雞、泰北拼盤，沒吃到不算來過清邁！',
+      color: 'bg-red-50 border-red-100 dark:bg-red-900/20 dark:border-red-800'
+    },
+    {
+      title: '甜點清單',
+      icon: <IceCream className="text-pink-600" />,
+      mapUrl: 'https://maps.app.goo.gl/RQSchhVcqjjftE4x6',
+      aiQuery: '甜點下午茶店推薦15家及特色 芒果糯米飯 椰子派也要 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
+      desc: '清邁限定椰子派、芒果糯米以及各種高顏值網美甜點。',
+      color: 'bg-pink-50 border-pink-100 dark:bg-pink-900/20 dark:border-pink-800'
+    },
+    {
+      title: '微醺酒吧',
+      icon: <Beer className="text-purple-600" />,
+      mapUrl: 'https://maps.app.goo.gl/xJwFHhz4zzGHND3P8',
+      aiQuery: '酒吧推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
+      desc: '清邁夜晚的靈魂，從尼曼路到河濱區的小酌選單。',
+      color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800'
+    },
+    {
+      title: '極致SPA與按摩',
+      icon: <Flower2 className="text-emerald-600" />,
+      mapUrl: 'https://maps.app.goo.gl/Kw3c8NTVD9ZuVXXo8',
+      aiQuery: 'spa推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
+      desc: '舒緩雙腿的爛腳救星，包含高檔 SPA 與在地按摩。',
+      color: 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800'
+    },
+    {
+      title: '百貨商場',
+      icon: <ShoppingBag className="text-blue-600" />,
+      mapUrl: 'https://maps.app.goo.gl/ehpNk2BDJHWBZTtz6',
+      aiQuery: '百貨商場推薦6家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的評價 以中文回答',
+      desc: '整理行李、吹冷氣、買伴手禮與國際品牌。',
+      color: 'bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800'
+    }
   ];
 
   return (
@@ -2164,14 +2205,13 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
         ))}
       </div>
 
-      {/* 🍱 4. 團隊協作許願池 (移到最下方) */}
+      {/* 🍱 4. 團隊協作許願池 (底部 & 捲軸保護) */}
       <section className="bg-stone-800 dark:bg-stone-950 p-6 rounded-[2.5rem] shadow-xl border border-stone-700 relative overflow-hidden mt-4">
         <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-3xl"></div>
         <div className="flex items-center gap-2 mb-5 text-emerald-400 font-bold text-xs uppercase tracking-[0.2em]">
           <Sparkles size={14} /> 團員私藏許願池
         </div>
 
-        {/* 顯示列表 */}
         <div className="space-y-3 mb-6 max-h-[400px] overflow-y-auto no-scrollbar">
           {sharedStores.length === 0 && (
             <div className="text-[10px] text-stone-500 italic text-center py-8 bg-stone-900/30 rounded-3xl border border-dashed border-stone-800">
@@ -2196,10 +2236,8 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
           ))}
         </div>
 
-        {/* 新增區塊 */}
         {(isAdmin || isMember) && (
           <div className="pt-5 border-t border-stone-700/50 space-y-3">
-            <div className="text-[10px] text-emerald-500/70 font-bold uppercase tracking-tighter ml-1">我想去這裡...</div>
             <input 
               value={newStoreName}
               onChange={(e) => setNewStoreName(e.target.value)}
@@ -2213,7 +2251,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
                 placeholder="網址 (選填，不填會自動搜尋)"
                 className="flex-1 bg-stone-900 border border-stone-800 rounded-2xl px-4 py-3 text-xs text-white placeholder:text-stone-600 outline-none focus:border-emerald-500 transition-all"
               />
-              <button onClick={handleAddStore} className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 rounded-2xl text-lg font-bold active:scale-90 transition-all shadow-lg shadow-emerald-900/20">
+              <button onClick={handleAddStore} className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 rounded-2xl text-lg font-bold active:scale-90 transition-all shadow-lg">
                 +
               </button>
             </div>
@@ -2221,7 +2259,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
         )}
       </section>
 
-      <div className="bg-stone-100 dark:bg-stone-800/50 p-4 rounded-2xl text-center mt-4 mb-4">
+      <div className="bg-stone-100 dark:bg-stone-800/50 p-4 rounded-2xl text-center mt-4">
         <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest leading-loose">
           這份指南是為了 2026 四人團特別準備的<br />
           希望大家玩得開心 🇹🇭
