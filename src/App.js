@@ -2037,7 +2037,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   const [sharedStores, setSharedStores] = useState([]);
   const [newStoreName, setNewStoreName] = useState('');
   const [newStoreUrl, setNewStoreUrl] = useState('');
-  const [newStoreNote, setNewStoreNote] = useState(''); // 🔥 新增備註狀態
+  const [newStoreNote, setNewStoreNote] = useState('');
 
   // 1. ☁️ 監聽雲端許願池
   useEffect(() => {
@@ -2054,25 +2054,25 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   const handleAddStore = () => {
     if (!newStoreName.trim()) return alert("請輸入商家名稱 🐹");
     
+    // 💡 網址邏輯：有填就用填的 (IG/TikTok/Web)，沒填才自動導向 Google Maps
     const finalUrl = newStoreUrl.trim() 
       ? newStoreUrl 
-      : `https://www.google.com/maps/search/${encodeURIComponent(newStoreName)}`;
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(newStoreName)}`;
 
     const newList = [...sharedStores, { 
       name: newStoreName, 
       url: finalUrl, 
-      note: newStoreNote, // 🔥 存入備註
+      note: newStoreNote,
       adder: isAdmin ? '導遊' : '團員' 
     }];
 
     set(ref(db, 'sharedStores'), newList).then(() => {
       setNewStoreName('');
       setNewStoreUrl('');
-      setNewStoreNote(''); // 🔥 清空備註欄
+      setNewStoreNote('');
     });
   };
 
-  // 3. ☁️ 刪除商家
   const handleDeleteStore = (index) => {
     if (!window.confirm("確定要移除這個願望嗎？")) return;
     const newList = sharedStores.filter((_, i) => i !== index);
@@ -2090,54 +2090,12 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
   ];
 
   const guideSections = [
-    {
-      title: '咖啡地圖',
-      icon: <Coffee className="text-amber-600" />,
-      mapUrl: 'https://maps.app.goo.gl/vgKmgeXXo4Dzkad29',
-      aiQuery: '咖啡廳推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的評價 以中文回答',
-      desc: '蒐集清邁最具特色的工業風與老宅咖啡廳。',
-      color: 'bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800'
-    },
-    {
-      title: '必吃清單',
-      icon: <UtensilsCrossed className="text-red-600" />,
-      mapUrl: 'https://maps.app.goo.gl/4wmbvZrToa8N59Jd8',
-      aiQuery: '必吃在地美食與名店推薦15家 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
-      desc: '泰北金麵 (Khao Soy)、烤雞、泰北拼盤，沒吃到不算來過清邁！',
-      color: 'bg-red-50 border-red-100 dark:bg-red-900/20 dark:border-red-800'
-    },
-    {
-      title: '甜點清單',
-      icon: <IceCream className="text-pink-600" />,
-      mapUrl: 'https://maps.app.goo.gl/RQSchhVcqjjftE4x6',
-      aiQuery: '甜點下午茶店推薦15家及特色 芒果糯米飯 椰子派也要 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
-      desc: '清邁限定椰子派、芒果糯米以及各種高顏值網美甜點。',
-      color: 'bg-pink-50 border-pink-100 dark:bg-pink-900/20 dark:border-pink-800'
-    },
-    {
-      title: '微醺酒吧',
-      icon: <Beer className="text-purple-600" />,
-      mapUrl: 'https://maps.app.goo.gl/xJwFHhz4zzGHND3P8',
-      aiQuery: '酒吧推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
-      desc: '清邁夜晚的靈魂，從尼曼路到河濱區的小酌選單。',
-      color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800'
-    },
-    {
-      title: '極致SPA與按摩',
-      icon: <Flower2 className="text-emerald-600" />,
-      mapUrl: 'https://maps.app.goo.gl/Kw3c8NTVD9ZuVXXo8',
-      aiQuery: 'spa推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答',
-      desc: '舒緩雙腿的爛腳救星，包含高檔 SPA 與在地按摩。',
-      color: 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800'
-    },
-    {
-      title: '百貨商場',
-      icon: <ShoppingBag className="text-blue-600" />,
-      mapUrl: 'https://maps.app.goo.gl/ehpNk2BDJHWBZTtz6',
-      aiQuery: '百貨商場推薦6家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的評價 以中文回答',
-      desc: '整理行李、吹冷氣、買伴手禮與國際品牌。',
-      color: 'bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800'
-    }
+    { title: '咖啡地圖', icon: <Coffee className="text-amber-600" />, mapUrl: 'https://maps.app.goo.gl/vgKmgeXXo4Dzkad29', aiQuery: '咖啡廳推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的評價 以中文回答', desc: '蒐集清邁最具特色的工業風與老宅咖啡廳。', color: 'bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800' },
+    { title: '必吃清單', icon: <UtensilsCrossed className="text-red-600" />, mapUrl: 'https://maps.app.goo.gl/4wmbvZrToa8N59Jd8', aiQuery: '必吃在地美食與名店推薦15家 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答', desc: '泰北金麵 (Khao Soy)、烤雞、泰北拼盤，沒吃到不算來過清邁！', color: 'bg-red-50 border-red-100 dark:bg-red-900/20 dark:border-red-800' },
+    { title: '甜點清單', icon: <IceCream className="text-pink-600" />, mapUrl: 'https://maps.app.goo.gl/RQSchhVcqjjftE4x6', aiQuery: '甜點下午茶店推薦15家及特色 芒果糯米飯 椰子派也要 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答', desc: '清邁限定椰子派、芒果糯米以及各種高顏值網美甜點。', color: 'bg-pink-50 border-pink-100 dark:bg-pink-900/20 dark:border-pink-800' },
+    { title: '微醺酒吧', icon: <Beer className="text-purple-600" />, mapUrl: 'https://maps.app.goo.gl/xJwFHhz4zzGHND3P8', aiQuery: '酒吧推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答', desc: '清邁夜晚的靈魂，從尼曼路到河濱區的小酌選單。', color: 'bg-purple-50 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800' },
+    { title: '極致SPA與按摩', icon: <Flower2 className="text-emerald-600" />, mapUrl: 'https://maps.app.goo.gl/Kw3c8NTVD9ZuVXXo8', aiQuery: 'spa推薦10家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的的評價 以中文回答', desc: '舒緩雙腿的爛腳救星，包含高檔 SPA 與在地按摩。', color: 'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800' },
+    { title: '百貨商場', icon: <ShoppingBag className="text-blue-600" />, mapUrl: 'https://maps.app.goo.gl/ehpNk2BDJHWBZTtz6', aiQuery: '百貨商場推薦6家及特色 2026年 也請納入參考Pantip與Wongnai 以及小紅書的評價 以中文回答', desc: '整理行李、吹冷氣、買伴手禮與國際品牌。', color: 'bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800' }
   ];
 
   return (
@@ -2208,37 +2166,35 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
         ))}
       </div>
 
-      {/* 🍱 4. 團隊協作許願池 (優化亮度與備註欄) */}
-      <section className="bg-emerald-50/50 dark:bg-stone-800 p-6 rounded-[2.5rem] shadow-sm border border-emerald-100 dark:border-stone-700 relative overflow-hidden mt-4">
-        <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/5 rounded-full blur-3xl"></div>
-        <div className="flex items-center gap-2 mb-5 text-emerald-600 dark:text-emerald-400 font-bold text-sm uppercase tracking-[0.2em]">
+      {/* 🍮 4. 團隊協作許願池 (鵝黃色版 🍮) */}
+      <section className="bg-amber-50/70 dark:bg-stone-800/50 p-6 rounded-[2.5rem] shadow-sm border border-amber-200/50 dark:border-stone-700 relative overflow-hidden mt-4">
+        <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-400/10 rounded-full blur-3xl"></div>
+        <div className="flex items-center gap-2 mb-5 text-amber-700 dark:text-amber-400 font-bold text-sm uppercase tracking-[0.2em]">
           <Sparkles size={16} /> 團員私藏許願池
         </div>
 
         <div className="space-y-4 mb-6 max-h-[450px] overflow-y-auto no-scrollbar">
           {sharedStores.length === 0 && (
-            <div className="text-xs text-stone-400 italic text-center py-10 bg-white/50 dark:bg-stone-900/30 rounded-3xl border border-dashed border-emerald-200 dark:border-stone-700">
+            <div className="text-xs text-stone-400 italic text-center py-10 bg-white/50 dark:bg-stone-900/30 rounded-3xl border border-dashed border-amber-200 dark:border-stone-700">
               目前還沒有人許願，快去新增想去的店！
             </div>
           )}
           {sharedStores.map((store, i) => (
-            <div key={i} className="flex items-start gap-3 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-emerald-100/50 dark:border-stone-800 group transition-all active:scale-[0.98]">
+            <div key={i} className="flex items-start gap-3 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-amber-100 dark:border-stone-800 group transition-all active:scale-[0.98]">
               <button 
                 onClick={() => window.open(store.url, '_blank')}
                 className="flex-1 text-left min-w-0"
               >
-                {/* 🔥 放大商家店名 */}
                 <div className="text-base font-black text-stone-800 dark:text-stone-100 truncate mb-1">
                   {store.name}
                 </div>
-                {/* 🔥 新增備註欄顯示 */}
                 {store.note && (
                   <div className="text-xs text-stone-500 dark:text-stone-400 leading-snug mb-2 font-medium">
                     💬 {store.note}
                   </div>
                 )}
-                <div className="text-[10px] text-emerald-600/70 dark:text-emerald-500/50 font-bold uppercase tracking-widest">
-                  Added by {store.adder}
+                <div className="text-[10px] text-amber-600/70 dark:text-amber-500/50 font-bold uppercase tracking-widest flex items-center gap-1">
+                  <User size={10} /> Added by {store.adder}
                 </div>
               </button>
               {(isAdmin || isMember) && (
@@ -2251,33 +2207,31 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
         </div>
 
         {(isAdmin || isMember) && (
-          <div className="pt-5 border-t border-emerald-100 dark:border-stone-700 space-y-3">
-            <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-black uppercase tracking-tighter ml-1">我想去這裡...</div>
+          <div className="pt-5 border-t border-amber-200/50 dark:border-stone-700 space-y-3">
+            <div className="text-[11px] text-amber-700 dark:text-amber-400 font-black uppercase tracking-tighter ml-1">我想去這裡...</div>
             
-            {/* 店名 */}
             <input 
               value={newStoreName}
               onChange={(e) => setNewStoreName(e.target.value)}
               placeholder="商家名稱 (必填)"
-              className="w-full bg-white dark:bg-stone-900 border border-emerald-100 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+              className="w-full bg-white dark:bg-stone-900 border border-amber-200/50 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
             />
             
-            {/* 備註 - 🔥 新功能 */}
             <input 
               value={newStoreNote}
               onChange={(e) => setNewStoreNote(e.target.value)}
-              placeholder="給這家店的簡單介紹 (例: 必吃椰子派)"
-              className="w-full bg-white dark:bg-stone-900 border border-emerald-100 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+              placeholder="想去的原因？(例如：這家 IG 超紅！)"
+              className="w-full bg-white dark:bg-stone-900 border border-amber-200/50 dark:border-stone-800 rounded-2xl px-4 py-3 text-sm text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
             />
 
             <div className="flex gap-2">
               <input 
                 value={newStoreUrl}
                 onChange={(e) => setNewStoreUrl(e.target.value)}
-                placeholder="Google Map 網址 (選填)"
-                className="flex-1 bg-white dark:bg-stone-900 border border-emerald-100 dark:border-stone-800 rounded-2xl px-4 py-3 text-xs text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                placeholder="貼上網址 (IG/TikTok/網頁...)"
+                className="flex-1 bg-white dark:bg-stone-900 border border-amber-200/50 dark:border-stone-800 rounded-2xl px-4 py-3 text-xs text-stone-800 dark:text-white placeholder:text-stone-300 outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
               />
-              <button onClick={handleAddStore} className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 rounded-2xl text-xl font-bold active:scale-90 transition-all shadow-md">
+              <button onClick={handleAddStore} className="bg-amber-500 hover:bg-amber-600 text-white px-6 rounded-2xl text-xl font-bold active:scale-90 transition-all shadow-md">
                 +
               </button>
             </div>
@@ -2294,8 +2248,6 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
     </div>
   );
 };
-
-
 
 
 // 修改 UtilsPage
