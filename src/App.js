@@ -1925,8 +1925,9 @@ const CurrencySection = ({ isAdmin, isMember }) => {
   const [newExNote, setNewExNote] = useState('');
   const [lastUpdate, setLastUpdate] = useState('');
 
+  // --- 模組 1：匯率訊號處理 (Rate Signal Block) ---
   useEffect(() => {
-    // 1. [匯率快取] 啟動時先拉出上次存的匯率，防止開機白屏
+    // 1. [斷網備援] 啟動時先拉出上次存的匯率，防止開機白屏
     const savedRate = localStorage.getItem('cm_exchange_rate');
     const savedRateTime = localStorage.getItem('cm_exchange_time');
     if (savedRate) {
@@ -1934,52 +1935,59 @@ const CurrencySection = ({ isAdmin, isMember }) => {
       setLastUpdate(savedRateTime + ' (離線備援)');
     }
 
-    // 2. 抓取即時匯率
-    fetch('https://api.exchangerate-api.com/v4/latest/TWD')
-      .then(res => res.json())
-      .then(data => {
+    // 2. [即時抓取] 獲取最新匯率訊號
+    const fetchRate = async () => {
+      try {
+        const res = await fetch('https://api.exchangerate-api.com/v4/latest/TWD');
+        const data = await res.json();
         if (data?.rates?.THB) {
           const newRate = data.rates.THB;
           const newTime = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
           setRate(newRate);
-          setLastUpdate(newTime); // ✅ 恢復：更新時間顯示
+          setLastUpdate(newTime); // ✅ 成功抓到，更新時間戳記
           
           // 燒錄進快取，下次沒網也能用
           localStorage.setItem('cm_exchange_rate', newRate);
           localStorage.setItem('cm_exchange_time', newTime);
         }
-      })
-      .catch(() => console.log('匯率更新失敗，目前使用離線資料'));
+      } catch (e) {
+        console.log('匯率 API 訊號異常，維持離線資料');
+      }
+    };
+    fetchRate();
+  }, []); // 僅在 Mount 時跑一次
 
-    // 3. ☁️ 雲端換匯所監聽 (含 LocalStorage 備援)
+  // --- 模組 2：雲端同步監聽 (Cloud Listener Block) ---
+  useEffect(() => {
     const exRef = ref(db, 'exchanges');
     const unsubscribe = onValue(exRef, (snapshot) => {
       const val = snapshot.val();
 
-      if (val === null) {
-        // 🔥 這裡解決 Claude 提的 Bug：
-        // 先檢查 LocalStorage，如果連 LocalStorage 都是空的，才執行「燒錄」初始化
-        const cachedEx = localStorage.getItem('cm_exchanges_list');
-        if (cachedEx) {
-          setExchanges(JSON.parse(cachedEx));
-        } else {
-          const defaultExchanges = [
-            { name: 'Super Rich (清邁店)', note: '🔥 匯率通常全清邁最好', map: 'Super Rich Chiang Mai' },
-            { name: 'Mr. Pierre (巫宗雄)', note: '👍 古城內匯率王，老闆會說中文', map: 'Mr. Pierre Money Exchange' },
-            { name: 'G Exchange', note: 'Loi Kroh 路熱門店，評價極高', map: 'G Exchange Chiang Mai' },
-            { name: '清邁機場換匯 (Arrival)', note: '🚨 抵達應急用，匯率較差', map: 'Chiang Mai International Airport' },
-            { name: 'S.K. Money Exchange', note: '塔佩門附近，方便快速', map: 'S.K. Money Exchange Chiang Mai' }
-          ];
-          set(exRef, defaultExchanges);
-          setExchanges(defaultExchanges);
-        }
-      } else {
-        // 如果雲端有資料，顯示並存入本地快取
+      if (val !== null) {
+        // A. 雲端有訊號，直接同步並寫入本地備份
         setExchanges(val);
         localStorage.setItem('cm_exchanges_list', JSON.stringify(val));
+      } else {
+        // B. 處理 null 狀態：預防「復活 Bug」
+        const cachedEx = localStorage.getItem('cm_exchanges_list');
+        if (cachedEx) {
+          // 如果雲端空了但本地有存過，優先用本地的（防止刪除後又自動復活）
+          setExchanges(JSON.parse(cachedEx));
+        } else {
+          // C. 真正的 Factory Reset：雲端跟本地都沒資料才初始化
+          const defaultExchanges = [
+            { name: 'Super Rich (清邁店)', note: '🔥 匯率通常全清邁最好', map: 'Super Rich Chiang Mai' },
+            { name: 'Mr. Pierre (巫宗雄)', note: '👍 古城內匯率王，老闆會中文', map: 'Mr. Pierre Money Exchange' },
+            { name: 'G Exchange', note: 'Loi Kroh 路熱門店，評價高', map: 'G Exchange Chiang Mai' },
+            { name: '清邁機場換匯', note: '🚨 應急用，匯率較差', map: 'Chiang Mai International Airport' },
+            { name: 'S.K. Money Exchange', note: '塔佩門附近方便', map: 'S.K. Money Exchange Chiang Mai' }
+          ];
+          set(exRef, defaultExchanges); // 燒錄回雲端
+          setExchanges(defaultExchanges);
+        }
       }
     });
-    return () => unsubscribe();
+    return () => unsubscribe(); // 獨立的清理函數
   }, []);
 
 
@@ -2004,12 +2012,32 @@ const CurrencySection = ({ isAdmin, isMember }) => {
         <Wallet size={18} className="text-green-600" /> 匯率計算與動態換匯
       </h3>
 
-      {/* 計算機 */}
-      <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl mb-6">
+      {/* 計算機 - 保留你原本的結構，只補上資訊顯示線 */}
+      <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl mb-6 border border-green-100 dark:border-green-800/30">
+        
+        {/* ✅ 新增：頂部匯率標示燈 */}
+        <div className="text-[10px] text-green-600 dark:text-green-400 font-bold mb-2 flex justify-between">
+          <span>即時匯率基準 1 TWD ≈ {rate} THB</span>
+          <span className="opacity-70 font-mono">{lastUpdate || '讀取中...'}</span>
+        </div>
+
+        {/* 🚀 這是你本來的雙向輸入電路，完全沒動 */}
         <div className="flex items-center gap-2">
-          <input type="number" value={twd} onChange={(e) => { setTwd(e.target.value); setThb(e.target.value ? (parseFloat(e.target.value) * rate).toFixed(2) : ''); }} placeholder="台幣" className="w-full p-2 rounded-lg border dark:bg-stone-700 dark:text-white" />
-          <span className="text-stone-400">=</span>
-          <input type="number" value={thb} onChange={(e) => { setThb(e.target.value); setTwd(e.target.value ? (parseFloat(e.target.value) / rate).toFixed(2) : ''); }} placeholder="泰銖" className="w-full p-2 rounded-lg border dark:bg-stone-700 dark:text-white" />
+          <input 
+            type="number" 
+            value={twd} 
+            onChange={(e) => { setTwd(e.target.value); setThb(e.target.value ? (parseFloat(e.target.value) * rate).toFixed(2) : ''); }} 
+            placeholder="台幣" 
+            className="w-full p-2 rounded-lg border border-green-200 dark:border-green-800 dark:bg-stone-700 dark:text-white outline-none focus:border-green-500 font-bold text-stone-700" 
+          />
+          <span className="text-stone-400 font-bold">=</span>
+          <input 
+            type="number" 
+            value={thb} 
+            onChange={(e) => { setThb(e.target.value); setTwd(e.target.value ? (parseFloat(e.target.value) / rate).toFixed(2) : ''); }} 
+            placeholder="泰銖" 
+            className="w-full p-2 rounded-lg border border-green-200 dark:border-green-800 dark:bg-stone-700 dark:text-white outline-none focus:border-green-500 font-bold text-stone-700" 
+          />
         </div>
       </div>
 
