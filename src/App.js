@@ -3759,11 +3759,10 @@ export default function TravelApp() {
                 <span className="text-[10px] font-bold tracking-wide">工具</span>
               </button>
             </nav>
-            
-
+          
           </div>
         )}
-        {/* 🔥 關鍵點 B：列印專用區要放在這裡！跟手機版容器「併列」 */}
+        
         <div id="print-zone" className="hidden print:block bg-white text-stone-900">
           <div className="p-10">
             <h1 className="text-3xl font-serif font-bold border-b-2 border-amber-500 pb-4 mb-8 text-center">
