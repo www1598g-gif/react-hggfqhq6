@@ -1268,7 +1268,7 @@ const FloatingStatus = ({ itinerary }) => {
         const bufferTime = 20 * 60 * 1000; // 15 分鐘轉換成毫秒
         // 即使行程已經開始（例如現在 17:10，行程 17:00 開始），
         // 只要還在 20 分鐘內（17:15 前），它都會留在列表中。
-        return new Date(stop.fullDate.getTime() + bufferTime) > nowInThai;
+        return new Date(stop.fullDate.getTime() + bufferTime) > now;
       });
 
       if (futureStops.length > 0) {
@@ -1711,6 +1711,7 @@ const DayCard = ({ dayData, isOpen, toggle, isAdmin, updateTime, updateContent, 
   const cardRef = useRef(null);
 
   const smoothScrollTo = (element, duration = 10) => {
+    if (!element) return;
     // 抓取卡片目前在整個網頁的絕對位置
     const elementPosition =
       element.getBoundingClientRect().top + window.pageYOffset;
