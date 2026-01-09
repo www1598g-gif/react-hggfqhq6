@@ -796,8 +796,11 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
               // 根據 WMO Code 判定圖標字串
               const code = weatherCodes[dateIndex];
               let iconStr = 'sunny';
-              if (code >= 51) iconStr = 'rainy';
-              else if (code >= 1 && code <= 3) iconStr = 'cloudy';
+              if (code >= 51) {
+                iconStr = 'rainy';
+              } else if ((code >= 1 && code <= 3) || code === 45 || code === 48) {
+                iconStr = 'cloudy'; // 將霧與多雲合併
+              }
 
               return {
                 ...day,
@@ -895,7 +898,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
 
   const getWeatherIcon = (code, size = 20) => {
     if (code <= 1) return <Sun size={size} className="text-amber-500" strokeWidth={2.5} />;
-    if (code <= 3)
+    if (code <= 3 || code === 45 || code === 48)
       return (
         <Cloud size={size} className="text-stone-400 dark:text-stone-300" strokeWidth={2.5} />
       );
@@ -1255,7 +1258,12 @@ const FloatingStatus = ({ itinerary }) => {
       });
 
       // 2. 比較：行程時間 > 泰國現在時間
-      const futureStops = allStops.filter((stop) => stop.fullDate > nowInThai);
+      const futureStops = allStops.filter((stop) => {
+        const bufferTime = 20 * 60 * 1000; // 15 分鐘轉換成毫秒
+        // 即使行程已經開始（例如現在 17:10，行程 17:00 開始），
+        // 只要還在 20 分鐘內（17:15 前），它都會留在列表中。
+        return new Date(stop.fullDate.getTime() + bufferTime) > nowInThai;
+      });
 
       if (futureStops.length > 0) {
         setNextStop(futureStops[0]);
