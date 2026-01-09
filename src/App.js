@@ -826,7 +826,7 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
         const nowInThai = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" }));
         const currentHourInThai = nowInThai.getHours();
 
-        // ✅ 用泰國小時去切預報陣列
+        // 使用正確的泰國小時 (0-23) 去切預報陣列
         const next3HoursRain = json.hourly.precipitation_probability.slice(currentHourInThai, currentHourInThai + 3);
         const maxRainProb = Math.max(...next3HoursRain);
 
