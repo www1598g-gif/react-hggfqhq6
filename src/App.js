@@ -860,8 +860,8 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
     const calcTime = () => {
       // 取得現在的「泰國時間」
       const now = new Date();
-      const thaiTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
-      const nowInThai = new Date(thaiTimeStr);
+      const twTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Taipei" });
+      const nowInTW = new Date(twTimeStr); // 這是模擬台灣時鐘的數字
 
       // 設定關鍵日期
       const startDate = new Date('2026-02-19T00:00:00'); // 出發日 00:00
