@@ -819,10 +819,17 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
         }
         // 🔥 --- 預報對接補丁結束 --- 🔥
 
+        // 🔥 修正：使用泰國時區計算降雨預報
+        const now = new Date();
+        const thaiTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+        const currentHour = new Date(thaiTimeStr).getHours();
 
-        const currentHour = new Date().getHours();
         const next3HoursRain = json.hourly.precipitation_probability.slice(currentHour, currentHour + 3);
         const maxRainProb = Math.max(...next3HoursRain);
+
+        //const currentHour = new Date().getHours();
+        //const next3HoursRain = json.hourly.precipitation_probability.slice(currentHour, currentHour + 3);
+        //const maxRainProb = Math.max(...next3HoursRain);
 
         let newAlerts = [];
         if (maxRainProb > 40) {
@@ -854,11 +861,10 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
       // 取得現在的「泰國時間」
       const now = new Date();
       const thaiTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
-      const currentHour = new Date(thaiTimeStr).getHours(); // ✅ 修正後; 
+      const nowInThai = new Date(thaiTimeStr); // ✅ 修正後; 
 
-     // 這樣 slice(currentHour) 就會永遠對齊 API 的泰國時區陣列了
-     const next3HoursRain = json.hourly.precipitation_probability.slice(currentHour, currentHour + 3);
-      const nowInThai = new Date(thaiTimeStr);
+
+
 
       // 設定關鍵日期
       const startDate = new Date('2026-02-19T00:00:00'); // 出發日 00:00
