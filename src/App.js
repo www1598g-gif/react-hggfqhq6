@@ -827,9 +827,6 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
         const next3HoursRain = json.hourly.precipitation_probability.slice(currentHour, currentHour + 3);
         const maxRainProb = Math.max(...next3HoursRain);
 
-        //const currentHour = new Date().getHours();
-        //const next3HoursRain = json.hourly.precipitation_probability.slice(currentHour, currentHour + 3);
-        //const maxRainProb = Math.max(...next3HoursRain);
 
         let newAlerts = [];
         if (maxRainProb > 40) {
