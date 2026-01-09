@@ -852,13 +852,12 @@ const WeatherHero = ({ isAdmin, versionText, updateVersion, onLock, showSecret, 
     const calcTime = () => {
       // 取得現在的「泰國時間」
       const now = new Date();
-      // ✅ 取得泰國當前的小時數 (0-23)
-const thaiTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
-const currentHourInThai = new Date(thaiTimeStr).getHours(); 
+      const thaiTimeStr = now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+      const currentHour = new Date(thaiTimeStr).getHours(); 
 
-// ✅ 使用泰國小時作為索引
-const next3HoursRain = json.hourly.precipitation_probability.slice(currentHourInThai, currentHourInThai + 3);
-const maxRainProb = Math.max(...next3HoursRain);
+// 這樣 slice(currentHour) 就會永遠對齊 API 的泰國時區陣列了
+const next3HoursRain = json.hourly.precipitation_probability.slice(currentHour, currentHour + 3);
+      const nowInThai = new Date(thaiTimeStr);
 
       // 設定關鍵日期
       const startDate = new Date('2026-02-19T00:00:00'); // 出發日 00:00
