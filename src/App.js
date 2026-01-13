@@ -2944,7 +2944,9 @@ const ThaiTips = ({ onTrigger }) => {
               </div>
               <div>
                 <strong className="text-stone-900 dark:text-stone-100 block">飲食衛生</strong>
-                生水不可飲用。路邊攤少吃生食 (如生蝦、生蟹)，避免腸胃不適。
+                1.生水不可飲用。路邊攤少吃生食 (如生蝦、生蟹)，避免腸胃不適。
+                <br />
+                2.清邁二月是燒山季，空氣汙染很嚴重甚至有毒，要隨身備著口罩。
               </div>
             </div>
           </div>
