@@ -3456,13 +3456,20 @@ export default function TravelApp() {
     }
   }, []);
 
-  // Firebase 監聽 (保持原樣)
+  // Firebase 監聽 (修正版：防止自動回朔)
   useEffect(() => {
     const itineraryRef = ref(db, 'itinerary');
     const unsubscribe = onValue(itineraryRef, (snapshot) => {
       const data = snapshot.val();
-      if (data) setItinerary(data);
-      else set(itineraryRef, INITIAL_ITINERARY_DATA);
+      if (data) {
+        // 1. 如果雲端有資料，就用雲端的
+        setItinerary(data);
+      } else {
+        // 2. 如果雲端沒資料 (或被誤刪)，只在「本地」顯示預設值
+        // ⚠️ 絕對不要在這裡呼叫 set() 寫回資料庫！
+        console.log("雲端無資料，載入本地預設值 (唯讀模式)");
+        setItinerary(INITIAL_ITINERARY_DATA);
+      }
     });
     return () => unsubscribe();
   }, []);
