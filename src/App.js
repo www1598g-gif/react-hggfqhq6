@@ -3916,6 +3916,23 @@ export default function TravelApp() {
         {/* 解鎖後的主畫面 */}
         {!isLocked && (
           <> {/* 🔥 加上這個：React Fragment，讓兩個兄弟併列 */}
+
+{isLoadingData ? (
+            <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#FDFBF7] dark:bg-stone-900 transition-colors">
+              <Loader2 size={48} className="text-amber-500 animate-spin mb-4" />
+              <p className="text-stone-500 dark:text-stone-400 text-sm font-bold tracking-widest animate-pulse">
+                同步雲端行程中...
+              </p>
+            </div>
+          ) : (
+
+
+
+
+
+
+
+
             <div id="main-app-container" className="bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
               {/* 🔥 傳入 onLock 讓子元件可以呼叫鎖定 */}
               <WeatherHero
@@ -4033,6 +4050,11 @@ export default function TravelApp() {
                 </button>
               </nav>
             </div>
+
+
+
+)}
+
 
             {/* 🖨️ 這是唯一的「精裝列印專用區」，它在手機版容器 (main-app-container) 的外面，但仍在 !isLocked 裡面 */}
             <div id="print-zone" className="hidden print:block bg-white text-stone-900 min-h-screen">
