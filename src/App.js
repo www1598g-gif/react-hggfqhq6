@@ -3662,9 +3662,36 @@ export default function TravelApp() {
   }, [konamiSequence]);
 
   // 更新函式 (保持原樣)
+  //const updateFirebase = (newItinerary) => {
+  //  setItinerary(newItinerary);
+  //  set(ref(db, 'itinerary'), newItinerary).catch((err) => alert("同步失敗 🛜"));
+  //};
+
+  // 更新函式 (偵錯版：檢查 undefined 並顯示詳細結果)
   const updateFirebase = (newItinerary) => {
+    // 1. 先更新本地畫面 (讓使用者覺得很快)
     setItinerary(newItinerary);
-    set(ref(db, 'itinerary'), newItinerary).catch((err) => alert("同步失敗 🛜"));
+
+    // 2. 檢查資料是否有 undefined (Firebase 會拒收 undefined)
+    const hasUndefined = JSON.stringify(newItinerary, (k, v) => (v === undefined ? null : v)).includes('null');
+    if (hasUndefined) {
+      console.error("❌ 寫入被攔截：資料中包含 undefined！", newItinerary);
+      alert("存檔失敗：資料格式錯誤 (包含 undefined)");
+      return;
+    }
+
+    // 3. 嘗試寫入雲端
+    console.log("🚀 正在上傳資料到 Firebase...");
+    set(ref(db, 'itinerary'), newItinerary)
+      .then(() => {
+        console.log("✅ 上傳成功！Firebase 已更新");
+        // 為了確認，我們手動再存一次備份
+        localStorage.setItem('cm_itinerary_backup', JSON.stringify(newItinerary));
+      })
+      .catch((err) => {
+        console.error("❌ 上傳失敗！原因：", err);
+        alert(`同步失敗 🛜\n錯誤代碼: ${err.code}\n訊息: ${err.message}`);
+      });
   };
 
   const updateSystemInfo = (newText) => { setSystemInfo(newText); set(ref(db, 'systemInfo'), newText); };
