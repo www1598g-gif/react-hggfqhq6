@@ -59,8 +59,8 @@ import {
 } from 'lucide-react';
 
 
-// 🔥🔥🔥 加入這兩行 (開啟雲端功能) 🔥🔥🔥
-import { ref, onValue, set, goOffline, goOnline } from "firebase/database";
+// 🔥🔥🔥 補上 get
+import { ref, onValue, set, goOffline, goOnline, get } from "firebase/database";
 import { db } from "./firebase"; // ⚠️ 前提：你要先建立 firebase.js 檔案
 
 // 🪷 泰式蓮花 Icon (線條版 - 仿照您提供的圖片)
@@ -3464,19 +3464,41 @@ export default function TravelApp() {
   // ==========================================
   // 🔥 F5 救星版：主動出擊抓取資料
   // ==========================================
+  // ==========================================
+  // 🔥 F5 強力抓取版：主動去雲端敲門，不依賴被動推播
+  // ==========================================
   useEffect(() => {
     const itineraryRef = ref(db, 'itinerary');
     const connectedRef = ref(db, '.info/connected');
 
-    // 1️⃣ 為了保險起見，先告訴 Firebase 我們要上線
-    goOnline(db); 
+    // 1️⃣ 不管三七二十一，先強制連線
+    goOnline(db);
 
     let unsubscribeItinerary = null;
     let unsubscribeConnected = null;
 
-    console.log("🚀 App 啟動 (F5救星版)...");
+    console.log("🚀 App 啟動，執行 F5 強力抓取...");
 
-    // 2️⃣ 監聽連線 (這部分維持原樣，負責監控)
+    // 2️⃣ 主動出擊！(這就是模擬你按 Refresh 按鈕的動作)
+    // 不等待 onValue 推播，直接發一個請求去抓資料
+    get(itineraryRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        console.log("🔥 [F5強制抓取] 成功！覆蓋本地資料");
+        
+        // 只要抓到了，就強制覆蓋畫面 (不管之前 onValue 說了什麼)
+        setItinerary(data);
+        
+        // 更新備份，把「冰冰好料理」洗掉
+        localStorage.setItem('cm_itinerary_backup', JSON.stringify(data));
+      } else {
+        console.warn("🔥 [F5強制抓取] 雲端回傳空值 (確認 Firebase 路徑是否正確)");
+      }
+    }).catch((error) => {
+      console.error("🔥 [F5強制抓取] 失敗:", error);
+    });
+
+    // 3️⃣ 建立長久連線監聽 (維持原本邏輯，確保後續更新)
     unsubscribeConnected = onValue(connectedRef, (snap) => {
       const connected = snap.val();
       setIsFirebaseConnected(connected === true);
@@ -3484,37 +3506,31 @@ export default function TravelApp() {
       if (connected) console.log('✅ Firebase 連線確認');
     });
 
-    // 3️⃣ 監聽資料 (加入防抖機制，不要太快放棄)
+    // 4️⃣ 建立資料監聽 (當別人更新時，你也會收到)
     unsubscribeItinerary = onValue(itineraryRef, (snapshot) => {
       setIsLoadingData(false);
       const data = snapshot.val();
 
       if (data) {
-        console.log('📥 收到 Firebase 資料，更新畫面');
+        console.log('📥 收到 Firebase 推播資料');
         setItinerary(data);
-        // 默默備份就好，不依賴它來顯示
         localStorage.setItem('cm_itinerary_backup', JSON.stringify(data));
       } else {
-        // ⚠️ 關鍵修改：不要馬上就放棄！
-        // 如果是剛啟動且沒有資料，我們再給它一次機會去讀備份
-        // 只有真的完全沒招了，才用初始資料
-        console.warn('⚠️ Firebase 暫無資料');
-        
-        // 嘗試讀取備份，如果沒有備份才用 INITIAL
+        // 只有在真的完全抓不到時，才稍微看一下備份
+        // 但因為上面的 get() 會同時在跑，所以這裡先顯示舊的沒關係
+        // 等 get() 回來就會把畫面修好了
         const backup = localStorage.getItem('cm_itinerary_backup');
         if (backup) {
-            console.log('📂 暫時顯示本地備份');
-            try { setItinerary(JSON.parse(backup)); } catch(e) {}
+           try { setItinerary(JSON.parse(backup)); } catch(e) {}
         } else {
-            setItinerary(INITIAL_ITINERARY_DATA);
+           setItinerary(INITIAL_ITINERARY_DATA);
         }
       }
     });
 
-    // 4️⃣ 喚醒強制重連
+    // 5️⃣ 喚醒強制重連
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        // 這裡加一點延遲，讓瀏覽器喘口氣
         setTimeout(() => {
           if (!isConnectedRef.current) {
             console.log('⚡ 喚醒重連...');
