@@ -3458,6 +3458,9 @@ export default function TravelApp() {
   // ==========================================
   // 🔥 最終完美版 V2：修正閉包陷阱 + 斷線保護 (使用 Ref)
   // ==========================================
+  // ==========================================
+  // 🔥 強制同步版：每次都直接抓 Firebase (不優先讀備份)
+  // ==========================================
   useEffect(() => {
     const itineraryRef = ref(db, 'itinerary');
     const connectedRef = ref(db, '.info/connected');
@@ -3465,65 +3468,53 @@ export default function TravelApp() {
     let unsubscribeItinerary = null;
     let unsubscribeConnected = null;
 
-    // 1️⃣ 監聽 Firebase 是否真的連上線了
+    console.log("🚀 App 啟動，開始建立 Firebase 連線...");
+
+    // 1️⃣ 監聽連線狀態 (用來做喚醒時的判斷)
     unsubscribeConnected = onValue(connectedRef, (snap) => {
       const connected = snap.val();
-      
-      // 更新 State (為了讓畫面顯示連線狀態)
       setIsFirebaseConnected(connected === true);
-      
-      // 🔥 關鍵修改：同步更新 Ref (為了讓 Event Listener 讀到最新狀態)
-      isConnectedRef.current = (connected === true);
+      isConnectedRef.current = (connected === true); // 更新 Ref 防止閉包問題
 
       if (connected) {
-        console.log('✅ Firebase 已連線');
+        console.log('✅ 與 Firebase 連線成功！等待資料下載...');
       } else {
-        console.log('❌ Firebase 斷線中/連線中...');
+        console.log('🔌 與 Firebase 斷線中...');
       }
     });
 
-    // 2️⃣ 監聽行程資料
+    // 2️⃣ 監聽資料 (絕對權威：Firebase 有什麼就顯示什麼)
     unsubscribeItinerary = onValue(itineraryRef, (snapshot) => {
       setIsLoadingData(false);
       const data = snapshot.val();
 
       if (data) {
-        console.log('📡 收到雲端最新資料，更新畫面');
+        // 🔥 這是你要的：只要 Firebase 有資料，就直接用，不囉嗦
+        console.log('📥 收到 Firebase 資料，立即更新畫面！');
         setItinerary(data);
-        try {
-          localStorage.setItem('cm_itinerary_backup', JSON.stringify(data));
-        } catch (e) {
-          console.warn('備份失敗:', e);
-        }
+        
+        // (順便存備份，但下次開機我們不會優先讀它，只當作斷網時的最後手段)
+        localStorage.setItem('cm_itinerary_backup', JSON.stringify(data));
       } else {
-        console.warn('⚠️ Firebase 回傳 null，啟動救援機制...');
-        const backup = localStorage.getItem('cm_itinerary_backup');
-        if (backup) {
-          try {
-            setItinerary(JSON.parse(backup));
-          } catch (e) {
-            setItinerary(INITIAL_ITINERARY_DATA);
-          }
-        } else {
-          setItinerary(INITIAL_ITINERARY_DATA);
-        }
+        // 只有當 Firebase 真的是空的 (或連線失敗回傳 null)，才勉強用預設值
+        console.warn('⚠️ Firebase 回傳空值 (可能是新資料庫或被清空)，載入預設行程');
+        setItinerary(INITIAL_ITINERARY_DATA);
       }
     });
 
-    // 3️⃣ 喚醒偵測 (修正版：讀取 Ref 而不是 State，解決無限循環)
+    // 3️⃣ 喚醒強制重連 (解決手機切換 App 後假死不更新的問題)
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        console.log('👀 App 喚醒，檢查連線狀態...');
+        console.log('👀 視窗喚醒，檢查是否需要重連...');
         
+        // 如果回來時發現是斷線狀態，強制踢它一腳讓它重連，確保你抓到最新的
         setTimeout(() => {
-          // 🔥 關鍵修改：這裡改成讀取 isConnectedRef.current
-          // 這樣才能拿到「當下真正」的狀態，而不是「剛開機時」的舊狀態
           if (!isConnectedRef.current) {
-            console.log('🔄 偵測到斷線，強制重連 Firebase...');
+            console.log('⚡ 偵測到斷線，執行強制重連 (Go Offline -> Online)');
             goOffline(db);
             setTimeout(() => goOnline(db), 300);
           } else {
-            console.log('✅ 連線正常 (Ref Check)，無需重連');
+            console.log('✅ 連線狀態良好，無需重連');
           }
         }, 500);
       }
@@ -3531,13 +3522,13 @@ export default function TravelApp() {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // 4️⃣ 清理函式
+    // 4️⃣ 清理
     return () => {
       if (unsubscribeItinerary) unsubscribeItinerary();
       if (unsubscribeConnected) unsubscribeConnected();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []); // 依賴保持空陣列
+  }, []);
 
   useEffect(() => {
     const versionRef = ref(db, 'appVersion');
