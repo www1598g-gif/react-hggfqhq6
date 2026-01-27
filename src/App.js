@@ -3381,6 +3381,8 @@ export default function TravelApp() {
     return localStorage.getItem('isUnlocked') !== 'true';
   });
   const [isUnlocking, setIsUnlocking] = useState(false);
+  const [isFirebaseConnected, setIsFirebaseConnected] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const [inputPwd, setInputPwd] = useState('');
 
   // 權限狀態
@@ -3448,51 +3450,93 @@ export default function TravelApp() {
   }, []);
 
   // Firebase 監聽 (進化版：包含喚醒自動重連)
+  // ==========================================
+  // 🔥 最終完美版：Firebase 監聽 + 斷線保護 + 本地備份
+  // ==========================================
   useEffect(() => {
     const itineraryRef = ref(db, 'itinerary');
-    
-    // 定義連線與監聽邏輯
-    const connectFirebase = () => {
-      return onValue(itineraryRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setItinerary(data);
+    const connectedRef = ref(db, '.info/connected'); // Firebase 內建的連線狀態節點
+
+    let unsubscribeItinerary = null;
+    let unsubscribeConnected = null;
+
+    // 1️⃣ 監聽 Firebase 是否真的連上線了
+    unsubscribeConnected = onValue(connectedRef, (snap) => {
+      const connected = snap.val();
+      setIsFirebaseConnected(connected === true);
+      if (connected) {
+        console.log('✅ Firebase 已連線');
+      } else {
+        console.log('❌ Firebase 斷線中/連線中...');
+      }
+    });
+
+    // 2️⃣ 監聽行程資料 (核心邏輯)
+    unsubscribeItinerary = onValue(itineraryRef, (snapshot) => {
+      setIsLoadingData(false); // 標記：我們已經嘗試讀取過了
+      const data = snapshot.val();
+
+      if (data) {
+        // [情況 A] 成功讀取到雲端資料 -> 更新畫面並備份
+        console.log('📡 收到雲端最新資料，更新畫面');
+        setItinerary(data);
+        
+        // 💾 順手存一份到本地備份 (下次斷網可以用)
+        try {
+          localStorage.setItem('cm_itinerary_backup', JSON.stringify(data));
+        } catch (e) {
+          console.warn('備份失敗 (空間不足?):', e);
+        }
+      } else {
+        // [情況 B] Firebase 回傳 null (可能是沒資料，也可能是剛連線還沒抓到)
+        console.warn('⚠️ Firebase 回傳 null，啟動救援機制...');
+
+        // 先去翻翻看有沒有「上次存的備份」
+        const backup = localStorage.getItem('cm_itinerary_backup');
+        if (backup) {
+          try {
+            const parsed = JSON.parse(backup);
+            console.log('💾 救援成功！載入本地備份資料');
+            setItinerary(parsed);
+          } catch (e) {
+            console.error('備份壞了，只好用預設值');
+            setItinerary(INITIAL_ITINERARY_DATA);
+          }
         } else {
-          // 雲端無資料時，顯示本地預設值，但不寫入
-          console.log("讀取不到雲端，顯示本地備用資料");
+          // 連備份都沒有，只好顯示初始資料 (通常是第一次用 App)
+          console.log('📋 完全無備份，載入預設行程');
           setItinerary(INITIAL_ITINERARY_DATA);
         }
-      });
-    };
+      }
+    });
 
-    // 1. 第一次執行時先連線
-    let unsubscribe = connectFirebase();
-
-    // 2. 定義「喚醒偵測」邏輯
+    // 3️⃣ 喚醒偵測 (比之前更溫柔，不會一喚醒就斷線)
     const handleVisibilityChange = () => {
-      // 如果網頁變回「可見 (visible)」，代表你切回來了
       if (document.visibilityState === 'visible') {
-        console.log("App 喚醒，強制重連 Firebase...");
+        console.log('👀 App 喚醒，檢查連線狀態...');
         
-        // A. 強制斷線再重連 (這是解決手機瀏覽器假死的關鍵!)
-        goOffline(db);
-        setTimeout(() => goOnline(db), 500);
-        
-        // B. 重新綁定監聽 (確保拿到最新數據)
-        if (unsubscribe) unsubscribe();
-        unsubscribe = connectFirebase();
+        // 等個 0.5 秒，如果 Firebase 自己沒醒來，我們再手動叫醒它
+        setTimeout(() => {
+          if (!isFirebaseConnected) {
+            console.log('🔄 似乎睡著了，強制重連 Firebase...');
+            goOffline(db);
+            setTimeout(() => goOnline(db), 300);
+          } else {
+            console.log('✅ 連線看起來很正常，不用重連');
+          }
+        }, 500);
       }
     };
 
-    // 3. 加入瀏覽器喚醒監聽器
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // 4. 清理函式 (組件卸載時執行)
+    // 4️⃣ 清理函式
     return () => {
-      if (unsubscribe) unsubscribe();
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (unsubscribeItinerary) unsubscribeItinerary();
+      if (unsubscribeConnected) unsubscribeConnected();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, []); // 只在啟動時執行一次
 
   useEffect(() => {
     const versionRef = ref(db, 'appVersion');
