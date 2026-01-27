@@ -3467,73 +3467,66 @@ export default function TravelApp() {
   // ==========================================
   // 🔥 F5 強力抓取版：主動去雲端敲門，不依賴被動推播
   // ==========================================
+ // ==========================================
+  // 🔥 F5 最終修正版：加入 Loading 機制，防止過早渲染舊資料
+  // ==========================================
   useEffect(() => {
     const itineraryRef = ref(db, 'itinerary');
     const connectedRef = ref(db, '.info/connected');
 
-    // 1️⃣ 不管三七二十一，先強制連線
+    // 1️⃣ 啟動時先鎖住畫面，顯示 Loading
+    setIsLoadingData(true); 
     goOnline(db);
 
     let unsubscribeItinerary = null;
     let unsubscribeConnected = null;
 
-    console.log("🚀 App 啟動，執行 F5 強力抓取...");
+    console.log("🚀 App 啟動，暫停畫面等待資料...");
 
-    // 2️⃣ 主動出擊！(這就是模擬你按 Refresh 按鈕的動作)
-    // 不等待 onValue 推播，直接發一個請求去抓資料
+    // 2️⃣ 主動出擊！強制抓取最新資料
     get(itineraryRef).then((snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        console.log("🔥 [F5強制抓取] 成功！覆蓋本地資料");
-        
-        // 只要抓到了，就強制覆蓋畫面 (不管之前 onValue 說了什麼)
+        console.log("🔥 [F5] 抓到了！更新資料並解鎖畫面");
         setItinerary(data);
-        
-        // 更新備份，把「冰冰好料理」洗掉
         localStorage.setItem('cm_itinerary_backup', JSON.stringify(data));
       } else {
-        console.warn("🔥 [F5強制抓取] 雲端回傳空值 (確認 Firebase 路徑是否正確)");
+        console.warn("🔥 [F5] 雲端無資料？");
+        // 真的沒資料才用預設值
+        setItinerary(INITIAL_ITINERARY_DATA);
       }
     }).catch((error) => {
-      console.error("🔥 [F5強制抓取] 失敗:", error);
+      console.error("🔥 [F5] 失敗:", error);
+    }).finally(() => {
+      // 3️⃣ 無論成功失敗，0.8秒後解除 Loading，展示結果
+      // 這裡故意加一點延遲，確保畫面不會閃爍，且讓 Firebase 有時間穩定
+      setTimeout(() => {
+        setIsLoadingData(false);
+      }, 800);
     });
 
-    // 3️⃣ 建立長久連線監聽 (維持原本邏輯，確保後續更新)
+    // 4️⃣ 建立長久連線監聽
     unsubscribeConnected = onValue(connectedRef, (snap) => {
       const connected = snap.val();
       setIsFirebaseConnected(connected === true);
       isConnectedRef.current = (connected === true);
-      if (connected) console.log('✅ Firebase 連線確認');
     });
 
-    // 4️⃣ 建立資料監聽 (當別人更新時，你也會收到)
+    // 5️⃣ 建立資料監聽 (保持同步)
     unsubscribeItinerary = onValue(itineraryRef, (snapshot) => {
-      setIsLoadingData(false);
       const data = snapshot.val();
-
       if (data) {
-        console.log('📥 收到 Firebase 推播資料');
         setItinerary(data);
         localStorage.setItem('cm_itinerary_backup', JSON.stringify(data));
-      } else {
-        // 只有在真的完全抓不到時，才稍微看一下備份
-        // 但因為上面的 get() 會同時在跑，所以這裡先顯示舊的沒關係
-        // 等 get() 回來就會把畫面修好了
-        const backup = localStorage.getItem('cm_itinerary_backup');
-        if (backup) {
-           try { setItinerary(JSON.parse(backup)); } catch(e) {}
-        } else {
-           setItinerary(INITIAL_ITINERARY_DATA);
-        }
+        // 如果監聽器比 get 還快回來，也解除 loading
+        setIsLoadingData(false); 
       }
     });
 
-    // 5️⃣ 喚醒強制重連
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         setTimeout(() => {
           if (!isConnectedRef.current) {
-            console.log('⚡ 喚醒重連...');
             goOffline(db);
             setTimeout(() => goOnline(db), 300);
           }
@@ -3922,7 +3915,18 @@ export default function TravelApp() {
 
         {/* 解鎖後的主畫面 */}
         {!isLocked && (
-          <> {/* 🔥 加上這個：React Fragment，讓兩個兄弟併列 */}
+        <>
+          {/* 👇👇👇 THIS IS THE NEW PART (Loading Screen) 👇👇👇 */}
+          {isLoadingData ? (
+            <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#FDFBF7] dark:bg-stone-900 transition-colors">
+              <Loader2 size={48} className="text-amber-500 animate-spin mb-4" />
+              <p className="text-stone-500 dark:text-stone-400 text-sm font-bold tracking-widest animate-pulse">
+                同步雲端行程中...
+              </p>
+            </div>
+          ) : (
+          {/* 👆👆👆 THIS IS THE NEW PART 👆👆👆 */}
+            
             <div id="main-app-container" className="bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
               {/* 🔥 傳入 onLock 讓子元件可以呼叫鎖定 */}
               <WeatherHero
