@@ -60,7 +60,7 @@ import {
 
 
 // 🔥🔥🔥 加入這兩行 (開啟雲端功能) 🔥🔥🔥
-import { ref, onValue, set, goOffline } from "firebase/database";
+import { ref, onValue, set, goOffline, goOnline } from "firebase/database";
 import { db } from "./firebase"; // ⚠️ 前提：你要先建立 firebase.js 檔案
 
 // 🪷 泰式蓮花 Icon (線條版 - 仿照您提供的圖片)
@@ -135,7 +135,7 @@ const INITIAL_ITINERARY_DATA = [
       {
         imageId: 'day1_2',
         type: 'transport',
-        time: '17:30-19:00',
+        time: '18:00',
         name: '前往 Mae Kampong',
         note: '山路視線暗請小心，車程約1.5小時。',
         desc: '這是一段蜿蜒的山路，進入山區後路燈較少，請慢速行駛。',
@@ -195,12 +195,12 @@ const INITIAL_ITINERARY_DATA = [
       },
       {
         imageId: 'day2_4',
-        type: 'transport',
-        time: '14:30',
-        name: '市區採買 (Rimping)',
-        note: '趁還車前買水、零食。',
-        desc: '利用還車前的空檔，在市區超市買水、零食。',
-        nav: 'Rimping Supermarket Nim City',
+        type: 'food',
+        time: '15:00',
+        name: '甕烤陶罐豬 (Jar Roast Pork)',
+        note: '必點超人氣脆皮豬。',
+        desc: '回程順路吃。皮脆肉嫩的甕烤豬肉 (Pork Belly)。',
+        nav: 'Jar Roast Pork Mae Kampong',
         difficulty: '低',
       },
       {
@@ -257,10 +257,10 @@ const INITIAL_ITINERARY_DATA = [
       {
         imageId: 'day3_4',
         type: 'food',
-        time: '18:30',
+        time: '19:00',
         name: 'Dash! Restaurant and Bar',
         note: '柚木老屋泰菜，有現場樂團。',
-        desc: '【古城南門人氣店】氣氛極佳，食物精緻好吃 (推薦鳳梨炒飯、羅望子魚)。建議請房東幫忙訂位。',
+        desc: '【古城南門人氣店】氣氛極佳，食物精緻好吃 (推薦鳳梨炒飯、羅望子魚)。已訂位!!',
         nav: 'Dash! Restaurant and Bar',
         highlight: '氣氛極佳',
         difficulty: '低 (環境舒適)',
@@ -287,7 +287,7 @@ const INITIAL_ITINERARY_DATA = [
       {
         imageId: 'day4_2',
         type: 'sight',
-        time: '10:50',
+        time: '12:00',
         name: 'Jing Jai Market (二訪)',
         note: '補貨與早午餐。',
         desc: '補買昨天看上的東西，順便在舒適的環境吃早午餐。',
@@ -297,10 +297,10 @@ const INITIAL_ITINERARY_DATA = [
       {
         imageId: 'day4_3',
         type: 'sight',
-        time: '13:00',
+        time: '15:30',
         name: 'Fah Lanna Spa (古城店)',
-        note: '2小時療程，務必預訂。',
-        desc: '享受 2 小時療程，修復雙腿。曾是電影《泰囧》取景地。',
+        note: '2-3小時療程，務必預訂。',
+        desc: '享受 2-3小時療程，修復雙腿。曾是電影《泰囧》取景地。',
         nav: 'Fah Lanna Spa - Old City',
         highlight: '敲筋按摩',
         difficulty: '零',
@@ -308,7 +308,7 @@ const INITIAL_ITINERARY_DATA = [
       {
         imageId: 'day4_4',
         type: 'sight',
-        time: '18:30',
+        time: '19:30',
         name: '週日夜市 (Sunday Night Market)',
         note: '從塔佩門開始逛，人潮極多。',
         desc: '【大魔王關卡】清邁規模最大夜市。強烈建議夥伴在入口附近找餐廳或酒吧坐下休息，不要硬走。',
@@ -328,10 +328,10 @@ const INITIAL_ITINERARY_DATA = [
         imageId: 'day5_1',
         type: 'sight',
         time: '06:30',
-        name: 'Elephant Nature Park',
-        note: '無騎乘，觀察泥巴浴，含素食午餐。',
-        desc: '體驗餵食、觀察大象泥巴浴。午餐的素食 Buffet 意外地非常好吃！',
-        nav: 'Elephant Nature Park Office',
+        name: 'Elephant Jungle Sanctuary (EJS)',
+        note: '泥漿SPA、洗澡、餵食~含午餐',
+        desc: '與大象互動，體驗泥巴浴。午餐 Buffet 意外地非常好吃！',
+        nav: 'Elephant Jungle Sanctuary Office',
         difficulty: '中 (泥土路)',
       },
       {
@@ -346,6 +346,17 @@ const INITIAL_ITINERARY_DATA = [
       },
       {
         imageId: 'day5_3',
+        type: 'food',
+        time: '15:00',
+        name: 'Ristr8to Original',
+        note: '世界拉花冠軍。',
+        desc: '必點招牌「Satan Latte (撒旦拿鐵)」。',
+        nav: 'Ristr8to Original',
+        highlight: '必喝咖啡',
+        difficulty: '低',
+      },
+      {
+        imageId: 'day5_4',
         type: 'food',
         time: '18:30',
         name: 'Huen Muan Jai (米其林)',
@@ -363,7 +374,7 @@ const INITIAL_ITINERARY_DATA = [
     displayDate: '2/24 (二)',
     title: '茵他儂國家公園',
     weather: {
-      temp: '5-28°C',
+      temp: '5°C',
       icon: 'cloudy',
       aqi: 50,
       note: '⛰️ 洋蔥式穿搭',
@@ -382,14 +393,13 @@ const INITIAL_ITINERARY_DATA = [
       },
       {
         imageId: 'day6_2',
-        type: 'food',
+        type: 'sight',
         time: '18:30',
-        name: '帝王餐秀 (Old Chiang Mai)',
-        note: 'Khantoke 晚宴，民宿斜對面。',
-        desc: '全程坐著吃泰北菜吃到飽，欣賞傳統舞蹈表演。非常舒服。',
-        nav: 'Old Chiang Mai Cultural Center',
-        difficulty: '零',
-        highlight: '傳統舞蹈',
+        name: 'Central Chiangmai',
+        note: '清邁最大百貨。',
+        desc: '整理心情，吹冷氣，採買國際品牌或藥妝。',
+        nav: 'Central Chiangmai',
+        difficulty: '低',
       },
     ],
   },
@@ -599,6 +609,9 @@ const INITIAL_ITINERARY_DATA = [
     ],
   },
 ];
+
+
+
 
 // 修改原本的 UTILS_DATA (填入正確航班資訊20251201)
 // 修改原本的 UTILS_DATA (含航廈資訊20251202)
@@ -3456,22 +3469,51 @@ export default function TravelApp() {
     }
   }, []);
 
-  // Firebase 監聽 (修正版：防止自動回朔)
+  // Firebase 監聽 (進化版：包含喚醒自動重連)
   useEffect(() => {
     const itineraryRef = ref(db, 'itinerary');
-    const unsubscribe = onValue(itineraryRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        // 1. 如果雲端有資料，就用雲端的
-        setItinerary(data);
-      } else {
-        // 2. 如果雲端沒資料 (或被誤刪)，只在「本地」顯示預設值
-        // ⚠️ 絕對不要在這裡呼叫 set() 寫回資料庫！
-        console.log("雲端無資料，載入本地預設值 (唯讀模式)");
-        setItinerary(INITIAL_ITINERARY_DATA);
+    
+    // 定義連線與監聽邏輯
+    const connectFirebase = () => {
+      return onValue(itineraryRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setItinerary(data);
+        } else {
+          // 雲端無資料時，顯示本地預設值，但不寫入
+          console.log("讀取不到雲端，顯示本地備用資料");
+          setItinerary(INITIAL_ITINERARY_DATA);
+        }
+      });
+    };
+
+    // 1. 第一次執行時先連線
+    let unsubscribe = connectFirebase();
+
+    // 2. 定義「喚醒偵測」邏輯
+    const handleVisibilityChange = () => {
+      // 如果網頁變回「可見 (visible)」，代表你切回來了
+      if (document.visibilityState === 'visible') {
+        console.log("App 喚醒，強制重連 Firebase...");
+        
+        // A. 強制斷線再重連 (這是解決手機瀏覽器假死的關鍵!)
+        goOffline(db);
+        setTimeout(() => goOnline(db), 500);
+        
+        // B. 重新綁定監聽 (確保拿到最新數據)
+        if (unsubscribe) unsubscribe();
+        unsubscribe = connectFirebase();
       }
-    });
-    return () => unsubscribe();
+    };
+
+    // 3. 加入瀏覽器喚醒監聽器
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // 4. 清理函式 (組件卸載時執行)
+    return () => {
+      if (unsubscribe) unsubscribe();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {
