@@ -345,7 +345,7 @@ const INITIAL_ITINERARY_DATA = [
         difficulty: '零',
       },
       {
-        imageId: 'day5_3',
+        imageId: 'day7_4',
         type: 'food',
         time: '15:00',
         name: 'Ristr8to Original',
@@ -407,7 +407,7 @@ const INITIAL_ITINERARY_DATA = [
     day: 7,
     date: '2026-02-25',
     displayDate: '2/25 (三)',
-    title: '料理課 & 冠軍咖啡',
+    title: '冰冰好料理',
     weather: { temp: '33°C', icon: 'sunny', aqi: 140, realData: false },
     locations: [
       {
@@ -439,17 +439,6 @@ const INITIAL_ITINERARY_DATA = [
         desc: '走進森林隧道參觀佛像。自然地面不平整。',
         nav: 'Wat Umong',
         difficulty: '中高',
-      },
-      {
-        imageId: 'day7_4',
-        type: 'food',
-        time: '17:00',
-        name: 'Ristr8to Original',
-        note: '世界拉花冠軍。',
-        desc: '必點招牌「Satan Latte (撒旦拿鐵)」。',
-        nav: 'Ristr8to Original',
-        highlight: '必喝咖啡',
-        difficulty: '低',
       },
       {
         imageId: 'day7_5',
@@ -490,17 +479,6 @@ const INITIAL_ITINERARY_DATA = [
         desc: '米其林必比登推薦。皮脆肉嫩多汁的烤小雞。',
         nav: 'SP Chicken',
         highlight: '必吃烤雞',
-        difficulty: '低',
-      },
-      {
-        imageId: 'day8_3',
-        type: 'food',
-        time: '13:30',
-        name: 'Kor Panich 芒果糯米飯',
-        note: '皇室秘方，米其林推薦。',
-        desc: '80年老店，糯米口感極佳。',
-        nav: 'Kor Panich Mango Sticky Rice',
-        highlight: '必吃甜點',
         difficulty: '低',
       },
       {
@@ -588,7 +566,7 @@ const INITIAL_ITINERARY_DATA = [
       {
         imageId: 'day9_5',
         type: 'food',
-        time: '20:00',
+        time: '19:30',
         name: 'The House by Ginger',
         note: '華麗復古泰菜。',
         desc: '米其林推薦。華麗復古殖民風，非常精緻。',
