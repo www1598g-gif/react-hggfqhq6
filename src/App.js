@@ -3915,16 +3915,7 @@ export default function TravelApp() {
 
         {/* 解鎖後的主畫面 */}
         {!isLocked && (
-        <>
-          {isLoadingData ? (
-            <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#FDFBF7] dark:bg-stone-900 transition-colors">
-              <Loader2 size={48} className="text-amber-500 animate-spin mb-4" />
-              <p className="text-stone-500 dark:text-stone-400 text-sm font-bold tracking-widest animate-pulse">
-                同步雲端行程中...
-              </p>
-            </div>
-          ) : (
-            
+          <> {/* 🔥 加上這個：React Fragment，讓兩個兄弟併列 */}
             <div id="main-app-container" className="bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
               {/* 🔥 傳入 onLock 讓子元件可以呼叫鎖定 */}
               <WeatherHero
