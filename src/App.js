@@ -3383,6 +3383,8 @@ export default function TravelApp() {
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [isFirebaseConnected, setIsFirebaseConnected] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  // 🔥 新增這一行：用來即時追蹤連線狀態的 Ref
+  const isConnectedRef = useRef(false);
   const [inputPwd, setInputPwd] = useState('');
 
   // 權限狀態
@@ -3453,9 +3455,12 @@ export default function TravelApp() {
   // ==========================================
   // 🔥 最終完美版：Firebase 監聽 + 斷線保護 + 本地備份
   // ==========================================
+  // ==========================================
+  // 🔥 最終完美版 V2：修正閉包陷阱 + 斷線保護 (使用 Ref)
+  // ==========================================
   useEffect(() => {
     const itineraryRef = ref(db, 'itinerary');
-    const connectedRef = ref(db, '.info/connected'); // Firebase 內建的連線狀態節點
+    const connectedRef = ref(db, '.info/connected');
 
     let unsubscribeItinerary = null;
     let unsubscribeConnected = null;
@@ -3463,7 +3468,13 @@ export default function TravelApp() {
     // 1️⃣ 監聽 Firebase 是否真的連上線了
     unsubscribeConnected = onValue(connectedRef, (snap) => {
       const connected = snap.val();
+      
+      // 更新 State (為了讓畫面顯示連線狀態)
       setIsFirebaseConnected(connected === true);
+      
+      // 🔥 關鍵修改：同步更新 Ref (為了讓 Event Listener 讀到最新狀態)
+      isConnectedRef.current = (connected === true);
+
       if (connected) {
         console.log('✅ Firebase 已連線');
       } else {
@@ -3471,58 +3482,48 @@ export default function TravelApp() {
       }
     });
 
-    // 2️⃣ 監聽行程資料 (核心邏輯)
+    // 2️⃣ 監聽行程資料
     unsubscribeItinerary = onValue(itineraryRef, (snapshot) => {
-      setIsLoadingData(false); // 標記：我們已經嘗試讀取過了
+      setIsLoadingData(false);
       const data = snapshot.val();
 
       if (data) {
-        // [情況 A] 成功讀取到雲端資料 -> 更新畫面並備份
         console.log('📡 收到雲端最新資料，更新畫面');
         setItinerary(data);
-        
-        // 💾 順手存一份到本地備份 (下次斷網可以用)
         try {
           localStorage.setItem('cm_itinerary_backup', JSON.stringify(data));
         } catch (e) {
-          console.warn('備份失敗 (空間不足?):', e);
+          console.warn('備份失敗:', e);
         }
       } else {
-        // [情況 B] Firebase 回傳 null (可能是沒資料，也可能是剛連線還沒抓到)
         console.warn('⚠️ Firebase 回傳 null，啟動救援機制...');
-
-        // 先去翻翻看有沒有「上次存的備份」
         const backup = localStorage.getItem('cm_itinerary_backup');
         if (backup) {
           try {
-            const parsed = JSON.parse(backup);
-            console.log('💾 救援成功！載入本地備份資料');
-            setItinerary(parsed);
+            setItinerary(JSON.parse(backup));
           } catch (e) {
-            console.error('備份壞了，只好用預設值');
             setItinerary(INITIAL_ITINERARY_DATA);
           }
         } else {
-          // 連備份都沒有，只好顯示初始資料 (通常是第一次用 App)
-          console.log('📋 完全無備份，載入預設行程');
           setItinerary(INITIAL_ITINERARY_DATA);
         }
       }
     });
 
-    // 3️⃣ 喚醒偵測 (比之前更溫柔，不會一喚醒就斷線)
+    // 3️⃣ 喚醒偵測 (修正版：讀取 Ref 而不是 State，解決無限循環)
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         console.log('👀 App 喚醒，檢查連線狀態...');
         
-        // 等個 0.5 秒，如果 Firebase 自己沒醒來，我們再手動叫醒它
         setTimeout(() => {
-          if (!isFirebaseConnected) {
-            console.log('🔄 似乎睡著了，強制重連 Firebase...');
+          // 🔥 關鍵修改：這裡改成讀取 isConnectedRef.current
+          // 這樣才能拿到「當下真正」的狀態，而不是「剛開機時」的舊狀態
+          if (!isConnectedRef.current) {
+            console.log('🔄 偵測到斷線，強制重連 Firebase...');
             goOffline(db);
             setTimeout(() => goOnline(db), 300);
           } else {
-            console.log('✅ 連線看起來很正常，不用重連');
+            console.log('✅ 連線正常 (Ref Check)，無需重連');
           }
         }, 500);
       }
@@ -3536,7 +3537,7 @@ export default function TravelApp() {
       if (unsubscribeConnected) unsubscribeConnected();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []); // 只在啟動時執行一次
+  }, []); // 依賴保持空陣列
 
   useEffect(() => {
     const versionRef = ref(db, 'appVersion');
