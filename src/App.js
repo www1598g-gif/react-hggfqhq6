@@ -3916,7 +3916,6 @@ export default function TravelApp() {
         {/* 解鎖後的主畫面 */}
         {!isLocked && (
         <>
-          {/* 👇👇👇 THIS IS THE NEW PART (Loading Screen) 👇👇👇 */}
           {isLoadingData ? (
             <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#FDFBF7] dark:bg-stone-900 transition-colors">
               <Loader2 size={48} className="text-amber-500 animate-spin mb-4" />
@@ -3925,7 +3924,6 @@ export default function TravelApp() {
               </p>
             </div>
           ) : (
-          {/* 👆👆👆 THIS IS THE NEW PART 👆👆👆 */}
             
             <div id="main-app-container" className="bg-[#FDFBF7] dark:bg-stone-900 min-h-screen transition-colors duration-500">
               {/* 🔥 傳入 onLock 讓子元件可以呼叫鎖定 */}
