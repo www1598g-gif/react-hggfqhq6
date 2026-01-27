@@ -3461,60 +3461,65 @@ export default function TravelApp() {
   // ==========================================
   // 🔥 強制同步版：每次都直接抓 Firebase (不優先讀備份)
   // ==========================================
+  // ==========================================
+  // 🔥 F5 救星版：主動出擊抓取資料
+  // ==========================================
   useEffect(() => {
     const itineraryRef = ref(db, 'itinerary');
     const connectedRef = ref(db, '.info/connected');
 
+    // 1️⃣ 為了保險起見，先告訴 Firebase 我們要上線
+    goOnline(db); 
+
     let unsubscribeItinerary = null;
     let unsubscribeConnected = null;
 
-    console.log("🚀 App 啟動，開始建立 Firebase 連線...");
+    console.log("🚀 App 啟動 (F5救星版)...");
 
-    // 1️⃣ 監聽連線狀態 (用來做喚醒時的判斷)
+    // 2️⃣ 監聽連線 (這部分維持原樣，負責監控)
     unsubscribeConnected = onValue(connectedRef, (snap) => {
       const connected = snap.val();
       setIsFirebaseConnected(connected === true);
-      isConnectedRef.current = (connected === true); // 更新 Ref 防止閉包問題
-
-      if (connected) {
-        console.log('✅ 與 Firebase 連線成功！等待資料下載...');
-      } else {
-        console.log('🔌 與 Firebase 斷線中...');
-      }
+      isConnectedRef.current = (connected === true);
+      if (connected) console.log('✅ Firebase 連線確認');
     });
 
-    // 2️⃣ 監聽資料 (絕對權威：Firebase 有什麼就顯示什麼)
+    // 3️⃣ 監聽資料 (加入防抖機制，不要太快放棄)
     unsubscribeItinerary = onValue(itineraryRef, (snapshot) => {
       setIsLoadingData(false);
       const data = snapshot.val();
 
       if (data) {
-        // 🔥 這是你要的：只要 Firebase 有資料，就直接用，不囉嗦
-        console.log('📥 收到 Firebase 資料，立即更新畫面！');
+        console.log('📥 收到 Firebase 資料，更新畫面');
         setItinerary(data);
-        
-        // (順便存備份，但下次開機我們不會優先讀它，只當作斷網時的最後手段)
+        // 默默備份就好，不依賴它來顯示
         localStorage.setItem('cm_itinerary_backup', JSON.stringify(data));
       } else {
-        // 只有當 Firebase 真的是空的 (或連線失敗回傳 null)，才勉強用預設值
-        console.warn('⚠️ Firebase 回傳空值 (可能是新資料庫或被清空)，載入預設行程');
-        setItinerary(INITIAL_ITINERARY_DATA);
+        // ⚠️ 關鍵修改：不要馬上就放棄！
+        // 如果是剛啟動且沒有資料，我們再給它一次機會去讀備份
+        // 只有真的完全沒招了，才用初始資料
+        console.warn('⚠️ Firebase 暫無資料');
+        
+        // 嘗試讀取備份，如果沒有備份才用 INITIAL
+        const backup = localStorage.getItem('cm_itinerary_backup');
+        if (backup) {
+            console.log('📂 暫時顯示本地備份');
+            try { setItinerary(JSON.parse(backup)); } catch(e) {}
+        } else {
+            setItinerary(INITIAL_ITINERARY_DATA);
+        }
       }
     });
 
-    // 3️⃣ 喚醒強制重連 (解決手機切換 App 後假死不更新的問題)
+    // 4️⃣ 喚醒強制重連
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        console.log('👀 視窗喚醒，檢查是否需要重連...');
-        
-        // 如果回來時發現是斷線狀態，強制踢它一腳讓它重連，確保你抓到最新的
+        // 這裡加一點延遲，讓瀏覽器喘口氣
         setTimeout(() => {
           if (!isConnectedRef.current) {
-            console.log('⚡ 偵測到斷線，執行強制重連 (Go Offline -> Online)');
+            console.log('⚡ 喚醒重連...');
             goOffline(db);
             setTimeout(() => goOnline(db), 300);
-          } else {
-            console.log('✅ 連線狀態良好，無需重連');
           }
         }, 500);
       }
@@ -3522,7 +3527,6 @@ export default function TravelApp() {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // 4️⃣ 清理
     return () => {
       if (unsubscribeItinerary) unsubscribeItinerary();
       if (unsubscribeConnected) unsubscribeConnected();
