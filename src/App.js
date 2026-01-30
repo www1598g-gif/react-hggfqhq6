@@ -2351,7 +2351,7 @@ const GuidePage = ({ isAdmin, isMember, noticeText, updateNoticeText }) => {
         )}
       </section>
 
-      
+
       {/* 🧭 3. 探索清邁標題與卡片 */}
       <div className="flex items-center gap-3 pt-2">
         <Compass className="text-stone-400" size={28} />
@@ -2532,7 +2532,12 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
                 <input
                   type="text"
                   value={taxInfo.threshold}
-                  onChange={(e) => set(ref(db, 'taxRefund/threshold'), e.target.value)}
+                  onChange={(e) => {
+                    // 1. 同步更新本地 State (讓格子打得出字)
+                    setTaxInfo({ ...taxInfo, threshold: e.target.value });
+                    // 2. 同步寫入雲端 (傳上 Firebase)
+                    set(ref(db, 'taxRefund/threshold'), e.target.value);
+                  }}
                   className="w-full bg-stone-900/50 border border-stone-600 rounded-xl px-3 py-2 text-sm text-amber-200 focus:outline-none focus:border-amber-500"
                   placeholder="例如: 20000"
                 />
