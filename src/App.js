@@ -2546,6 +2546,69 @@ const UtilsPage = ({ isAdmin, isMember, systemInfo, updateSystemInfo }) => {
             </div>
 
 
+            {/* 💰 補齊剩下的 3 個退稅變數設定 */}
+
+{/* 1. 退稅領現手續費 */}
+<div className="mt-4 pt-4 border-t border-stone-700">
+  <label className="text-xs text-stone-400 font-bold mb-1.5 block">退稅手續費 (預設 100)</label>
+  <div className="flex gap-2">
+    <input
+      type="text"
+      value={taxInfo.fee || ''}
+      onChange={(e) => {
+        const newVal = e.target.value;
+        setTaxInfo({ ...taxInfo, fee: newVal });
+        set(ref(db, 'taxRefund/fee'), newVal);
+      }}
+      className="w-full bg-stone-900/50 border border-stone-600 rounded-xl px-3 py-2 text-sm text-amber-200 focus:outline-none focus:border-amber-500"
+    />
+    <div className="bg-stone-700 px-3 py-2 rounded-xl text-[10px] font-bold flex items-center text-stone-400">THB</div>
+  </div>
+</div>
+
+{/* 2. 奢侈品查驗門檻 */}
+<div className="mt-4">
+  <label className="text-xs text-stone-400 font-bold mb-1.5 block">奢侈品二次查驗門檻 (預設 40,000)</label>
+  <div className="flex gap-2">
+    <input
+      type="text"
+      value={taxInfo.luxuryThreshold || ''}
+      onChange={(e) => {
+        const newVal = e.target.value;
+        setTaxInfo({ ...taxInfo, luxuryThreshold: newVal });
+        set(ref(db, 'taxRefund/luxuryThreshold'), newVal);
+      }}
+      className="w-full bg-stone-900/50 border border-stone-600 rounded-xl px-3 py-2 text-sm text-amber-200 focus:outline-none focus:border-amber-500"
+    />
+    <div className="bg-stone-700 px-3 py-2 rounded-xl text-[10px] font-bold flex items-center text-stone-400">THB</div>
+  </div>
+</div>
+
+{/* 3. 總退稅額起退點 */}
+<div className="mt-4">
+  <label className="text-xs text-stone-400 font-bold mb-1.5 block">加總退稅最低起退額 (預設 5,000)</label>
+  <div className="flex gap-2">
+    <input
+      type="text"
+      value={taxInfo.totalThreshold || ''}
+      onChange={(e) => {
+        const newVal = e.target.value;
+        setTaxInfo({ ...taxInfo, totalThreshold: newVal });
+        set(ref(db, 'taxRefund/totalThreshold'), newVal);
+      }}
+      className="w-full bg-stone-900/50 border border-stone-600 rounded-xl px-3 py-2 text-sm text-amber-200 focus:outline-none focus:border-amber-500"
+    />
+    <div className="bg-stone-700 px-3 py-2 rounded-xl text-[10px] font-bold flex items-center text-stone-400">THB</div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
 
 
 
